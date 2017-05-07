@@ -1,7 +1,8 @@
-export class Interpreter {
+export default class Interpreter {
 
     /**
-     * match five regex
+     * match six regex
+     * export default class uuu
      * export class abc
      * exports.eee =
      * exports["default"] =
@@ -12,7 +13,7 @@ export class Interpreter {
          }
      */
     private static importRegex = new RegExp(`
-        export\\s(?:const|let|var|function|class)\\s+([\\w]+)
+        export\\s+(default\\s+){0,1}(?:const|let|var|function|class)\\s+([\\w]+)
         |exports\\.([\\w]+)\\s*=
         |exports\\[\\"([\\w]+)\\"\\]\\s*=
         |Object.defineProperty\\(\\s*exports\\s*,\\s*[\\'|\\"]([\\w]+)[\\'|\\"]
@@ -30,15 +31,15 @@ export class Interpreter {
         let res;
         let i = 0;
         while ((res = Interpreter.importRegex.exec(text)) != null) {
-            for (i = 1; i < 5; i+=1) {
+            for (i = 2; i < 6; i+=1) {
                 if (res[i] != null) {
-                    // TODO: 把defalut替換成文件名
+                    // TODO: replace default to filename@@defalut，if filename is index，replace to dirname-defalut
                     result.push(res[i]);
                     break;
                 }
             }
-            if (res[5] != null) {
-                result.push(...this.extrachModuleFromExportBlock(res[5]))
+            if (res[6] != null) {
+                result.push(...this.extrachModuleFromExportBlock(res[6]))
             }
         }
         return result;
@@ -53,6 +54,7 @@ export class Interpreter {
     private extrachModuleFromExportBlock(block) {
         const result = [];
         let res = [];
+        // TODO: filter all comment, we can use split(',') //[\s\S]*?[\n|\r\n] or /\*{1,2}[\s\S]*?\*/
         while ((res = Interpreter.importBlockRegex.exec(block)) != null) {
             result.push(res[0]);
         }

@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 
-import { Interpreter } from '../src/interpreter';
+import Interpreter from '../src/interpreter';
 
 suite.only("Interpreter Tests", () => {
 
@@ -8,6 +8,7 @@ suite.only("Interpreter Tests", () => {
     test("Something 1", () => {
         const my = new Interpreter();
         const text = `
+            export default class uuu
             export class abc {};
             exports.eee = eee.cxx;
             exports["default"] = _grid.Col;
