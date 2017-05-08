@@ -6,7 +6,7 @@ const path = require('path');
 export default class Scanner {
 
     private interpreter = new Interpreter();
-    private cache = [];
+    private cache = {};
 
     public scan() {
         vscode.workspace.findFiles('**/*.{jsx,js}', '{**∕node_modules∕**, lib/**}', 99999)
@@ -50,15 +50,62 @@ export default class Scanner {
                         modules.push(...Object.keys(packageJson[key]));
                     }
                 })
-                modules.forEach(name => {
-                    this.cacheModule(name);
-                })
+                this.cacheModules(modules);
             })
         }
     }
 
-    private cacheModule(moduleNmae) {
-        const modulePath = path.join(vscode.workspace.rootPath, 'node_modules', moduleNmae);
-        console.log(modulePath);
+    private cacheModules(modules) {
+        modules.forEach((moduleName) => {
+            const modulePath = path.join(vscode.workspace.rootPath, 'node_modules', moduleName);
+            const packageJsonPath = path.join(modulePath, 'package.json');
+            if (fs.existsSync(packageJsonPath)) {
+                fs.readFile(packageJsonPath, 'utf-8', (err, data) => {
+                    if (err) {
+                        return console.log(err);
+                    }
+                    const packageJson = JSON.parse(data);
+                    if (!this.isCachedByVersion(moduleName, packageJson)) {
+                        this.cacheModulesFromMain(moduleName, modulePath, packageJson);
+                    }
+                })
+            }
+        })
+    }
+
+    private cacheModulesFromMain(moduleName, modulePath, packageJson) {
+        if (!packageJson.hasOwnProperty('main'))
+            return;
+        const mainFilePath = path.join(modulePath, packageJson.main);
+        if (fs.existsSync(mainFilePath)) {
+            fs.readFile(mainFilePath, 'utf-8', (err, data) => {
+                if (err) {
+                    return console.log(err);
+                }
+                console.log(moduleName);
+                console.log(this.interpreter.run(data));
+                console.log('\n');
+            })
+        }
+    }
+
+    private isCachedByVersion(moduleName, packageJson) {
+        if (packageJson.hasOwnProperty('version')) {
+            if (this.cache[moduleName] != null) {
+                if (this.cache[moduleName].version === packageJson.version) {
+                    return true
+                } else {
+                    this.cache[moduleName].version = packageJson.version;
+                    return false;
+                }
+            } else {
+                this.cache[moduleName] = {
+                    version: packageJson.version,
+                }
+                return false;
+            }
+        }
+        this.cache[moduleName] = {};
+        return false;
     }
 }

@@ -22,6 +22,7 @@ suite.only("Interpreter Tests", () => {
                 aaa,
                 bbb,
             };
+            module.exports = classNames;
         `
         console.log(my.run(text));
     });
