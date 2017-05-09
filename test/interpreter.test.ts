@@ -24,6 +24,6 @@ suite.only("Interpreter Tests", () => {
             };
             module.exports = classNames;
         `
-        console.log(my.run(text));
+        console.log(my.run(text, false, '', ''));
     });
 });

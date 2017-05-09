@@ -24,27 +24,42 @@ export default class Interpreter {
 
     private static importBlockRegex = /[\w]+/g;
 
-    public run(text :string) {
-        return this.extractModuleFromFile(text);
+    private static unWantedName = ['__esModule', 'function', 'exports', 'require'];
+
+    public run(text :string, isIndex: boolean, moduleName :string, fileName: string) {
+        return this.extractModuleFromFile(text, isIndex, moduleName, fileName);
     }
 
-    private extractModuleFromFile(text: string) {
-        const result = [];
+    private extractModuleFromFile(text: string, isIndex: boolean, moduleName :string, fileName: string) {
+        const nameList = [];
+        const resultList = [];
         let res;
         let i = 0;
         while ((res = Interpreter.importRegex.exec(text)) != null) {
             for (i = 2; i < 7; i+=1) {
                 if (res[i] != null) {
-                    // TODO: replace default to filename@@defalut，if filename is index，replace to dirname-defalut
-                    result.push(res[i]);
+                    if (!this.isUnwantedName(res[i]) && !nameList.includes(res[i])) {
+                        nameList.push(res[i]);
+                    }
                     break;
                 }
             }
             if (res[7] != null) {
-                result.push(...this.extrachModuleFromExportBlock(res[7]))
+                nameList.push(...this.extrachModuleFromExportBlock(res[7]))
             }
         }
-        return result;
+        nameList.forEach((item) => {
+            const o = {}
+            if (item === 'default') {
+                o['defalut'] = true;
+                o['name'] = isIndex ? moduleName: fileName;
+            } else {
+                o['defalut'] = false;
+                o['name'] = item;
+            }
+            resultList.push(o)
+        });
+        return resultList;
     }
 
     /**
@@ -61,6 +76,10 @@ export default class Interpreter {
             result.push(res[0]);
         }
         return result;
+    }
+
+    isUnwantedName(name) {
+        return Interpreter.unWantedName.includes(name);
     }
 }
 

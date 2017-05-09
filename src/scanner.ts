@@ -12,7 +12,7 @@ export default class Scanner {
         vscode.workspace.findFiles('**/*.{jsx,js}', '{**∕node_modules∕**, lib/**}', 99999)
         .then((files) => this.processFiles(files));
 
-        this.findModulesInPackageJson();
+        // this.findModulesInPackageJson();
     }
 
     public processFiles(files: vscode.Uri[]) {
@@ -25,8 +25,11 @@ export default class Scanner {
                 if (err) {
                     return console.log(err);
                 }
-                //console.log(this.interpreter.run(data));
-                this.interpreter.run(data);
+                const fileName = path.parse(file.fsPath).name;
+                const moduleName = path.basename(path.dirname(file.fsPath));
+                const isIndex = fileName === 'index';
+                console.log(this.interpreter.run(data, isIndex, moduleName, fileName));
+                // this.interpreter.run(data, false, '', '');
             });
         });
     }
@@ -83,9 +86,9 @@ export default class Scanner {
                     return console.log(err);
                 }
                 console.log(moduleName);
-                console.log(this.interpreter.run(data));
+                console.log(this.interpreter.run(data, true, moduleName, ''));
                 console.log('\n');
-            })
+            });
         }
     }
 
