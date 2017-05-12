@@ -1,0 +1,22 @@
+{
+    "plugins": [
+        ["lodash"],
+	],
+    "env": {
+        "production": {
+            "presets": [
+                "es2015",
+                "stage-0",
+            ],
+        },
+        "development": {
+            "sourceMaps" : "inline",
+            "presets": [
+                "es2016",
+            ],
+            "plugins": [
+                ["transform-es2015-modules-commonjs"],
+            ],
+        }
+    }
+}

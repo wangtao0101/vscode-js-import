@@ -3,19 +3,28 @@ import * as fs from 'fs';
 import Interpreter from './interpreter';
 const path = require('path');
 
+export interface ImportFile {
+    path: string;
+    modules: Array<any>;
+}
+
 export default class Scanner {
 
     private interpreter = new Interpreter();
     private cache = {};
 
     public scan() {
-        vscode.workspace.findFiles('**/*.{jsx,js}', '{**∕node_modules∕**, lib/**}', 99999)
-        .then((files) => this.processFiles(files));
-
+        // let importFiles: ImportFile[];
+        // vscode.workspace.findFiles('**/*.{jsx,js}', '{**∕node_modules∕**, lib/**}', 99999)
+        //     .then((files) => {
+        //         importFiles = this.processFiles(files)
+        //     });
         // this.findModulesInPackageJson();
+        this.resolveImportFiles();
     }
 
-    public processFiles(files: vscode.Uri[]) {
+    public processFiles(files: vscode.Uri[]) : ImportFile[] {
+        const importFiles: ImportFile[] = [];
         let pruned = files.filter((f) => {
             return f.fsPath.indexOf('typings') === -1 &&
                 f.fsPath.indexOf('node_modules') === -1
@@ -28,10 +37,18 @@ export default class Scanner {
                 const fileName = path.parse(file.fsPath).name;
                 const moduleName = path.basename(path.dirname(file.fsPath));
                 const isIndex = fileName === 'index';
-                console.log(this.interpreter.run(data, isIndex, moduleName, fileName));
-                // this.interpreter.run(data, false, '', '');
+                importFiles.push({
+                    path: file.fsPath,
+                    modules: this.interpreter.run(data, isIndex, moduleName, fileName)
+                })
             });
         });
+        return importFiles;
+    }
+
+    private resolveImportFiles() {
+        let root = vscode.workspace.getConfiguration('js-import').get<string>('root');
+        console.log(root);
     }
 
     private findModulesInPackageJson() {

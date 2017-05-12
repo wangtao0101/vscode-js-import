@@ -1,0 +1,14 @@
+node_modules
+npm-debug.*
+.npminstall.done
+.idea
+.DS_Store
+.babelrc
+.eslintrc
+src
+.editorconfig
+.vscode
+.travis.yml
+jsconfig.json
+yarn.lock
+coverage/

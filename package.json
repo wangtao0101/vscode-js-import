@@ -18,7 +18,23 @@
         "commands": [{
             "command": "extension.sayHello",
             "title": "Hello World"
-        }]
+        }],
+        "configuration": {
+            "type": "object",
+            "title": "js import configuration",
+            "properties": {
+                "js-import.root": {
+                    "type": "string",
+                    "default": "/src",
+                    "description": "root to resolve absolute path and relative path"
+                },
+                "js-import.alias": {
+					"type": "object",
+					"description": "module alias",
+					"default": ""
+				}
+            }
+        }
     },
     "scripts": {
         "vscode:prepublish": "tsc -p ./",
