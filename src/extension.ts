@@ -12,6 +12,9 @@ export function activate(context: vscode.ExtensionContext) {
     // This line of code will only be executed once when your extension is activated
     console.log('Congratulations, your extension "vscode-js-import" is now active!');
 
+    // const scanner = new Scanner();
+    // scanner.scan();
+
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with  registerCommand
     // The commandId parameter must match the command field in package.json
@@ -19,9 +22,9 @@ export function activate(context: vscode.ExtensionContext) {
         // The code you place here will be executed every time your command is executed
 
         // Display a message box to the user
-        vscode.window.showInformationMessage('Hello World!');
         const scanner = new Scanner();
         scanner.scan();
+        vscode.window.showInformationMessage('Hello World!');
     });
 
     let shortcutImport = vscode.commands.registerCommand('extension.shortcutImport', () => {
@@ -36,8 +39,11 @@ export function activate(context: vscode.ExtensionContext) {
 
         editor.selections.forEach((selection) => {
             if (selection.start.isEqual(selection.end)) {
-                console.log(selection);
-                console.log(doc.getWordRangeAtPosition(selection.start))
+                const wordRange = doc.getWordRangeAtPosition(selection.start)
+                const value = doc.getText().substring(doc.offsetAt(wordRange.start), doc.offsetAt(wordRange.end));
+                console.log(value);
+            } else {
+                // do nothing
             }
         });
 
