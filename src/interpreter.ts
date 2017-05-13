@@ -14,12 +14,12 @@ export default class Interpreter {
        module.exports = classNames;
      */
     private static importRegex = new RegExp(`
-        export\\s+(default\\s+){0,1}(?:const|let|var|function|class)\\s+([\\w]+)
+        export\\s+(default\\s+){0,1}(?:(?:const|let|var|function|function\\*|class)\\s+){0,1}([\\w]+)
         |exports\\.([\\w]+)\\s*=
         |exports\\[\\"([\\w]+)\\"\\]\\s*=
         |Object.defineProperty\\(\\s*exports\\s*,\\s*[\\'|\\"]([\\w]+)[\\'|\\"]
         |module.exports\\s*=\\s*([\\w]+)
-        |export\\s+(\\{[^\\}]+\\})
+        |export\\s+(?:default\\s+){0,1}(\\{[^\\}]+\\})
     `.replace(/\s*/g, ''), 'g');
 
     private static importBlockRegex = /[\w]+/g;
@@ -36,6 +36,13 @@ export default class Interpreter {
         let res;
         let i = 0;
         while ((res = Interpreter.importRegex.exec(text)) != null) {
+            if (res[1] != null) {
+                resultList.push({
+                    defalut: true,
+                    name: res[2],
+                })
+                continue;
+            }
             for (i = 2; i < 7; i+=1) {
                 if (res[i] != null) {
                     if (!this.isUnwantedName(res[i]) && !nameList.includes(res[i])) {

@@ -8,7 +8,9 @@ suite.only("Interpreter Tests", () => {
     test("Something 1", () => {
         const my = new Interpreter();
         const text = `
-            export default class uuu
+            export default class uuu;
+            export function* xxx;
+            export default config;
             export class abc {};
             exports.eee = eee.cxx;
             exports["default"] = _grid.Col;

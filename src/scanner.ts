@@ -14,16 +14,13 @@ export default class Scanner {
     private cache = {};
 
     public scan() {
-        // let importFiles: ImportFile[];
-        // vscode.workspace.findFiles('**/*.{jsx,js}', '{**∕node_modules∕**, lib/**}', 99999)
-        //     .then((files) => {
-        //         importFiles = this.processFiles(files)
-        //     });
+        vscode.workspace.findFiles('**/*.{jsx,js}', '{**∕node_modules∕**, lib/**}', 99999)
+            .then((files) => this.processFiles(files));
         // this.findModulesInPackageJson();
         this.resolveImportFiles();
     }
 
-    public processFiles(files: vscode.Uri[]) : ImportFile[] {
+    public processFiles(files: vscode.Uri[]) {
         const importFiles: ImportFile[] = [];
         let pruned = files.filter((f) => {
             return f.fsPath.indexOf('typings') === -1 &&
@@ -41,9 +38,10 @@ export default class Scanner {
                     path: file.fsPath,
                     modules: this.interpreter.run(data, isIndex, moduleName, fileName)
                 })
+                console.log(importFiles)
             });
         });
-        return importFiles;
+        return;
     }
 
     private resolveImportFiles() {
