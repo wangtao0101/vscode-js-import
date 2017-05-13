@@ -11,13 +11,23 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.sayHello"
+        "onCommand:extension.sayHello",
+        "onCommand:extension.shortcutImport"
     ],
     "main": "./out/src/extension",
     "contributes": {
         "commands": [{
             "command": "extension.sayHello",
             "title": "Hello World"
+        }, {
+            "command": "extension.shortcutImport",
+            "title": "Shortcut Import"
+        }],
+        "keybindings": [{
+            "command": "extension.shortcutImport",
+            "key": "ctrl+alt+j",
+            "mac": "cmd+alt+j",
+            "when": "editorFocus"
         }],
         "configuration": {
             "type": "object",

@@ -24,7 +24,28 @@ export function activate(context: vscode.ExtensionContext) {
         scanner.scan();
     });
 
-    context.subscriptions.push(disposable);
+    let shortcutImport = vscode.commands.registerCommand('extension.shortcutImport', () => {
+        // The code you place here will be executed every time your command is executed
+        let editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            this._statusBarItem.hide();
+            return;
+        }
+
+        let doc = editor.document;
+
+        editor.selections.forEach((selection) => {
+            if (selection.start.isEqual(selection.end)) {
+                console.log(selection);
+                console.log(doc.getWordRangeAtPosition(selection.start))
+            }
+        });
+
+        // Display a message box to the user
+        vscode.window.showInformationMessage('shortcutImport');
+    });
+
+    context.subscriptions.push(disposable, shortcutImport);
 }
 
 // this method is called when your extension is deactivated
