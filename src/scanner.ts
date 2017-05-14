@@ -3,15 +3,16 @@ import * as fs from 'fs';
 import Interpreter from './interpreter';
 const path = require('path');
 
-export interface ImportFile {
+export interface ImportObj {
     path: string;
-    modules: Array<any>;
+    module: any;
+    isNodeModule: boolean;
 }
 
 export default class Scanner {
 
     private interpreter = new Interpreter();
-    private cache = {};
+    public cache = {};
 
     public scan() {
         vscode.workspace.findFiles('**/*.{jsx,js}', '{**∕node_modules∕**, lib/**}', 99999)
@@ -21,7 +22,6 @@ export default class Scanner {
     }
 
     public processFiles(files: vscode.Uri[]) {
-        const importFiles: ImportFile[] = [];
         let pruned = files.filter((f) => {
             return f.fsPath.indexOf('typings') === -1 &&
                 f.fsPath.indexOf('node_modules') === -1
@@ -34,11 +34,14 @@ export default class Scanner {
                 const fileName = path.parse(file.fsPath).name;
                 const moduleName = path.basename(path.dirname(file.fsPath));
                 const isIndex = fileName === 'index';
-                importFiles.push({
-                    path: file.fsPath,
-                    modules: this.interpreter.run(data, isIndex, moduleName, fileName)
+                const modules = this.interpreter.run(data, isIndex, moduleName, fileName);
+                modules.forEach(m => {
+                    this.cache[`${file.fsPath}-${m.name}`] = {
+                        path: file.fsPath,
+                        module: m,
+                        isNodeModule: false,
+                    };
                 })
-                console.log(importFiles)
             });
         });
         return;

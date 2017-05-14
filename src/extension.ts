@@ -3,6 +3,8 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import Scanner from './scanner';
+import Resolver from './resolver';
+import ImportFixer from './importFixer';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -12,8 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
     // This line of code will only be executed once when your extension is activated
     console.log('Congratulations, your extension "vscode-js-import" is now active!');
 
-    // const scanner = new Scanner();
-    // scanner.scan();
+    const scanner = new Scanner();
 
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with  registerCommand
@@ -22,7 +23,6 @@ export function activate(context: vscode.ExtensionContext) {
         // The code you place here will be executed every time your command is executed
 
         // Display a message box to the user
-        const scanner = new Scanner();
         scanner.scan();
         vscode.window.showInformationMessage('Hello World!');
     });
@@ -42,13 +42,16 @@ export function activate(context: vscode.ExtensionContext) {
                 const wordRange = doc.getWordRangeAtPosition(selection.start)
                 const value = doc.getText().substring(doc.offsetAt(wordRange.start), doc.offsetAt(wordRange.end));
                 console.log(value);
+                new Resolver(scanner).resolve(value, doc, wordRange);
             } else {
                 // do nothing
             }
         });
+    });
 
-        // Display a message box to the user
-        vscode.window.showInformationMessage('shortcutImport');
+    let importFixer = vscode.commands.registerCommand('extension.fixImport', (d, r, c, t, i) => {
+        // new ImportFixer().fix(d, r, c, t, i);
+        console.log('fixImport')
     });
 
     context.subscriptions.push(disposable, shortcutImport);
