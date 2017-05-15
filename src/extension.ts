@@ -41,7 +41,6 @@ export function activate(context: vscode.ExtensionContext) {
             if (selection.start.isEqual(selection.end)) {
                 const wordRange = doc.getWordRangeAtPosition(selection.start)
                 const value = doc.getText().substring(doc.offsetAt(wordRange.start), doc.offsetAt(wordRange.end));
-                console.log(value);
                 new Resolver(scanner).resolve(value, doc, wordRange);
             } else {
                 // do nothing
@@ -49,9 +48,8 @@ export function activate(context: vscode.ExtensionContext) {
         });
     });
 
-    let importFixer = vscode.commands.registerCommand('extension.fixImport', (d, r, c, t, i) => {
-        // new ImportFixer().fix(d, r, c, t, i);
-        console.log('fixImport')
+    let importFixer = vscode.commands.registerCommand('extension.fixImport', (importObj, doc, range) => {
+        new ImportFixer().fix(importObj, doc, range);
     });
 
     context.subscriptions.push(disposable, shortcutImport);

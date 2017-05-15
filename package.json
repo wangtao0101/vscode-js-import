@@ -36,7 +36,7 @@
                 "js-import.root": {
                     "type": "string",
                     "default": "/src",
-                    "description": "root to resolve absolute path and relative path"
+                    "description": "the source dir, currently we only support single root"
                 },
                 "js-import.alias": {
 					"type": "object",

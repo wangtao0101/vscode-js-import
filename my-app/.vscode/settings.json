@@ -8,6 +8,7 @@
     },
     "js-import.root": "src",
     "js-import.alias": {
-        "sie-util": "src/sie-util/"
+        "sie-util": "src/sie-util/",
+        "redux-saga-websocket": "src/redux-saga-websocket/src"
     }
 }
