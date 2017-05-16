@@ -41,11 +41,12 @@ export default class ImportFixer {
         if (aliasMatch !== null) {
             const filename = path.basename(importObj.path);
             const aliasPath = path.join(vscode.workspace.rootPath, aliasMatch);
+            const relativePath = path.relative(aliasPath, path.dirname(importObj.path));
             if (filename.match(/index(\.(jsx|js))/)) {
-                const relativePath = path.relative(aliasPath, path.dirname(importObj.path));
                 importPath = relativePath === '' ?  aliasKey : `${aliasKey}/${relativePath}`
             } else {
-
+                const filename = path.parse(importObj.path).name;
+                importPath = relativePath === '' ?  `${aliasKey}/${filename}` : `${aliasKey}/${relativePath}/${filename}`
             }
         }
         console.log(importPath)
