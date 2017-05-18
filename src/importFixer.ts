@@ -3,7 +3,7 @@ import { ImportObj } from "./scanner";
 const path = require('path');
 
 export default class ImportFixer {
-    fix(importObj: ImportObj, doc: vscode.TextDocument , range: vscode.Range) {
+    public fix(importObj: ImportObj, doc: vscode.TextDocument , range: vscode.Range) {
         if (importObj.isNodeModule) {
             this.fixNodeModule(importObj, doc, range);
         } else {
@@ -17,30 +17,36 @@ export default class ImportFixer {
     /**
      * from import form node_module dir
      */
-    fixNodeModule(importObj: ImportObj, doc: vscode.TextDocument , range: vscode.Range) {
+    private fixNodeModule(importObj: ImportObj, doc: vscode.TextDocument , range: vscode.Range) {
 
     }
 
     /**
      * fix import from local file
      */
-    fixFile(importObj: ImportObj, doc: vscode.TextDocument , range: vscode.Range) {
-        let alias = vscode.workspace.getConfiguration('js-import').get<string>('alias');
+    private fixFile(importObj: ImportObj, doc: vscode.TextDocument , range: vscode.Range) {
+        let importPath = this.extractImportPathFromAlias(importObj)
+        console.log(importPath);
+    }
+
+    public extractImportPathFromAlias(importObj: ImportObj) {
         let aliasMatch = null;
         let aliasKey = null;
+        const rootPath = vscode.workspace.rootPath;
         /**
          * pick up the first alias, not support nested alias
          */
+        const alias = vscode.workspace.getConfiguration('js-import').get<string>('alias') || {};
         for(const key of Object.keys(alias)) {
-            if (importObj.path.startsWith(path.join(vscode.workspace.rootPath, alias[key]))) {
+            if (importObj.path.startsWith(path.join(rootPath, alias[key]))) {
                 aliasMatch = alias[key];
                 aliasKey = key;
             }
         }
-        let importPath;
+        let importPath = null;
         if (aliasMatch !== null) {
             const filename = path.basename(importObj.path);
-            const aliasPath = path.join(vscode.workspace.rootPath, aliasMatch);
+            const aliasPath = path.join(rootPath, aliasMatch);
             const relativePath = path.relative(aliasPath, path.dirname(importObj.path));
             if (filename.match(/index(\.(jsx|js))/)) {
                 importPath = relativePath === '' ?  aliasKey : `${aliasKey}/${relativePath}`
@@ -49,6 +55,6 @@ export default class ImportFixer {
                 importPath = relativePath === '' ?  `${aliasKey}/${filename}` : `${aliasKey}/${relativePath}/${filename}`
             }
         }
-        console.log(importPath)
+        return importPath;
     }
 }

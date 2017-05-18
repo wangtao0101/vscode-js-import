@@ -2,7 +2,7 @@ import * as assert from 'assert';
 
 import Interpreter from '../src/interpreter';
 
-suite.only("Interpreter Tests", () => {
+suite("Interpreter Tests", () => {
 
     // Defines a Mocha unit test
     test("Something 1", () => {
