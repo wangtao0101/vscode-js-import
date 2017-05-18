@@ -42,12 +42,7 @@
 					"type": "object",
 					"description": "module alias like webpack alias, not support nested alias path",
 					"default": ""
-				},
-                "js-import.isRelative": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "whether to use reative, default is true"
-                }
+				}
             }
         }
     },

@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
-import { ImportObj } from "./scanner";
+import { ImportObj } from './scanner';
+import { isIndexFile, isWin } from './help';
 const path = require('path');
 
 export default class ImportFixer {
@@ -26,6 +27,9 @@ export default class ImportFixer {
      */
     private fixFile(importObj: ImportObj, doc: vscode.TextDocument , range: vscode.Range) {
         let importPath = this.extractImportPathFromAlias(importObj)
+        if (importPath === null) {
+            importPath = this.extractImportFromRoot(importObj, doc.uri.fsPath);
+        }
         console.log(importPath);
     }
 
@@ -48,12 +52,32 @@ export default class ImportFixer {
             const filename = path.basename(importObj.path);
             const aliasPath = path.join(rootPath, aliasMatch);
             const relativePath = path.relative(aliasPath, path.dirname(importObj.path));
-            if (filename.match(/index(\.(jsx|js))/)) {
+            if (isIndexFile(filename)) {
                 importPath = relativePath === '' ?  aliasKey : `${aliasKey}/${relativePath}`
             } else {
                 const filename = path.parse(importObj.path).name;
                 importPath = relativePath === '' ?  `${aliasKey}/${filename}` : `${aliasKey}/${relativePath}/${filename}`
             }
+        }
+        return importPath;
+    }
+
+    public extractImportFromRoot(importObj: ImportObj, filePath: string) {
+        const rootPath = vscode.workspace.rootPath;
+        let importPath = path.relative(filePath, importObj.path);
+        const parsePath = path.parse(importPath);
+        /**
+         * normalize dir
+         */
+        let dir = parsePath.dir;
+        if (isWin()) {
+            dir = dir.replace(/\\/g, '/');
+            dir = dir.replace(/../, '.');
+        }
+        if (isIndexFile(parsePath.base)) {
+            importPath = `${dir}`
+        } else {
+            importPath = `${dir}/${parsePath.name}`;
         }
         return importPath;
     }
