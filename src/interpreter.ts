@@ -74,6 +74,7 @@ export default class Interpreter {
            a,
            b,
        }
+       TODO: there maybe comment after every item
      */
     private extrachModuleFromExportBlock(block) {
         const result = [];
