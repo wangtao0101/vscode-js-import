@@ -91,7 +91,11 @@ export default class ImportFixer {
         if (isIndexFile(parsePath.base)) {
             importPath = `${dir}`
         } else {
-            importPath = `${dir}/${parsePath.name}`;
+            if (dir.startsWith('./..')){
+                importPath = `${dir.substr(2, dir.length-2)}/${parsePath.name}`;
+            } else {
+                importPath = `${dir}/${parsePath.name}`;
+            }
         }
         return importPath;
     }

@@ -36,6 +36,11 @@ suite("extractImportFromRoot", () => {
         isNodeModule: false,
     }
 
+    test("should return ignore ./ if in parent dir", () => {
+        const importFixer = new ImportFixer();
+        assert.equal('../via', importFixer.extractImportFromRoot(importObj, path.join(vscode.workspace.rootPath, 'src/component/index.js')))
+    });
+
     test("should return ./ + dirname", () => {
         const importFixer = new ImportFixer();
         assert.equal('./via', importFixer.extractImportFromRoot(importObj, path.join(vscode.workspace.rootPath, 'src/app.js')))
