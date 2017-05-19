@@ -5,7 +5,10 @@ const path = require('path');
 
 export interface ImportObj {
     path: string;
-    module: any;
+    module: {
+        name: string;
+        default: boolean;
+    };
     isNodeModule: boolean;
 }
 

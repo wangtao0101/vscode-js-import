@@ -10,9 +10,6 @@ export default class ImportFixer {
         } else {
             this.fixFile(importObj, doc, range);
         }
-        // let edit: vscode.WorkspaceEdit = new vscode.WorkspaceEdit();
-        // edit.insert(doc.uri, new vscode.Position(0, 0), `${importObj.module.name}\n`);
-        // vscode.workspace.applyEdit(edit);
     }
 
     /**
@@ -29,6 +26,24 @@ export default class ImportFixer {
         let importPath = this.extractImportPathFromAlias(importObj)
         if (importPath === null) {
             importPath = this.extractImportFromRoot(importObj, doc.uri.fsPath);
+        }
+        const editString = this.getEditIfResolved(importObj, doc, importPath);
+        if (editString === -1) {
+            return;
+        } else if (editString !== 0) {
+            let edit: vscode.WorkspaceEdit = new vscode.WorkspaceEdit();
+            edit.replace(doc.uri, new vscode.Range(0, 0, doc.lineCount, 0), editString);
+            vscode.workspace.applyEdit(edit);
+        } else {
+            let importStatement;
+            if (importObj.module.default) {
+                importStatement = this.getImportStatement(importObj.module.name, [], importPath, true);
+            } else {
+                importStatement = this.getImportStatement(null, [importObj.module.name], importPath, true);
+            }
+            let edit: vscode.WorkspaceEdit = new vscode.WorkspaceEdit();
+            edit.insert(doc.uri, new vscode.Position(0, 0), importStatement);
+            vscode.workspace.applyEdit(edit);
         }
     }
 
@@ -81,13 +96,72 @@ export default class ImportFixer {
         return importPath;
     }
 
-    public isAlreadyResolved(importObj: ImportObj, doc: vscode.TextDocument, importPath) {
-        const importBodyRegex = new RegExp(`(?:import\\s+)(.*)(?:from\\s+[\'|\"]${importPath}[\'|\"])`)
+    /**
+     * return edit if the import has been resolved
+     * @param importObj
+     * @param doc
+     * @param importPath
+     * @return edit, 0 not resolve, -1 resolved
+     */
+    public getEditIfResolved(importObj: ImportObj, doc: vscode.TextDocument, importPath) {
+        const importBodyRegex = new RegExp(`(?:import\\s+)(.*)(?:from\\s+[\'|\"]${importPath}[\'|\"](?:\s*;){0,1})`)
         const importBodyMatch = importBodyRegex.exec(doc.getText());
+        const importBracketRegex = /\{(.*)\}/;
         if (importBodyMatch !== null) {
+            // TODO: here we can provide some error info if there has some import syntax mistake, such as two default import
             const importBody = importBodyMatch[1].trim();
-        } else {
+            const importBracketMatch = importBracketRegex.exec(importBody);
+            let defaultImport = null;
+            let bracketImport = [];
+            if (importBracketMatch === null) {
+                /**
+                 * here importBody must be single word
+                 */
+                defaultImport = importBody;
+            } else {
+                bracketImport.push(...importBracketMatch[1].replace(/\s/g, '').split(','));
+                if (importBracketMatch.index === 0) {
+                    // TODO: maybe there hava mistake if two defalut
+                    defaultImport = importBody.slice(importBracketMatch[0].length, importBody.length).replace(/\s/g, '').split(',')[1];
+                } else if (importBracketMatch.index + importBracketMatch[0].length === importBody.length) {
+                    // TODO: maybe there hava mistake if two defalut
+                    defaultImport = importBody.slice(0, importBracketMatch.index).replace(/\s/g, '').split(',')[0];
+                } else {
+                    // TODO: mistake, currently we just return null to insert new import statement;
+                    return 0;
+                }
+            }
 
+            // sort and remove weight bracketImport
+            if (importObj.module.default === true) {
+                if (defaultImport === null) {
+                    defaultImport = importObj.module.name;
+                } else {
+                    // TODO: mistake
+                    return 0;
+                }
+            } else {
+                if (bracketImport.includes(importObj.module.name)) {
+                    return -1;
+                }
+                bracketImport.push(importObj.module.name);
+            }
+            const importStatement = this.getImportStatement(defaultImport, bracketImport, importPath);
+            return doc.getText().replace(importBodyRegex, importStatement);
+        } else {
+            return 0;
+        }
+    }
+
+    public getImportStatement(defaultImport: string, bracketImport: Array<string>, importPath: string, endline = false) {
+        if (defaultImport != null && bracketImport.length !== 0) {
+            return `import ${defaultImport}, { ${bracketImport.join(', ')} } from '${importPath}'${endline ? '\r\n' : ''};`
+        } else if (defaultImport == null && bracketImport.length !== 0) {
+            return `import { ${bracketImport.join(', ')} } from '${importPath}';${endline ? '\r\n' : ''}`
+        } else if (defaultImport != null && bracketImport.length === 0) {
+            return `import ${defaultImport} from '${importPath}';${endline ? '\r\n' : ''}`
+        } else {
+            // do nothing
         }
     }
 }
