@@ -18,37 +18,55 @@ export default class Scanner {
     private interpreter = new Interpreter();
     public static cache = {};
 
-    public scan() {
+    public scanAllImport() {
         vscode.workspace.findFiles('**/*.{jsx,js}', '{**∕node_modules∕**, lib/**}', 99999)
             .then((files) => this.processFiles(files));
         // this.findModulesInPackageJson();
     }
 
-    public processFiles(files: vscode.Uri[]) {
+    public scanFileImport(file: vscode.Uri) {
+        this.deleteFile(file);
+        this.processFile(file);
+    }
+
+    public deleteFile(file: vscode.Uri) {
+        const keys = Object.keys(Scanner.cache);
+        for (const key of keys) {
+            if (key.startsWith(file.fsPath)) {
+                delete Scanner.cache[key];
+            }
+        }
+    }
+
+    private processFiles(files: vscode.Uri[]) {
         let pruned = files.filter((f) => {
             return f.fsPath.indexOf('typings') === -1 &&
                 f.fsPath.indexOf('node_modules') === -1
         });
         pruned.forEach(file => {
-            fs.readFile(file.fsPath, 'utf8', (err, data) => {
-                if (err) {
-                    return console.log(err);
-                }
-                const fileName = path.parse(file.fsPath).name;
-                const moduleName = path.basename(path.dirname(file.fsPath));
-                const isIndex = fileName === 'index';
-                const modules = this.interpreter.run(data, isIndex, moduleName, fileName);
-                modules.forEach(m => {
-                    Scanner.cache[`${file.fsPath}-${m.name}`] = {
-                        path: file.fsPath,
-                        module: m,
-                        isNodeModule: false,
-                    };
-                })
-                JsImport.setStatusBar();
-            });
+            this.processFile(file);
         });
         return;
+    }
+
+    private processFile(file: vscode.Uri) {
+        fs.readFile(file.fsPath, 'utf8', (err, data) => {
+            if (err) {
+                return console.log(err);
+            }
+            const fileName = path.parse(file.fsPath).name;
+            const moduleName = path.basename(path.dirname(file.fsPath));
+            const isIndex = fileName === 'index';
+            const modules = this.interpreter.run(data, isIndex, moduleName, fileName);
+            modules.forEach(m => {
+                Scanner.cache[`${file.fsPath}-${m.name}`] = {
+                    path: file.fsPath,
+                    module: m,
+                    isNodeModule: false,
+                };
+            })
+            JsImport.setStatusBar();
+        });
     }
 
     private findModulesInPackageJson() {

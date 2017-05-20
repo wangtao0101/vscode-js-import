@@ -61,7 +61,6 @@ export default class ImportFixer {
                 aliasKey = key;
             }
         }
-        // TODO: normalize alias[key] path
         let importPath = null;
         if (aliasMatch !== null) {
             const filename = path.basename(importObj.path);
@@ -111,6 +110,8 @@ export default class ImportFixer {
     public getEditIfResolved(importObj: ImportObj, doc: vscode.TextDocument, importPath) {
         // TODO: import statement maybe have been comment
         // TODO: change import regex if import statement takes up multiple lines
+        // TODO: support import * as xxx from 'aaa'
+        // TODO: support import { xxx as ccc } from 'aaa'
         const importBodyRegex = new RegExp(`(?:import\\s+)(.*)(?:from\\s+[\'|\"]${importPath}[\'|\"](?:\s*;){0,1})`)
         const importBodyMatch = importBodyRegex.exec(doc.getText());
         const importBracketRegex = /\{(.*)\}/;

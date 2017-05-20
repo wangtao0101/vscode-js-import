@@ -15,18 +15,25 @@ export default class JsImport {
             return;
         }
         this.attachCommands(context);
+        this.attachFileWatcher();
         JsImport.statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
         JsImport.statusBar.text = '$(search)...';
         JsImport.statusBar.tooltip = 'JsImport: Building import cache...';
         JsImport.statusBar.show();
-        vscode.commands.executeCommand('extension.scanImport');
+        vscode.commands.executeCommand('extension.scanImport', { init: true });
     }
 
     private attachCommands(context: vscode.ExtensionContext) {
         const scanner = new Scanner();
 
-        let disposable = vscode.commands.registerCommand('extension.scanImport', () => {
-            scanner.scan();
+        let importScanner = vscode.commands.registerCommand('extension.scanImport', (request) => {
+            if (request.init) {
+                scanner.scanAllImport();
+            } else if (request.edit) {
+                scanner.scanFileImport(request.file);
+            } else {
+                scanner.deleteFile(request.file);
+            }
         });
 
         let shortcutImport = vscode.commands.registerCommand('extension.shortcutImport', () => {
@@ -53,7 +60,24 @@ export default class JsImport {
             new ImportFixer().fix(importObj, doc, range);
         });
 
-        context.subscriptions.push(disposable, shortcutImport);
+        context.subscriptions.push(importScanner, shortcutImport);
+    }
+
+    public attachFileWatcher() {
+        let glob = vscode.workspace.getConfiguration('js-import').get<string>('filesToScan');
+        let watcher = vscode.workspace.createFileSystemWatcher(glob);
+        watcher.onDidChange((file: vscode.Uri) => {
+            vscode.commands
+                .executeCommand('extension.scanImport', { file, edit: true, init: false });
+        })
+        watcher.onDidCreate((file: vscode.Uri) => {
+            vscode.commands
+                .executeCommand('extension.scanImport', { file, edit: true, init: false });
+        })
+        watcher.onDidDelete((file: vscode.Uri) => {
+            vscode.commands
+                .executeCommand('extension.scanImport', { file, delete: true, init: false });
+        })
     }
 
     public static setStatusBar() {
