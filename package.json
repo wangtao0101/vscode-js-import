@@ -2,8 +2,12 @@
     "name": "vscode-js-import",
     "displayName": "vscode-js-import",
     "description": "",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "publisher": "wangtao0101",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/wangtao0101/vscode-js-import.git"
+    },
     "engines": {
         "vscode": "^1.12.0"
     },
@@ -11,7 +15,7 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.sayHello",
+        "*",
         "onCommand:extension.shortcutImport"
     ],
     "main": "./out/src/extension",

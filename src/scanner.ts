@@ -17,11 +17,13 @@ export default class Scanner {
 
     private interpreter = new Interpreter();
     public static cache = {};
+    public static nodeModuleCache = {};
+    public static nodeModuleVersion = {};
 
     public scanAllImport() {
         vscode.workspace.findFiles('**/*.{jsx,js}', '{**∕node_modules∕**, lib/**}', 99999)
             .then((files) => this.processFiles(files));
-        // this.findModulesInPackageJson();
+        this.findModulesInPackageJson();
     }
 
     public scanFileImport(file: vscode.Uri) {
@@ -64,7 +66,7 @@ export default class Scanner {
                     module: m,
                     isNodeModule: false,
                 };
-            })
+            });
             JsImport.setStatusBar();
         });
     }
@@ -120,30 +122,33 @@ export default class Scanner {
                 if (err) {
                     return console.log(err);
                 }
-                console.log(moduleName);
-                console.log(this.interpreter.run(data, true, moduleName, ''));
-                console.log('\n');
+                const modules = this.interpreter.run(data, true, moduleName, '')
+                modules.forEach(m => {
+                    Scanner.nodeModuleCache[`${moduleName}-${m.name}`] = {
+                        path: moduleName,
+                        module: m,
+                        isNodeModule: true,
+                    };
+                });
+                JsImport.setStatusBar();
             });
         }
     }
 
-    private isCachedByVersion(moduleName, packageJson) {
+    public isCachedByVersion(moduleName, packageJson) {
         if (packageJson.hasOwnProperty('version')) {
-            if (Scanner.cache[moduleName] != null) {
-                if (Scanner.cache[moduleName].version === packageJson.version) {
+            if (Scanner.nodeModuleVersion[moduleName] != null) {
+                if (Scanner.nodeModuleVersion[moduleName] === packageJson.version) {
                     return true
                 } else {
-                    Scanner.cache[moduleName].version = packageJson.version;
+                    Scanner.nodeModuleVersion[moduleName] = packageJson.version;
                     return false;
                 }
             } else {
-                Scanner.cache[moduleName] = {
-                    version: packageJson.version,
-                }
+                Scanner.nodeModuleVersion[moduleName] = packageJson.version;
                 return false;
             }
         }
-        Scanner.cache[moduleName] = {};
         return false;
     }
 }

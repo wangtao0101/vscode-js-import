@@ -81,7 +81,7 @@ export default class JsImport {
     }
 
     public static setStatusBar() {
-        JsImport.statusBar.text = `$(database) ${Object.keys(Scanner.cache).length}`;
-        JsImport.statusBar.tooltip = `JsImport: ${Object.keys(Scanner.cache).length} import statements`;
+        JsImport.statusBar.text = `$(database) ${Object.keys(Scanner.cache).length + Object.keys(Scanner.nodeModuleCache).length}`;
+        JsImport.statusBar.tooltip = `JsImport : ${Object.keys(Scanner.cache).length + Object.keys(Scanner.nodeModuleCache).length} import statements`;
     }
 }

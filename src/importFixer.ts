@@ -5,28 +5,20 @@ const path = require('path');
 
 export default class ImportFixer {
     public fix(importObj: ImportObj, doc: vscode.TextDocument, range: vscode.Range) {
+        let importPath;
         if (importObj.isNodeModule) {
-            this.fixNodeModule(importObj, doc, range);
+            importPath = this.extractImportPathFromNodeModules(importObj);
         } else {
-            this.fixFile(importObj, doc, range);
+            importPath = this.extractImportPathFromAlias(importObj)
+            if (importPath === null) {
+                importPath = this.extractImportFromRoot(importObj, doc.uri.fsPath);
+            }
         }
+        this.applyDocText(importObj, importPath, doc, range);
     }
 
-    /**
-     * from import form node_module dir
-     */
-    private fixNodeModule(importObj: ImportObj, doc: vscode.TextDocument, range: vscode.Range) {
-
-    }
-
-    /**
-     * fix import from local file
-     */
-    private fixFile(importObj: ImportObj, doc: vscode.TextDocument, range: vscode.Range) {
-        let importPath = this.extractImportPathFromAlias(importObj)
-        if (importPath === null) {
-            importPath = this.extractImportFromRoot(importObj, doc.uri.fsPath);
-        }
+    private applyDocText(importObj: ImportObj, importPath: string, doc: vscode.TextDocument, range: vscode.Range) {
+        // TODO: delete range word if it the word is in a single
         const editString = this.getEditIfResolved(importObj, doc, importPath);
         if (editString === -1) {
             return;
@@ -45,6 +37,10 @@ export default class ImportFixer {
             edit.insert(doc.uri, new vscode.Position(0, 0), importStatement);
             vscode.workspace.applyEdit(edit);
         }
+    }
+
+    public extractImportPathFromNodeModules(importObj: ImportObj) {
+        return importObj.path;
     }
 
     public extractImportPathFromAlias(importObj: ImportObj) {
@@ -91,8 +87,8 @@ export default class ImportFixer {
         if (isIndexFile(parsePath.base)) {
             importPath = `${dir}`
         } else {
-            if (dir.startsWith('./..')){
-                importPath = `${dir.substr(2, dir.length-2)}/${parsePath.name}`;
+            if (dir.startsWith('./..')) {
+                importPath = `${dir.substr(2, dir.length - 2)}/${parsePath.name}`;
             } else {
                 importPath = `${dir}/${parsePath.name}`;
             }
@@ -105,8 +101,9 @@ export default class ImportFixer {
      * @param importObj
      * @param doc
      * @param importPath
-     * @return edit, 0 not resolve, -1 resolved
+     * @return text value, 0 not resolve, -1 resolved
      */
+    // TODO: add test
     public getEditIfResolved(importObj: ImportObj, doc: vscode.TextDocument, importPath) {
         // TODO: import statement maybe have been comment
         // TODO: change import regex if import statement takes up multiple lines
