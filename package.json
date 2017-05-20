@@ -3,7 +3,7 @@
     "displayName": "vscode-js-import",
     "description": "",
     "version": "0.0.1",
-    "publisher": "yuecjnadt",
+    "publisher": "wangtao0101",
     "engines": {
         "vscode": "^1.12.0"
     },
@@ -17,9 +17,6 @@
     "main": "./out/src/extension",
     "contributes": {
         "commands": [{
-            "command": "extension.sayHello",
-            "title": "Hello World"
-        }, {
             "command": "extension.shortcutImport",
             "title": "Shortcut Import"
         }],

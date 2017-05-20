@@ -61,6 +61,7 @@ export default class ImportFixer {
                 aliasKey = key;
             }
         }
+        // TODO: normalize alias[key] path
         let importPath = null;
         if (aliasMatch !== null) {
             const filename = path.basename(importObj.path);

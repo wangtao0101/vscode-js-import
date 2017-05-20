@@ -3,14 +3,8 @@ import * as vscode from 'vscode';
 const path = require('path');
 
 export default class Resolver {
-    private scanner;
-
-    constructor(scanner: Scanner) {
-        this.scanner = scanner;
-    }
-
     resolve(value: string, doc: vscode.TextDocument, range: vscode.Range) {
-        const cache = this.scanner.cache;
+        const cache = Scanner.cache;
         let quickPickItems = [];
         for (const key of Object.keys(cache)) {
             if (cache[key].module.name === value) {

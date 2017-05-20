@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import Interpreter from './interpreter';
+import JsImport from './jsImport';
 const path = require('path');
 
 export interface ImportObj {
@@ -15,13 +16,12 @@ export interface ImportObj {
 export default class Scanner {
 
     private interpreter = new Interpreter();
-    public cache = {};
+    public static cache = {};
 
     public scan() {
         vscode.workspace.findFiles('**/*.{jsx,js}', '{**∕node_modules∕**, lib/**}', 99999)
             .then((files) => this.processFiles(files));
         // this.findModulesInPackageJson();
-        this.resolveImportFiles();
     }
 
     public processFiles(files: vscode.Uri[]) {
@@ -39,20 +39,16 @@ export default class Scanner {
                 const isIndex = fileName === 'index';
                 const modules = this.interpreter.run(data, isIndex, moduleName, fileName);
                 modules.forEach(m => {
-                    this.cache[`${file.fsPath}-${m.name}`] = {
+                    Scanner.cache[`${file.fsPath}-${m.name}`] = {
                         path: file.fsPath,
                         module: m,
                         isNodeModule: false,
                     };
                 })
+                JsImport.setStatusBar();
             });
         });
         return;
-    }
-
-    private resolveImportFiles() {
-        let root = vscode.workspace.getConfiguration('js-import').get<string>('root');
-        console.log(root);
     }
 
     private findModulesInPackageJson() {
@@ -115,21 +111,21 @@ export default class Scanner {
 
     private isCachedByVersion(moduleName, packageJson) {
         if (packageJson.hasOwnProperty('version')) {
-            if (this.cache[moduleName] != null) {
-                if (this.cache[moduleName].version === packageJson.version) {
+            if (Scanner.cache[moduleName] != null) {
+                if (Scanner.cache[moduleName].version === packageJson.version) {
                     return true
                 } else {
-                    this.cache[moduleName].version = packageJson.version;
+                    Scanner.cache[moduleName].version = packageJson.version;
                     return false;
                 }
             } else {
-                this.cache[moduleName] = {
+                Scanner.cache[moduleName] = {
                     version: packageJson.version,
                 }
                 return false;
             }
         }
-        this.cache[moduleName] = {};
+        Scanner.cache[moduleName] = {};
         return false;
     }
 }
