@@ -86,8 +86,8 @@ export default class ImportFixer {
         let dir = parsePath.dir;
         if (isWin()) {
             dir = dir.replace(/\\/g, '/');
-            dir = dir.replace(/../, '.');
         }
+        dir = dir.replace(/../, '.');
         if (isIndexFile(parsePath.base)) {
             importPath = `${dir}`
         } else {
