@@ -105,7 +105,7 @@ export default class ImportFixer {
      */
     // TODO: add test
     public getEditIfResolved(importObj: ImportObj, doc: vscode.TextDocument, importPath) {
-        // TODO: import statement maybe have been comment
+        // TODO: remove all comment before parse
         // TODO: change import regex if import statement takes up multiple lines
         // TODO: support import * as xxx from 'aaa'
         // TODO: support import { xxx as ccc } from 'aaa'

@@ -30,6 +30,8 @@ export default class Interpreter {
         return this.extractModuleFromFile(text, isIndex, moduleName, fileName);
     }
 
+    // TODO: remove all comment before parse
+    // TODO: filter all comment, we can use split(',') //[\s\S]*?[\n|\r\n] or /\*{1,2}[\s\S]*?\*/
     private extractModuleFromFile(text: string, isIndex: boolean, moduleName :string, fileName: string) {
         const nameList = [];
         const resultList = [];
@@ -74,12 +76,10 @@ export default class Interpreter {
            a,
            b,
        }
-       TODO: there maybe comment after every item
      */
     private extrachModuleFromExportBlock(block) {
         const result = [];
         let res = [];
-        // TODO: filter all comment, we can use split(',') //[\s\S]*?[\n|\r\n] or /\*{1,2}[\s\S]*?\*/
         while ((res = Interpreter.importBlockRegex.exec(block)) != null) {
             result.push(res[0]);
         }
