@@ -108,6 +108,8 @@ export default class ImportFixer {
      * @return edit, 0 not resolve, -1 resolved
      */
     public getEditIfResolved(importObj: ImportObj, doc: vscode.TextDocument, importPath) {
+        // TODO: import statement maybe have been comment
+        // TODO: change import regex if import statement takes up multiple lines
         const importBodyRegex = new RegExp(`(?:import\\s+)(.*)(?:from\\s+[\'|\"]${importPath}[\'|\"](?:\s*;){0,1})`)
         const importBodyMatch = importBodyRegex.exec(doc.getText());
         const importBracketRegex = /\{(.*)\}/;
@@ -158,6 +160,7 @@ export default class ImportFixer {
     }
 
     public getImportStatement(defaultImport: string, bracketImport: Array<string>, importPath: string, endline = false) {
+        // TODO: split multiple lines if exceed character per line (use a parameter setting)
         if (defaultImport != null && bracketImport.length !== 0) {
             return `import ${defaultImport}, { ${bracketImport.join(', ')} } from '${importPath}'${endline ? '\r\n' : ''};`
         } else if (defaultImport == null && bracketImport.length !== 0) {
@@ -170,5 +173,4 @@ export default class ImportFixer {
     }
 }
 
-// TODO: import statement maybe have been comment
 // TODO: sort all import statement by eslint rules
