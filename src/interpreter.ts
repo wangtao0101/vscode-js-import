@@ -1,3 +1,8 @@
+export interface ModuleItem {
+    name: string;
+    default: boolean;
+}
+
 export default class Interpreter {
 
     /**
@@ -34,13 +39,13 @@ export default class Interpreter {
     // TODO: filter all comment, we can use split(',') //[\s\S]*?[\n|\r\n] or /\*{1,2}[\s\S]*?\*/
     private extractModuleFromFile(text: string, isIndex: boolean, moduleName :string, fileName: string) {
         const nameList = [];
-        const resultList = [];
+        const resultList : Array<ModuleItem> = [];
         let res;
         let i = 0;
         while ((res = Interpreter.importRegex.exec(text)) != null) {
             if (res[1] != null) {
                 resultList.push({
-                    defalut: true,
+                    default: true,
                     name: res[2],
                 })
                 continue;
@@ -58,15 +63,17 @@ export default class Interpreter {
             }
         }
         nameList.forEach((item) => {
-            const o = {}
             if (item === 'default') {
-                o['defalut'] = true;
-                o['name'] = isIndex ? moduleName: fileName;
+                resultList.push({
+                    default: true,
+                    name: isIndex ? moduleName: fileName,
+                })
             } else {
-                o['defalut'] = false;
-                o['name'] = item;
+                resultList.push({
+                    default: false,
+                    name: item,
+                })
             }
-            resultList.push(o)
         });
         return resultList;
     }
