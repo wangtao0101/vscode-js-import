@@ -1,3 +1,5 @@
+import strip from 'parse-comment-es6';
+
 export interface ModuleItem {
     name: string;
     default: boolean;
@@ -32,12 +34,11 @@ export default class Interpreter {
     private static unWantedName = ['__esModule', 'function', 'exports', 'require'];
 
     public run(text :string, isIndex: boolean, moduleName :string, fileName: string) {
-        return this.extractModuleFromFile(text, isIndex, moduleName, fileName);
+        return this.extractModuleFromFile(strip(text).text, isIndex, moduleName, fileName);
     }
 
-    // TODO: remove all comment before parse
-    // TODO: filter all comment, we can use split(',') //[\s\S]*?[\n|\r\n] or /\*{1,2}[\s\S]*?\*/
     private extractModuleFromFile(text: string, isIndex: boolean, moduleName :string, fileName: string) {
+
         const nameList = [];
         const resultList : Array<ModuleItem> = [];
         let res;
