@@ -21,7 +21,9 @@ export default class ImportFixer {
     private applyDocText(importObj: ImportObj, importPath: string, doc: vscode.TextDocument, range: vscode.Range) {
         // TODO: delete range word if it the word is in a single
         const editString = this.getEditIfResolved(importObj, doc, importPath);
-        if (editString !== 0) {
+        if (editString === -1) {
+            return;
+        } else if (editString !== 0) {
             let edit: vscode.WorkspaceEdit = new vscode.WorkspaceEdit();
             edit.replace(doc.uri, new vscode.Range(0, 0, doc.lineCount, 0), editString);
             vscode.workspace.applyEdit(edit);
@@ -105,7 +107,7 @@ export default class ImportFixer {
      * @param stripText
      * @param originText
      * @param importPath
-     * @return text value, 0 not resolve
+     * @return text value, 0 not resolve, -1 error
      */
      // TODO: add test
     public resolveImport(importObj: ImportObj, stripText: string, originText: string, importPath) {
@@ -131,7 +133,7 @@ export default class ImportFixer {
                  */
                 bracketImport.push(...importBracketMatch[1]
                     .split(',')
-                    .map(s => s.trim().replace(/[\r|\n]/g, ' ').replace(/\s+/g, ' '))
+                    .map(s => s.trim().replace(/[\r\n]/g, ' ').replace(/\s+/g, ' '))
                     .filter(s => s !== '')
                 );
                 if (importBracketMatch.index === 0) {
@@ -151,8 +153,11 @@ export default class ImportFixer {
                 if (defaultImport === null) {
                     defaultImport = importObj.module.name;
                 } else {
-                    // TODO: mistake
-                    return 0;
+                    // (aaa as ccc) or aaa
+                    if (importObj.module.name !== defaultImport.split('as')[0]) {
+                        vscode.window.showErrorMessage(`mulitple default import from ${importPath}, ${importObj.module.name} and ${defaultImport.split('as')[0]}`);
+                        return -1;
+                    }
                 }
             } else {
                 // we can clear up the import although importObj is already import

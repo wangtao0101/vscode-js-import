@@ -9,5 +9,6 @@
     "js-import.root": "src",
     "js-import.alias": {
         "helpalias": "src/package/"
-    }
+    },
+    "js-import.filesToScan": "**/*.{jsx,js}"
 }

@@ -21,7 +21,8 @@ export default class Scanner {
     public static nodeModuleVersion = {};
 
     public scanAllImport() {
-        vscode.workspace.findFiles('**/*.{jsx,js}', '{**∕node_modules∕**, lib/**}', 99999)
+        const filesToScan = vscode.workspace.getConfiguration('js-import').get<string>('filesToScan');
+        vscode.workspace.findFiles(filesToScan, '{**∕node_modules∕**, lib/**}', 99999)
             .then((files) => this.processFiles(files));
         this.findModulesInPackageJson();
     }

@@ -17,8 +17,8 @@ ctrl + alt + j  (mac cmd + alt + j)
     "helpalias": "src/package/"
 }
 
-//Glob for files to watch and scan, e.g ./src/** ./src/app/**/*.js. Defaults to **/*.{jsx,js}
-"js-import.filesToScan": "**/*.{jsx,js}"
+//Glob for files to watch and scan, e.g ./src/** ./src/app/**/*.js. Defaults to **/*.{jsx,js,ts}
+"js-import.filesToScan": "**/*.{jsx,js,ts}"
 ```
 
 # TODO
