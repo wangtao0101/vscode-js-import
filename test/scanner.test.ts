@@ -2,7 +2,7 @@ import * as assert from 'assert';
 
 import Scanner from '../src/scanner';
 
-suite.only("isCachedByVersion", () => {
+suite("isCachedByVersion", () => {
     const packageJson = {
         version: '111',
     }
