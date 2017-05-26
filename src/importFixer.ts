@@ -120,11 +120,18 @@ export default class ImportFixer {
             let bracketImport = [];
             if (importBracketMatch === null) {
                 /**
-                 * here importBody must be single word
+                 * here importBody must be single word or (aaa as ccc)
                  */
                 defaultImport = importBody;
             } else {
-                bracketImport.push(...importBracketMatch[1].replace(/\s/g, '').split(','));
+                /**
+                 * importBracketMatch[1] maybe like { aaa as ccc, aaa }
+                 */
+                bracketImport.push(...importBracketMatch[1]
+                    .split(',')
+                    .map(s => s.trim().replace(/[\r|\n]/g, ' ').replace(/\s+/g, ' '))
+                    .filter(s => s !== '')
+                );
                 if (importBracketMatch.index === 0) {
                     // TODO: maybe there hava mistake if two defalut
                     defaultImport = importBody.slice(importBracketMatch[0].length, importBody.length).replace(/\s/g, '').split(',')[1];
@@ -146,10 +153,10 @@ export default class ImportFixer {
                     return 0;
                 }
             } else {
-                if (bracketImport.includes(importObj.module.name)) {
-                    return -1;
+                // we can clear up the import although importObj is already import
+                if (!bracketImport.includes(importObj.module.name)) {
+                    bracketImport.push(importObj.module.name);
                 }
-                bracketImport.push(importObj.module.name);
             }
             const importStatement = this.getImportStatement(defaultImport, bracketImport, importPath);
             return doc.getText().replace(importBodyRegex, importStatement);

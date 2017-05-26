@@ -1,5 +1,6 @@
-import { abc } from 'helpalias/api';
-import { a, b, c } from './component';
+import { comabc } from './component/com';
+import { abc as c } from 'helpalias/api';
+import { a as d, comabc } from './component';
 
 
 Via
