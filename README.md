@@ -26,7 +26,7 @@ ctrl + alt + j  (mac cmd + alt + j)
 
 # TODO
 Currently in beta, there are a lot of work to do;
-- [ ] full suport in node_modules, currently only extract import form main file
+- [ ] full suport in node_modules, currently only extract export form main file
 - [ ] full support import statement, such as 'feedline' in import statement
 - [ ] option for insert position (ability to skip flow, Copyright, Lisence comment in top of file), currently we just insert statement into fisrtline.
 - [ ] sort import statement by eslint rule, deal with comment
@@ -34,3 +34,17 @@ Currently in beta, there are a lot of work to do;
 - [ ] support auto fix by eslint rule
 - [ ] support import statement syntax check
 - [ ] support option for max-line like eslint rule max-line, auto split statement to mutilines
+
+# Export regex
+```
+export (default) (const|let|var|function|function*|class) abc;
+export default abc;
+exports.eee = eee
+exports["default"] = abc
+Object.defineProperty( exports , 'version', ...
+export {
+    a,
+    b,
+}
+module.exports = classNames;
+```
