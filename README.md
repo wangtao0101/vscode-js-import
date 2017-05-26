@@ -48,3 +48,5 @@ export {
 }
 module.exports = classNames;
 ```
+
+# [CHANGELOG](https://github.com/wangtao0101/vscode-js-import/blob/master/CHANGELOG.md)
