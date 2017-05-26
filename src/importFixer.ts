@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import strip from 'parse-comment-es6';
 import { ImportObj } from './scanner';
 import { isIndexFile, isWin } from './help';
 const path = require('path');
@@ -20,9 +21,7 @@ export default class ImportFixer {
     private applyDocText(importObj: ImportObj, importPath: string, doc: vscode.TextDocument, range: vscode.Range) {
         // TODO: delete range word if it the word is in a single
         const editString = this.getEditIfResolved(importObj, doc, importPath);
-        if (editString === -1) {
-            return;
-        } else if (editString !== 0) {
+        if (editString !== 0) {
             let edit: vscode.WorkspaceEdit = new vscode.WorkspaceEdit();
             edit.replace(doc.uri, new vscode.Range(0, 0, doc.lineCount, 0), editString);
             vscode.workspace.applyEdit(edit);
@@ -96,21 +95,24 @@ export default class ImportFixer {
         return importPath;
     }
 
+    private getEditIfResolved(importObj: ImportObj, doc: vscode.TextDocument, importPath) {
+        return this.resolveImport(importObj, strip(doc.getText()).text, doc.getText(), importPath);
+    }
+
     /**
      * return edit if the import has been resolved
      * @param importObj
-     * @param doc
+     * @param stripText
+     * @param originText
      * @param importPath
-     * @return text value, 0 not resolve, -1 resolved
+     * @return text value, 0 not resolve
      */
-    // TODO: add test
-    public getEditIfResolved(importObj: ImportObj, doc: vscode.TextDocument, importPath) {
-        // TODO: remove all comment before parse
+     // TODO: add test
+    public resolveImport(importObj: ImportObj, stripText: string, originText: string, importPath) {
         // TODO: change import regex if import statement takes up multiple lines
         // TODO: support import * as xxx from 'aaa'
-        // TODO: support import { xxx as ccc } from 'aaa'
         const importBodyRegex = new RegExp(`(?:import\\s+)(.*)(?:from\\s+[\'|\"]${importPath}[\'|\"](?:\s*;){0,1})`)
-        const importBodyMatch = importBodyRegex.exec(doc.getText());
+        const importBodyMatch = importBodyRegex.exec(stripText);
         const importBracketRegex = /\{(.*)\}/;
         if (importBodyMatch !== null) {
             // TODO: here we can provide some error info if there has some import syntax mistake, such as two default import
@@ -159,7 +161,8 @@ export default class ImportFixer {
                 }
             }
             const importStatement = this.getImportStatement(defaultImport, bracketImport, importPath);
-            return doc.getText().replace(importBodyRegex, importStatement);
+            // TODO: we must find the exact position to replace new importStatement
+            return originText.replace(importBodyRegex, importStatement);
         } else {
             return 0;
         }
