@@ -24,7 +24,7 @@ ctrl + alt + j  (mac cmd + alt + j)
 # TODO
 Currently in beta, there are a lot of work to do;
 - [ ] full suport in node_modules, currently only extract import form main file
-- [ ] full support import statement, such as 'feedline' or 'as' in import statement
+- [ ] full support import statement, such as 'feedline' in import statement
 - [ ] option for insert position (ability to skip flow, Copyright, Lisence comment in top of file), currently we just insert statement into fisrtline.
 - [ ] sort import statement by eslint rule, deal with comment
 - [ ] support autocomplete
