@@ -70,6 +70,6 @@
         "vscode": "^1.0.0"
     },
     "dependencies": {
-        "parse-comment-es6": "^0.2.0"
+        "parse-comment-es6": "^0.5.0"
     }
 }
