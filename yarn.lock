@@ -1180,6 +1180,10 @@ parse-comment-es6@^0.5.0:
   version "0.5.0"
   resolved "http://registry.npm.taobao.org/parse-comment-es6/download/parse-comment-es6-0.5.0.tgz#caa19e0ec4c8d5b9a22b99064ab877f79270d3d8"
 
+parse-comment-es6@^0.5.1:
+  version "0.5.1"
+  resolved "http://registry.npm.taobao.org/parse-comment-es6/download/parse-comment-es6-0.5.1.tgz#9b5e897e55bfab3afb2c8639c6b2bbadf084791b"
+
 parse-glob@^3.0.4:
   version "3.0.4"
   resolved "http://registry.npm.taobao.org/parse-glob/download/parse-glob-3.0.4.tgz#b2c376cfb11f35513badd173ef0bb6e3a388391c"
@@ -1188,6 +1192,12 @@ parse-glob@^3.0.4:
     is-dotfile "^1.0.0"
     is-extglob "^1.0.0"
     is-glob "^2.0.0"
+
+parse-import-es6@^0.1.0:
+  version "0.1.0"
+  resolved "http://registry.npm.taobao.org/parse-import-es6/download/parse-import-es6-0.1.0.tgz#7182a937880df27e74604e25ce6eea8ed2e6044c"
+  dependencies:
+    parse-comment-es6 "^0.5.1"
 
 path-dirname@^1.0.0:
   version "1.0.2"
