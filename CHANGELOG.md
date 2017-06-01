@@ -3,7 +3,11 @@ All notable changes to the "vscode-js-import" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [0.3.2] - 2017-05-26
+## [0.5.1] - 2017-06-01
+- support webpack export style like : exports.default = _parseImport2.default
+- support partial matching of module name and value
+
+## [0.4.0] - 2017-05-26
 - support ts file in source code
 - fix option filesToScan inactive bug
 - add error msg when attempt to import mutiple default variable
