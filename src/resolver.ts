@@ -8,12 +8,12 @@ export default class Resolver {
         const nodeModuleCache = Scanner.nodeModuleCache;
         let quickPickItems = [];
         for (const key of Object.keys(Scanner.cache)) {
-            if (cache[key].module.name.toLowerCase() === value.toLowerCase()) {
+            if (cache[key].module.name.toLowerCase().includes(value.toLowerCase())) {
                 quickPickItems.push(this.resolveFromFile(cache[key], doc, range));
             }
         }
         for (const key of Object.keys(nodeModuleCache)) {
-            if (nodeModuleCache[key].module.name.toLowerCase() === value.toLowerCase()) {
+            if (nodeModuleCache[key].module.name.toLowerCase().includes(value.toLowerCase())) {
                 quickPickItems.push(this.resolveFromModule(nodeModuleCache[key], doc, range));
             }
         }
