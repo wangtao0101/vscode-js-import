@@ -48,6 +48,7 @@ export {
     b,
 }
 module.exports = classNames;
+exports.default = _parseImport2.default; //webpack export default style
 ```
 
 # [CHANGELOG](https://github.com/wangtao0101/vscode-js-import/blob/master/CHANGELOG.md)
