@@ -19,9 +19,11 @@ export default class Interpreter {
              b,
        }
        module.exports = classNames;
+       exports.default = _parseImport2.default;
      */
     private static importRegex = new RegExp(`
-        export\\s+(default\\s+){0,1}(?:(?:const|let|var|function|function\\*|class)\\s+){0,1}([\\w]+)
+        exports.default\\s*=\\s*_(\\w+)2.default
+        |export\\s+(default\\s+){0,1}(?:(?:const|let|var|function|function\\*|class)\\s+){0,1}([\\w]+)
         |exports\\.([\\w]+)\\s*=
         |exports\\[\\"([\\w]+)\\"\\]\\s*=
         |Object.defineProperty\\(\\s*exports\\s*,\\s*[\\'|\\"]([\\w]+)[\\'|\\"]
@@ -47,11 +49,18 @@ export default class Interpreter {
             if (res[1] != null) {
                 resultList.push({
                     default: true,
-                    name: res[2],
+                    name: res[1],
                 })
                 continue;
             }
-            for (i = 2; i < 7; i+=1) {
+            if (res[2] != null) {
+                resultList.push({
+                    default: true,
+                    name: res[3],
+                })
+                continue;
+            }
+            for (i = 3; i < 8; i+=1) {
                 if (res[i] != null) {
                     if (!this.isUnwantedName(res[i]) && !nameList.includes(res[i])) {
                         nameList.push(res[i]);
@@ -59,8 +68,8 @@ export default class Interpreter {
                     break;
                 }
             }
-            if (res[7] != null) {
-                nameList.push(...this.extrachModuleFromExportBlock(res[7]))
+            if (res[8] != null) {
+                nameList.push(...this.extrachModuleFromExportBlock(res[8]))
             }
         }
         nameList.forEach((item) => {

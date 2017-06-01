@@ -84,4 +84,12 @@ suite("Interpreter Tests", () => {
         `
         assert.deepEqual([{default: false, name: 'classNames'}], my.run(text, false, '', ''))
     });
+
+    test("exports.default = _parseImport2.default;", () => {
+        const my = new Interpreter();
+        const text = `
+            exports.default = _parseImport2.default;
+        `
+        assert.deepEqual([{default: true, name: 'parseImport'}], my.run(text, false, '', ''))
+    });
 });
