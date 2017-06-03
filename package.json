@@ -52,6 +52,11 @@
                     "type": "string",
                     "default": "**/*.{jsx,js,ts}",
                     "description": "Glob for files to watch and scan, e.g ./src/** ./src/app/**/*.js. Defaults to **/*.{jsx,js,ts}"
+                },
+                "js-import.insertPosition": {
+                    "type": "string",
+                    "default": "last",
+                    "description": "the insert position of new import statement, first means first of all imports, last means last of all imports, soon we will suport sort"
                 }
             }
         }
@@ -72,6 +77,6 @@
     },
     "dependencies": {
         "parse-comment-es6": "^0.5.1",
-        "parse-import-es6": "^0.3.0"
+        "parse-import-es6": "^0.4.0"
     }
 }

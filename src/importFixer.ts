@@ -1,3 +1,4 @@
+import parseImport from 'parse-import-es6';
 import * as vscode from 'vscode';
 import strip from 'parse-comment-es6';
 import { ImportObj } from './scanner';
@@ -5,39 +6,31 @@ import { isIndexFile, isWin } from './help';
 const path = require('path');
 
 export default class ImportFixer {
-    public fix(importObj: ImportObj, doc: vscode.TextDocument, range: vscode.Range) {
-        let importPath;
-        if (importObj.isNodeModule) {
-            importPath = this.extractImportPathFromNodeModules(importObj);
-        } else {
-            importPath = this.extractImportPathFromAlias(importObj)
-            if (importPath === null) {
-                importPath = this.extractImportFromRoot(importObj, doc.uri.fsPath);
-            }
+    eol: string;
+    doc: vscode.TextDocument;
+    importObj: ImportObj;
+    range: vscode.Range;
+
+    constructor(importObj: ImportObj, doc: vscode.TextDocument, range: vscode.Range) {
+        this.importObj = importObj;
+        this.doc = doc;
+        this.range = range;
+        if (doc != null) {
+            this.eol = doc.eol === vscode.EndOfLine.LF ? '\n' : '\r\n';
         }
-        this.applyDocText(importObj, importPath, doc, range);
     }
 
-    private applyDocText(importObj: ImportObj, importPath: string, doc: vscode.TextDocument, range: vscode.Range) {
-        // TODO: delete range word if it the word is in a single
-        const editString = this.getEditIfResolved(importObj, doc, importPath);
-        if (editString === -1) {
-            return;
-        } else if (editString !== 0) {
-            let edit: vscode.WorkspaceEdit = new vscode.WorkspaceEdit();
-            edit.replace(doc.uri, new vscode.Range(0, 0, doc.lineCount, 0), editString);
-            vscode.workspace.applyEdit(edit);
+    public fix() {
+        let importPath;
+        if (this.importObj.isNodeModule) {
+            importPath = this.extractImportPathFromNodeModules(this.importObj);
         } else {
-            let importStatement;
-            if (importObj.module.default) {
-                importStatement = this.getImportStatement(importObj.module.name, [], importPath, true);
-            } else {
-                importStatement = this.getImportStatement(null, [importObj.module.name], importPath, true);
+            importPath = this.extractImportPathFromAlias(this.importObj)
+            if (importPath === null) {
+                importPath = this.extractImportFromRoot(this.importObj, this.doc.uri.fsPath);
             }
-            let edit: vscode.WorkspaceEdit = new vscode.WorkspaceEdit();
-            edit.insert(doc.uri, new vscode.Position(0, 0), importStatement);
-            vscode.workspace.applyEdit(edit);
         }
+        this.resolveImport(importPath);
     }
 
     public extractImportPathFromNodeModules(importObj: ImportObj) {
@@ -97,90 +90,63 @@ export default class ImportFixer {
         return importPath;
     }
 
-    private getEditIfResolved(importObj: ImportObj, doc: vscode.TextDocument, importPath) {
-        return this.resolveImport(importObj, strip(doc.getText()).text, doc.getText(), importPath);
-    }
+    public resolveImport(importPath) {
+        const imports = parseImport(this.doc.getText());
+        const filteredImports = imports.filter(imp => imp.error === 0 && imp.moduleSpecifier === importPath);
+        // TODO: merge imports
 
-    /**
-     * return edit if the import has been resolved
-     * @param importObj
-     * @param stripText
-     * @param originText
-     * @param importPath
-     * @return text value, 0 not resolve, -1 error
-     */
-     // TODO: add test
-    public resolveImport(importObj: ImportObj, stripText: string, originText: string, importPath) {
-        // TODO: change import regex if import statement takes up multiple lines
-        // TODO: support import * as xxx from 'aaa'
-        const importBodyRegex = new RegExp(`(?:import\\s+)(.*)(?:from\\s+[\'|\"]${importPath}[\'|\"](?:\s*;){0,1})`)
-        const importBodyMatch = importBodyRegex.exec(stripText);
-        const importBracketRegex = /\{(.*)\}/;
-        if (importBodyMatch !== null) {
-            // TODO: here we can provide some error info if there has some import syntax mistake, such as two default import
-            const importBody = importBodyMatch[1].trim();
-            const importBracketMatch = importBracketRegex.exec(importBody);
-            let defaultImport = null;
-            let bracketImport = [];
-            if (importBracketMatch === null) {
-                /**
-                 * here importBody must be single word or (aaa as ccc)
-                 */
-                defaultImport = importBody;
+        if (filteredImports.length === 0) {
+            let importStatement;
+            if (this.importObj.module.default) {
+                importStatement = this.getImportStatement(this.importObj.module.name, null, [],  importPath, true);
             } else {
-                /**
-                 * importBracketMatch[1] maybe like { aaa as ccc, aaa }
-                 */
-                bracketImport.push(...importBracketMatch[1]
-                    .split(',')
-                    .map(s => s.trim().replace(/[\r\n]/g, ' ').replace(/\s+/g, ' '))
-                    .filter(s => s !== '')
-                );
-                if (importBracketMatch.index === 0) {
-                    // TODO: maybe there hava mistake if two defalut
-                    defaultImport = importBody.slice(importBracketMatch[0].length, importBody.length).replace(/\s/g, '').split(',')[1];
-                } else if (importBracketMatch.index + importBracketMatch[0].length === importBody.length) {
-                    // TODO: maybe there hava mistake if two defalut
-                    defaultImport = importBody.slice(0, importBracketMatch.index).replace(/\s/g, '').split(',')[0];
-                } else {
-                    // TODO: mistake, currently we just return null to insert new import statement;
-                    return 0;
-                }
+                importStatement = this.getImportStatement(null, null, [this.importObj.module.name], importPath, true);
             }
-
-            // sort and remove weight bracketImport
-            if (importObj.module.default === true) {
-                if (defaultImport === null) {
-                    defaultImport = importObj.module.name;
-                } else {
-                    // (aaa as ccc) or aaa
-                    if (importObj.module.name !== defaultImport.split('as')[0]) {
-                        vscode.window.showErrorMessage(`mulitple default import from ${importPath}, ${importObj.module.name} and ${defaultImport.split('as')[0]}`);
-                        return -1;
-                    }
-                }
-            } else {
-                // we can clear up the import although importObj is already import
-                if (!bracketImport.includes(importObj.module.name)) {
-                    bracketImport.push(importObj.module.name);
-                }
-            }
-            const importStatement = this.getImportStatement(defaultImport, bracketImport, importPath);
-            // TODO: we must find the exact position to replace new importStatement
-            return originText.replace(importBodyRegex, importStatement);
-        } else {
-            return 0;
+            this.insertNewImport(imports, importStatement);
         }
     }
 
-    public getImportStatement(defaultImport: string, bracketImport: Array<string>, importPath: string, endline = false) {
+    public insertNewImport(imports, importStatement) {
+        let newText = '';
+        let position: vscode.Position = null;
+        let pos = vscode.workspace.getConfiguration('js-import').get<string>('insertPosition') || 'last';
+        if (pos !== 'first' && pos !== 'last') {
+            pos = 'last'
+        }
+        if (pos === 'last' && imports.length !== 0) {
+            const imp = imports[imports.length - 1];
+            if (imp.trailingComments.length === 0) {
+                position =  new vscode.Position(imp.loc.end.line + 1, 0);
+            } else {
+                newText += this.eol;
+                position =  new vscode.Position(imp.trailingComments[imp.trailingComments.length - 1].loc.end.line + 1, 0);
+            }
+        }
+        let edit: vscode.WorkspaceEdit = new vscode.WorkspaceEdit();
+        edit.insert(this.doc.uri, position, newText + importStatement);
+        vscode.workspace.applyEdit(edit);
+        // const comments = strip(originText, { comment: true, range: true, loc: true, raw: true })
+    }
+
+    /**
+     * https://tc39.github.io/ecma262/#prod-ImportClause
+     * @param imp
+     * @param importPath
+     * @param endline
+     */
+    public getImportStatement(importedDefaultBinding, nameSpaceImport, namedImports, importPath: string, endline = false) {
         // TODO: split multiple lines if exceed character per line (use a parameter setting)
-        if (defaultImport != null && bracketImport.length !== 0) {
-            return `import ${defaultImport}, { ${bracketImport.join(', ')} } from '${importPath}'${endline ? '\r\n' : ''};`
-        } else if (defaultImport == null && bracketImport.length !== 0) {
-            return `import { ${bracketImport.join(', ')} } from '${importPath}';${endline ? '\r\n' : ''}`
-        } else if (defaultImport != null && bracketImport.length === 0) {
-            return `import ${defaultImport} from '${importPath}';${endline ? '\r\n' : ''}`
+
+        if (importedDefaultBinding !== null &&　nameSpaceImport !== null) {
+            return `import ${importedDefaultBinding}, { ${nameSpaceImport} } from '${importPath}'${endline ? this.eol : ''};`
+        } else if (importedDefaultBinding !== null && namedImports.length !== 0) {
+            return `import ${importedDefaultBinding}, { ${namedImports.join(', ')} } from '${importPath}'${endline ? this.eol : ''};`
+        } else if (importedDefaultBinding !== null) {
+            return `import ${importedDefaultBinding} from '${importPath}';${endline ? this.eol : ''}`
+        } else if (nameSpaceImport !== null) {
+            return `import ${nameSpaceImport} from '${importPath}';${endline ? this.eol : ''}`
+        } else if (namedImports.length !== 0) {
+            return `import { ${namedImports.join(', ')} } from '${importPath}';${endline ? this.eol : ''}`
         } else {
             // do nothing
         }

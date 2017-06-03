@@ -57,7 +57,7 @@ export default class JsImport {
         });
 
         let importFixer = vscode.commands.registerCommand('extension.fixImport', (importObj, doc, range) => {
-            new ImportFixer().fix(importObj, doc, range);
+            new ImportFixer(importObj, doc, range).fix();
         });
 
         context.subscriptions.push(importScanner, shortcutImport);
