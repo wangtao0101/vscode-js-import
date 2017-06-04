@@ -93,21 +93,63 @@ export default class ImportFixer {
     public resolveImport(importPath) {
         const imports = parseImport(this.doc.getText());
         const filteredImports = imports.filter(imp => imp.error === 0 && imp.moduleSpecifier === importPath);
-        // TODO: merge imports
 
         if (filteredImports.length === 0) {
             let importStatement;
             if (this.importObj.module.default) {
-                importStatement = this.getImportStatement(this.importObj.module.name, null, [],  importPath, true);
+                importStatement = this.getSingleLineImport(this.importObj.module.name, null, [], importPath, true);
             } else {
-                importStatement = this.getImportStatement(null, null, [this.importObj.module.name], importPath, true);
+                importStatement = this.getSingleLineImport(null, null, [this.importObj.module.name], importPath, true);
             }
             this.insertNewImport(imports, importStatement);
+        } else {
+            // TODO: merge imports
+            this.replaceOldImport(filteredImports[0], importPath);
         }
     }
 
+    public replaceOldImport(imp, importPath) {
+        let importStatement;
+        if (this.importObj.module.default) {
+            if (imp.importedDefaultBinding !== null && imp.importedDefaultBinding === this.importObj.module.name) {
+                // TODO: we can format code
+                return;
+            } else if (imp.importedDefaultBinding !== null && imp.importedDefaultBinding !== this.importObj.module.name) {
+                // error , two default import
+                return;
+            } else {
+                // imp.importedDefaultBinding === null
+                if (imp.loc.start.line < imp.loc.end.line && imp.namedImports.length !== 0) {
+                    this.getMultipleLineImport(imp, this.importObj.module.name, imp.nameSpaceImport, imp.namedImports, importPath);
+                    return;
+                }
+                importStatement = this.getSingleLineImport(this.importObj.module.name, imp.nameSpaceImport, imp.namedImports, importPath, true);
+            }
+        } else {
+            if (imp.nameSpaceImport !== null) {
+                // error
+                return;
+            }
+            if (imp.namedImports.includes(this.importObj.module.name)) {
+                // TODO: we can format code
+                return;
+            }
+            if (imp.loc.start.line < imp.loc.end.line) {
+                this.getMultipleLineImport(imp, imp.importedDefaultBinding, imp.nameSpaceImport,
+                    imp.namedImports.concat([this.importObj.module.name]), importPath);
+                return;
+            }
+            importStatement = this.getSingleLineImport(imp.importedDefaultBinding, imp.nameSpaceImport,
+                imp.namedImports.concat([this.importObj.module.name]), importPath, false);
+        }
+        let edit: vscode.WorkspaceEdit = new vscode.WorkspaceEdit();
+        edit.replace(this.doc.uri, new vscode.Range(imp.loc.start.line, imp.loc.start.column,
+            imp.loc.end.line, imp.loc.end.column), importStatement);
+        vscode.workspace.applyEdit(edit);
+    }
+
     public insertNewImport(imports, importStatement) {
-        let newText = '';
+        let newText = importStatement;
         let position: vscode.Position = null;
         let pos = vscode.workspace.getConfiguration('js-import').get<string>('insertPosition') || 'last';
         if (pos !== 'first' && pos !== 'last') {
@@ -116,16 +158,50 @@ export default class ImportFixer {
         if (pos === 'last' && imports.length !== 0) {
             const imp = imports[imports.length - 1];
             if (imp.trailingComments.length === 0) {
-                position =  new vscode.Position(imp.loc.end.line + 1, 0);
+                position = new vscode.Position(imp.loc.end.line + 1, 0);
             } else {
-                newText += this.eol;
-                position =  new vscode.Position(imp.trailingComments[imp.trailingComments.length - 1].loc.end.line + 1, 0);
+                newText = this.eol + newText;
+                position = new vscode.Position(imp.trailingComments[imp.trailingComments.length - 1].loc.end.line + 1, 0);
+            }
+        }
+
+        if (imports.length === 0) {
+            const comments = strip(this.doc.getText(), { comment: true, range: true, loc: true, raw: true }).comments;
+
+            if (comments.length === 0) {
+                newText = newText + this.eol;
+                position = new vscode.Position(0, 0);
+            } else {
+                // exculde the first leading comment of the first import, if exist 'flow' 'Copyright' 'LICENSE'
+                const ignoreComment = /@flow|license|copyright/i;
+                let index = 0;
+                let comment;
+                for (; index < comments.length; index += 1) {
+                    comment = comments[index];
+                    if (!ignoreComment.test(comments[index].raw)) {
+                        break;
+                    }
+                }
+                if (index === comments.length) {
+                    // should insert after every comment
+                    newText = this.eol + newText;
+                    position = new vscode.Position(comment.loc.end.line + 1, 0);
+                } else {
+                    if (index === 0) {
+                        newText = newText + this.eol;
+                        position = new vscode.Position(0, 0);
+                    } else {
+                        // should insert after previous current comment
+                        newText = this.eol + newText;
+                        comment = comments[index - 1];
+                        position = new vscode.Position(comment.loc.end.line + 1, 0);
+                    }
+                }
             }
         }
         let edit: vscode.WorkspaceEdit = new vscode.WorkspaceEdit();
-        edit.insert(this.doc.uri, position, newText + importStatement);
+        edit.insert(this.doc.uri, position, newText);
         vscode.workspace.applyEdit(edit);
-        // const comments = strip(originText, { comment: true, range: true, loc: true, raw: true })
     }
 
     /**
@@ -134,10 +210,10 @@ export default class ImportFixer {
      * @param importPath
      * @param endline
      */
-    public getImportStatement(importedDefaultBinding, nameSpaceImport, namedImports, importPath: string, endline = false) {
+    public getSingleLineImport(importedDefaultBinding, nameSpaceImport, namedImports, importPath: string, endline = false) {
         // TODO: split multiple lines if exceed character per line (use a parameter setting)
 
-        if (importedDefaultBinding !== null &&　nameSpaceImport !== null) {
+        if (importedDefaultBinding !== null && nameSpaceImport !== null) {
             return `import ${importedDefaultBinding}, { ${nameSpaceImport} } from '${importPath}'${endline ? this.eol : ''};`
         } else if (importedDefaultBinding !== null && namedImports.length !== 0) {
             return `import ${importedDefaultBinding}, { ${namedImports.join(', ')} } from '${importPath}'${endline ? this.eol : ''};`
@@ -150,6 +226,60 @@ export default class ImportFixer {
         } else {
             // do nothing
         }
+    }
+
+    public getMultipleLineImport(imp, importedDefaultBinding, nameSpaceImport, namedImports, importPath) {
+        let newText = 'import ';
+        let startline = imp.loc.start.line;
+        let startcolumn = imp.loc.start.column;
+        let endline = imp.loc.end.line;
+        let endcolumn = imp.loc.end.column;
+        if (importedDefaultBinding != null) {
+            newText += importedDefaultBinding + ', {';
+        } else {
+            newText += ' {'
+        }
+
+        // handle comment of import or default import
+        const defaultImportComments = imp.middleComments.filter(comment => comment.identifier.identifier === importedDefaultBinding || comment.identifier.type === 'Import');
+        if (defaultImportComments.length != 0) {
+            newText += ' ';
+        }
+        defaultImportComments.forEach(element => {
+            newText += element.raw;
+            startcolumn = Math.min(startcolumn, element.loc.start.column);
+        });
+
+        namedImports.forEach(element => {
+            newText += this.eol;
+            // handle comment before identifier in previous line
+            const beforeNamedImportsComments = imp.middleComments.filter(comment => comment.identifier.identifier === element && comment.loc.start.line < comment.identifier.loc.start.line);
+            beforeNamedImportsComments.forEach(comment => {
+                newText += `    ${comment.raw}${this.eol}`;
+            });
+            newText += `    ${element},`;
+            // handle comment after identifier
+            const afterNamedImportsComments = imp.middleComments.filter(comment => comment.identifier.identifier === element && comment.loc.start.line >= comment.identifier.loc.start.line);
+            if (afterNamedImportsComments.length != 0) {
+                newText += ' ';
+            }
+            afterNamedImportsComments.forEach(comment => {
+                newText += comment.raw;
+            });
+        });
+
+        newText += `${this.eol}} from '${importPath}';`;
+        const comments = imp.middleComments.filter(comment => comment.identifier.type === 'From' || comment.identifier.type === 'ModuleSpecifier');
+        if (comments.length != 0) {
+            newText += ' ';
+        }
+        comments.forEach(comment => {
+            newText += comment.raw;
+            endcolumn = Math.max(endcolumn, comment.loc.end.column);
+        });
+        let edit: vscode.WorkspaceEdit = new vscode.WorkspaceEdit();
+        edit.replace(this.doc.uri, new vscode.Range(startline, startcolumn, endline, endcolumn), newText);
+        vscode.workspace.applyEdit(edit);
     }
 }
 

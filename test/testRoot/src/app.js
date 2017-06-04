@@ -1,16 +1,26 @@
-//import { comabc } from './component/com';
+/* @flow*/
+/*
+copyright
+*/
+
 import { comabc } from './component/com';
 import { abc as c } from 'helpalias/api';
-import a, { b, c as d, comabc } from './component';
+/* */ import /*c*/ a, {
+    /**
+     * sfasdfa
+     */
+    b, //asdfasdf
+    c as d, //asdfasdf
+} from './component';
+//asdfasdfa
 
-
+import Via from './via';
+let a = 'asdfasdf';
 
 Via
+
 affix
-comment
 
 comabc
-
 ccc
 
-ts
