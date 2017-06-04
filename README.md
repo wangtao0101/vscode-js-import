@@ -11,6 +11,16 @@ intelligent and fast import extension for js in vscode
 # Shortcuts
 ctrl + alt + j  (mac cmd + alt + j)
 
+# Feature
+## Support import in multiple line
+If origin import statement occupies multiple lines(import must have namedImports, it is not necessary to split statement when there is no namedImports), we will turn into multiple line mode and carefully handle comments.
+![merge](https://raw.githubusercontent.com/wangtao0101/vscode-js-import/master/img/merge.png)
+
+We split comments into every identifier:
+1. Comments in the same line with defaultImport or 'import' word will be moved after '{'.
+2. There are two kinds of comment related to namedImports, comments in previous line or in the same line of namedImports, comments in previous will be in previsou also, and comments in the same line will be moved after ','
+3. Comments in the same line with 'from' word or moduleSpecifier will be moved after ';'
+
 # Setting
 ```
 //the source dir, currently we only support single root
@@ -23,6 +33,9 @@ ctrl + alt + j  (mac cmd + alt + j)
 
 //Glob for files to watch and scan, e.g ./src/** ./src/app/**/*.js. Defaults to **/*.{jsx,js,ts}
 "js-import.filesToScan": "**/*.{jsx,js,ts}"
+
+//the insert position of new import statement, first means first of all imports, last means last of all imports, soon we will suport sort
+"js-import.insertPosition" : "last"
 ```
 
 # TODO
