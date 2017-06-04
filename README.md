@@ -6,10 +6,12 @@
 intelligent and fast import extension for js in vscode
 
 # Introduce
-![GitHub Logo](https://raw.githubusercontent.com/wangtao0101/vscode-js-import/master/img/import.gif)
+![GitHub Logo](https://github.com/wangtao0101/vscode-js-import/blob/master/img/newimport.gif?raw=true)
 
 # Shortcuts
 ctrl + alt + j  (mac cmd + alt + j)
+
+Move cursor into target word and enter shortcuts, then select the match import.
 
 # Feature
 ## Support import in multiple line
@@ -61,8 +63,8 @@ Also, we can skip @flow or copyright comment.
 # TODO
 Currently in beta, there are a lot of work to do;
 - [ ] full suport in node_modules, currently only extract export form main file
-- [ ] full support import statement, such as 'feedline' in import statement
-- [ ] option for insert position (ability to skip flow, Copyright, Lisence comment in top of file), currently we just insert statement into fisrtline.
+- [x] full support import statement, such as 'feedline' in import statement
+- [x] option for insert position (ability to skip flow, Copyright, Lisence comment in top of file), currently we just insert statement into fisrtline.
 - [ ] sort import statement by eslint rule, deal with comment
 - [ ] support autocomplete
 - [ ] support auto fix by eslint rule
