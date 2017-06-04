@@ -36,7 +36,7 @@ Currently in beta, there are a lot of work to do;
 - [ ] support import statement syntax check
 - [ ] support option for max-line like eslint rule max-line, auto split statement to mutilines
 
-# Export regex
+# Export RegExp
 ```
 export (default) (const|let|var|function|function*|class) abc;
 export default abc;
