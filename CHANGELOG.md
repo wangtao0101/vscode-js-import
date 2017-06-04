@@ -3,6 +3,10 @@ All notable changes to the "vscode-js-import" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.6.0] - 2017-06-04
+- support insert position option
+- support multiple line import statement
+
 ## [0.5.1] - 2017-06-01
 - support webpack export style like : exports.default = _parseImport2.default
 - support partial matching of module name and value
