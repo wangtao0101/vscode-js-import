@@ -3,7 +3,7 @@
 copyright
 */
 
-import { comabc } from './component/com';
+import { fff } from './component/com';
 import { abc as c } from 'helpalias/api';
 /* */ import /*c*/ a, {
     /**
@@ -12,12 +12,12 @@ import { abc as c } from 'helpalias/api';
     b, //asdfasdf
     c as d, //asdfasdf
 } from './component';
-//asdfasdfa
 
-import Via from './via';
-let a = 'asdfasdf';
 
 Via
+comabc
+ccc
+
 
 affix
 
