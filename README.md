@@ -14,7 +14,6 @@ ctrl + alt + j  (mac cmd + alt + j)
 # Feature
 ## Support import in multiple line
 If origin import statement occupies multiple lines(import must have namedImports, it is not necessary to split statement when there is no namedImports), we will turn into multiple line mode and carefully handle comments.
-![merge](https://raw.githubusercontent.com/wangtao0101/vscode-js-import/master/img/merge.png)
 
 We split comments into every identifier:
 1. Comments in the same line with defaultImport or 'import' word will be moved after '{'.
@@ -36,6 +35,8 @@ import a from 'b';
 import c from 'd';
 ```
 So, if you want to comment after import in a new line, you should not forget to add a empty line after comment.
+
+Also, we can skip @flow or copyright comment.
 # Setting
 ```
 //the source dir, currently we only support single root
