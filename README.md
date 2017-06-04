@@ -18,9 +18,24 @@ If origin import statement occupies multiple lines(import must have namedImports
 
 We split comments into every identifier:
 1. Comments in the same line with defaultImport or 'import' word will be moved after '{'.
-2. There are two kinds of comment related to namedImports, comments in previous line or in the same line of namedImports, comments in previous will be in previsou also, and comments in the same line will be moved after ','
+2. There are two kinds of comment related to namedImports, comments in previous line or in the same line of namedImports, comments in previous will be in previous also, and comments in the same line will be moved after ','
 3. Comments in the same line with 'from' word or moduleSpecifier will be moved after ';'
 
+## Suport insert position option
+There are two positions we can insert new statement, before all import statements or after all import statements. (soon we can support sort option)
+
+You should know how we deal with comments.
+```
+// i am leading comment of import a from 'b';
+import a from 'b';
+// i ame trailing comment of import a from 'b';
+
+// i am leading comment of import a from 'b';
+import a from 'b';
+// i ame leading comment of import c from 'd';
+import c from 'd';
+```
+So, if you want to comment after import in a new line, you should not forget to add a empty line after comment.
 # Setting
 ```
 //the source dir, currently we only support single root
