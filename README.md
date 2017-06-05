@@ -76,7 +76,7 @@ Currently in beta, there are a lot of work to do;
 - [x] option for insert position (ability to skip flow, Copyright, Lisence comment in top of file), currently we just insert statement into fisrtline.
 - [ ] sort import statement by eslint rule, deal with comment
 - [ ] support autocomplete
-- [ ] support auto fix by eslint rule
+- [x] support auto fix by eslint rule
 - [ ] support import statement syntax check
 - [ ] support option for max-line like eslint rule max-line, auto split statement to mutilines
 
