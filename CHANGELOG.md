@@ -3,6 +3,9 @@ All notable changes to the "vscode-js-import" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+##
+- fix doublequote bug
+
 ## [0.6.2] - 2017-06-05
 - support commaDangleImport option
 
