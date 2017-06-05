@@ -1,22 +1,14 @@
 import Scanner, { ImportObj } from "./scanner";
 import * as vscode from 'vscode';
+import { isWin } from './help';
+
 const path = require('path');
 
 export default class Resolver {
     resolve(value: string, doc: vscode.TextDocument, range: vscode.Range) {
         const cache = Scanner.cache;
         const nodeModuleCache = Scanner.nodeModuleCache;
-        let quickPickItems = [];
-        for (const key of Object.keys(Scanner.cache)) {
-            if (cache[key].module.name.toLowerCase().includes(value.toLowerCase())) {
-                quickPickItems.push(this.resolveFromFile(cache[key], doc, range));
-            }
-        }
-        for (const key of Object.keys(nodeModuleCache)) {
-            if (nodeModuleCache[key].module.name.toLowerCase().includes(value.toLowerCase())) {
-                quickPickItems.push(this.resolveFromModule(nodeModuleCache[key], doc, range));
-            }
-        }
+        let quickPickItems = this.resolveItems(value, doc, range);
         vscode.window.showQuickPick(quickPickItems).then(item => {
             if(item) {
                 vscode.commands.executeCommand('extension.fixImport',
@@ -25,13 +17,30 @@ export default class Resolver {
         })
     }
 
+    resolveItems(value: string, doc: vscode.TextDocument, range: vscode.Range) {
+        const cache = Scanner.cache;
+        const nodeModuleCache = Scanner.nodeModuleCache;
+        let items = [];
+        for (const key of Object.keys(Scanner.cache)) {
+            if (cache[key].module.name.toLowerCase().includes(value.toLowerCase())) {
+                items.push(this.resolveFromFile(cache[key], doc, range));
+            }
+        }
+        for (const key of Object.keys(nodeModuleCache)) {
+            if (nodeModuleCache[key].module.name.toLowerCase().includes(value.toLowerCase())) {
+                items.push(this.resolveFromModule(nodeModuleCache[key], doc, range));
+            }
+        }
+        return items;
+    }
+
     resolveFromFile(importObj: ImportObj, doc: vscode.TextDocument, range: vscode.Range) {
         let rp = path.relative(vscode.workspace.rootPath, importObj.path);
-        if (/^win/.test(process.platform)) {
+        if (isWin) {
             rp = rp.replace(/\\/g, '/');
         }
         return {
-            label: `${importObj.module.name} ${rp}`,
+            label: `import ${importObj.module.name} from ${rp}`,
             description: '',
             importObj: importObj,
             doc:doc,
@@ -41,7 +50,7 @@ export default class Resolver {
 
     resolveFromModule(importObj: ImportObj, doc: vscode.TextDocument, range: vscode.Range) {
         return {
-            label: `${importObj.module.name} node_modules/${importObj.path}`,
+            label: `import ${importObj.module.name} from node_modules/${importObj.path}`,
             description: '',
             importObj: importObj,
             doc:doc,

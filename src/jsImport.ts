@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import Scanner from './scanner';
 import Resolver from './resolver';
 import ImportFixer from './importFixer';
+import { ImportAction } from './importAction';
 
 // TODO: support ts file
 
@@ -60,7 +61,10 @@ export default class JsImport {
             new ImportFixer(importObj, doc, range).fix();
         });
 
-        context.subscriptions.push(importScanner, shortcutImport);
+        let codeActionFixer = vscode.languages.registerCodeActionsProvider(
+            ['javascript', 'typescript', 'javascriptreact', 'typescriptreact'], new ImportAction())
+
+        context.subscriptions.push(importScanner, shortcutImport, codeActionFixer);
     }
 
     public attachFileWatcher() {
