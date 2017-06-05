@@ -1,7 +1,7 @@
 {
     "name": "vscode-js-import",
     "displayName": "vscode-js-import",
-    "description": "",
+    "description": "Intelligent and fast import extension for js in vscode, support both TypeScript and JavaScript !!!.",
     "version": "0.7.0",
     "publisher": "wangtao0101",
     "repository": {
