@@ -2,7 +2,7 @@
     "name": "vscode-js-import",
     "displayName": "vscode-js-import",
     "description": "",
-    "version": "0.6.1",
+    "version": "0.6.2",
     "publisher": "wangtao0101",
     "repository": {
         "type": "git",
@@ -57,6 +57,11 @@
                     "type": "string",
                     "default": "last",
                     "description": "the insert position of new import statement, first means first of all imports, last means last of all imports, soon we will suport sort"
+                },
+                "js-import.commaDangleImport": {
+                    "type": "string",
+                    "default": "never",
+                    "description": "option for comma-dangle to generate import statement, like esline rule imports of comma-dangle, there are four options :　never, always, always-multiline, only-multiline"
                 }
             }
         }

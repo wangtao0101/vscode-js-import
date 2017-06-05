@@ -58,6 +58,9 @@ Also, we can skip @flow or copyright comment.
 
 //the insert position of new import statement, first means first of all imports, last means last of all imports, soon we will suport sort
 "js-import.insertPosition" : "last"
+
+//option for comma-dangle to generate import statement, like esline rule imports of comma-dangle, there are four options :　never, always, always-multiline, only-multiline
+"js-import.commaDangleImport" : "never"
 ```
 
 # TODO

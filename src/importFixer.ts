@@ -214,16 +214,24 @@ export default class ImportFixer {
      */
     public getSingleLineImport(importedDefaultBinding, nameSpaceImport, namedImports, importPath: string, endline = false) {
         // support import 'aaaaa';
+        let commaDangleImport = vscode.workspace.getConfiguration('js-import').get<string>('commaDangleImport') || 'never';
+        let namedImportsText = null;
+        if (commaDangleImport === 'always' && namedImports.length !== 0) {
+            namedImportsText = `${namedImports.join(', ')},`
+        } else {
+            namedImportsText = `${namedImports.join(', ')}`
+        }
+
         if (importedDefaultBinding !== null && nameSpaceImport !== null) {
             return `import ${importedDefaultBinding}, { ${nameSpaceImport} } from '${importPath}'${endline ? this.eol : ''};`
         } else if (importedDefaultBinding !== null && namedImports.length !== 0) {
-            return `import ${importedDefaultBinding}, { ${namedImports.join(', ')} } from '${importPath}'${endline ? this.eol : ''};`
+            return `import ${importedDefaultBinding}, { ${namedImportsText} } from '${importPath}'${endline ? this.eol : ''};`
         } else if (importedDefaultBinding !== null) {
             return `import ${importedDefaultBinding} from '${importPath}';${endline ? this.eol : ''}`
         } else if (nameSpaceImport !== null) {
             return `import ${nameSpaceImport} from '${importPath}';${endline ? this.eol : ''}`
         } else if (namedImports.length !== 0) {
-            return `import { ${namedImports.join(', ')} } from '${importPath}';${endline ? this.eol : ''}`
+            return `import { ${namedImportsText} } from '${importPath}';${endline ? this.eol : ''}`
         } else {
             // do nothing
         }
@@ -252,14 +260,23 @@ export default class ImportFixer {
             startcolumn = Math.min(startcolumn, element.loc.start.column);
         });
 
-        namedImports.forEach(element => {
+        namedImports.forEach((element, index) => {
             newText += this.eol;
             // handle comment before identifier in previous line
             const beforeNamedImportsComments = imp.middleComments.filter(comment => comment.identifier.identifier === element && comment.loc.start.line < comment.identifier.loc.start.line);
             beforeNamedImportsComments.forEach(comment => {
                 newText += `    ${comment.raw}${this.eol}`;
             });
-            newText += `    ${element},`;
+            let commaDangleImport = vscode.workspace.getConfiguration('js-import').get<string>('commaDangleImport') || 'never';
+            if (commaDangleImport === 'always' || commaDangleImport === 'always-multiline') {
+                newText += `    ${element},`;
+            } else {
+                if (index === namedImports.length - 1) {
+                    newText += `    ${element}`;
+                } else {
+                    newText += `    ${element},`;
+                }
+            }
             // handle comment after identifier
             const afterNamedImportsComments = imp.middleComments.filter(comment => comment.identifier.identifier === element && comment.loc.start.line >= comment.identifier.loc.start.line);
             if (afterNamedImportsComments.length != 0) {

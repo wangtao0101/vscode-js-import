@@ -3,6 +3,9 @@ All notable changes to the "vscode-js-import" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.6.2] - 2017-06-05
+- support commaDangleImport option
+
 ## [0.6.1] - 2017-06-04
 - support insert position option
 - support multiple line import statement

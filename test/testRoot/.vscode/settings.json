@@ -10,5 +10,6 @@
     "js-import.alias": {
         "helpalias": "src/package/"
     },
-    "js-import.filesToScan": "**/*.{jsx,js}"
+    "js-import.filesToScan": "**/*.{jsx,js}",
+    "js-import.commaDangleImport": "never"
 }
