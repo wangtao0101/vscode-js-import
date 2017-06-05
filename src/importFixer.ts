@@ -92,6 +92,7 @@ export default class ImportFixer {
 
     public resolveImport(importPath) {
         const imports = parseImport(this.doc.getText());
+        // TODO: here we can normalize moduleSpecifier
         const filteredImports = imports.filter(imp => imp.error === 0 && imp.moduleSpecifier === importPath);
 
         if (filteredImports.length === 0) {
@@ -123,6 +124,7 @@ export default class ImportFixer {
                     this.getMultipleLineImport(imp, this.importObj.module.name, imp.nameSpaceImport, imp.namedImports, importPath);
                     return;
                 }
+                // TODO: if imp.middleComments is not empty, wo should extract all middle comment into end to avoid missing comments
                 importStatement = this.getSingleLineImport(this.importObj.module.name, imp.nameSpaceImport, imp.namedImports, importPath, true);
             }
         } else {
@@ -211,8 +213,7 @@ export default class ImportFixer {
      * @param endline
      */
     public getSingleLineImport(importedDefaultBinding, nameSpaceImport, namedImports, importPath: string, endline = false) {
-        // TODO: split multiple lines if exceed character per line (use a parameter setting)
-
+        // support import 'aaaaa';
         if (importedDefaultBinding !== null && nameSpaceImport !== null) {
             return `import ${importedDefaultBinding}, { ${nameSpaceImport} } from '${importPath}'${endline ? this.eol : ''};`
         } else if (importedDefaultBinding !== null && namedImports.length !== 0) {
@@ -229,6 +230,7 @@ export default class ImportFixer {
     }
 
     public getMultipleLineImport(imp, importedDefaultBinding, nameSpaceImport, namedImports, importPath) {
+        // TODO: split multiple lines if exceed character per line (use a parameter setting)
         let newText = 'import ';
         let startline = imp.loc.start.line;
         let startcolumn = imp.loc.start.column;
