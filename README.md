@@ -14,6 +14,9 @@ ctrl + alt + j  (mac cmd + alt + j)
 Move cursor into target word and enter shortcuts, then select the match import.
 
 # Feature
+## Support autofix by using eslint rule(no-undef) or ts compiler error
+
+
 ## Support import in multiple line
 If origin import statement occupies multiple lines(import must have namedImports, it is not necessary to split statement when there is no namedImports), we will turn into multiple line mode and carefully handle comments.
 
