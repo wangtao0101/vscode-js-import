@@ -105,4 +105,7 @@ module.exports = classNames;
 exports.default = _parseImport2.default; //webpack export default style
 ```
 
+# Thanks
+some code from [import-js](https://github.com/Galooshi/import-js)
+
 # [CHANGELOG](https://github.com/wangtao0101/vscode-js-import/blob/master/CHANGELOG.md)
