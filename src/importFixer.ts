@@ -131,7 +131,7 @@ export default class ImportFixer {
                     return;
                 }
                 // TODO: if imp.middleComments is not empty, wo should extract all middle comment into end to avoid missing comments
-                importStatement = this.getSingleLineImport(this.importObj.module.name, imp.nameSpaceImport, imp.namedImports, importPath, true);
+                importStatement = this.getSingleLineImport(this.importObj.module.name, imp.nameSpaceImport, imp.namedImports, importPath, false);
             }
         } else {
             if (imp.nameSpaceImport !== null) {

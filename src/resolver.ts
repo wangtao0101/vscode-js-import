@@ -38,7 +38,7 @@ export default class Resolver {
                     items.push(this.resolveFromModule(nodeModuleCache[key], doc, range));
                 }
             } else {
-                if (nodeModuleCache[key].module.namet.toLowerCase().includes(value.toLowerCase())) {
+                if (nodeModuleCache[key].module.name.toLowerCase().includes(value.toLowerCase())) {
                     items.push(this.resolveFromModule(nodeModuleCache[key], doc, range));
                 }
             }
@@ -52,7 +52,7 @@ export default class Resolver {
             rp = rp.replace(/\\/g, '/');
         }
         return {
-            label: `import ${importObj.module.name} from ${rp}`,
+            label: `import ${importObj.module.name} from ${rp} [js-import]`,
             description: '',
             importObj: importObj,
             doc:doc,
@@ -62,7 +62,7 @@ export default class Resolver {
 
     resolveFromModule(importObj: ImportObj, doc: vscode.TextDocument, range: vscode.Range) {
         return {
-            label: `import ${importObj.module.name} from node_modules/${importObj.path}`,
+            label: `import ${importObj.module.name} from node_modules/${importObj.path} [js-import]`,
             description: '',
             importObj: importObj,
             doc:doc,

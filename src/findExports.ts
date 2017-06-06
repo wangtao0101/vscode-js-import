@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const requireRelative = require('require-relative');
 
+
 function findESNamedExports(node) {
     if (node.type !== 'ExportNamedDeclaration') {
         return [];

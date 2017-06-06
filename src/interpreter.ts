@@ -120,7 +120,7 @@ export default class Interpreter {
                 })
             }
             result.named.forEach(name => {
-                if (!this.isUnwantedName(name)) {
+                if (!this.isUnwantedName(name) && name !== undefined) {
                     resultList.push({
                         default: false,
                         name: name,
