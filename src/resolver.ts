@@ -8,7 +8,7 @@ export default class Resolver {
     resolve(value: string, doc: vscode.TextDocument, range: vscode.Range) {
         const cache = Scanner.cache;
         const nodeModuleCache = Scanner.nodeModuleCache;
-        let quickPickItems = this.resolveItems(value, doc, range);
+        let quickPickItems = this.resolveItems(value, doc, range, false);
         vscode.window.showQuickPick(quickPickItems).then(item => {
             if(item) {
                 vscode.commands.executeCommand('extension.fixImport',
@@ -17,18 +17,30 @@ export default class Resolver {
         })
     }
 
-    resolveItems(value: string, doc: vscode.TextDocument, range: vscode.Range) {
+    resolveItems(value: string, doc: vscode.TextDocument, range: vscode.Range, completion : false) {
         const cache = Scanner.cache;
         const nodeModuleCache = Scanner.nodeModuleCache;
         let items = [];
         for (const key of Object.keys(Scanner.cache)) {
-            if (cache[key].module.name.toLowerCase().includes(value.toLowerCase())) {
-                items.push(this.resolveFromFile(cache[key], doc, range));
+            if (completion) {
+                if (cache[key].module.name.toLowerCase().startsWith(value.toLowerCase())) {
+                    items.push(this.resolveFromFile(cache[key], doc, range));
+                }
+            } else {
+                if (cache[key].module.name.toLowerCase().includes(value.toLowerCase())) {
+                    items.push(this.resolveFromFile(cache[key], doc, range));
+                }
             }
         }
         for (const key of Object.keys(nodeModuleCache)) {
-            if (nodeModuleCache[key].module.name.toLowerCase().includes(value.toLowerCase())) {
-                items.push(this.resolveFromModule(nodeModuleCache[key], doc, range));
+            if (completion) {
+                if (nodeModuleCache[key].module.name.toLowerCase().startsWith(value.toLowerCase())) {
+                    items.push(this.resolveFromModule(nodeModuleCache[key], doc, range));
+                }
+            } else {
+                if (nodeModuleCache[key].module.name.toLowerCase().includes(value.toLowerCase())) {
+                    items.push(this.resolveFromModule(nodeModuleCache[key], doc, range));
+                }
             }
         }
         return items;

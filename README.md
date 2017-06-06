@@ -20,7 +20,7 @@ To enable the feature, you should install enable [eslint](https://marketplace.vi
 
 ![GitHub Logo](https://github.com/wangtao0101/vscode-js-import/blob/master/img/autofix.gif?raw=true)
 
-## Support import in multiple line
+## Support import in multiple line and support comment in any where
 If origin import statement occupies multiple lines(import must have namedImports, it is not necessary to split statement when there is no namedImports), we will turn into multiple line mode and carefully handle comments.
 
 Here we add a new namedImport 'e':
@@ -49,6 +49,10 @@ import c from 'd';
 So, if you want to comment after import in a new line, you should not forget to add a empty line after comment.
 
 Also, we can skip @flow or copyright comment.
+
+## Support auto code completion
+![GitHub Logo](https://github.com/wangtao0101/vscode-js-import/blob/master/img/codecomplete.gif?raw=true)
+
 # Setting
 ```
 //the source dir, currently we only support single root
@@ -67,6 +71,9 @@ Also, we can skip @flow or copyright comment.
 
 //option for comma-dangle to generate import statement, like esline rule imports of comma-dangle, there are four options :　never, always, always-multiline, only-multiline
 "js-import.commaDangleImport" : "never"
+
+//whether to enable codeCompletion
+"js-import.codeCompletion" : true
 ```
 
 # TODO
@@ -75,7 +82,7 @@ Currently in beta, there are a lot of work to do;
 - [x] full support import statement, such as 'feedline' in import statement
 - [x] option for insert position (ability to skip flow, Copyright, Lisence comment in top of file), currently we just insert statement into fisrtline.
 - [ ] sort import statement by eslint rule, deal with comment
-- [ ] support autocomplete
+- [x] support autocomplete
 - [x] support auto fix by eslint rule
 - [ ] support import statement syntax check
 - [ ] support option for max-line like eslint rule max-line, auto split statement to mutilines

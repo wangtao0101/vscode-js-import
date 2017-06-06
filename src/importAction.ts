@@ -39,7 +39,7 @@ export class ImportAction implements vscode.CodeActionProvider {
         if (name == null) {
             return handlers;
         }
-        const items = new Resolver().resolveItems(name, document, range);
+        const items = new Resolver().resolveItems(name, document, range, false);
         items.forEach(item => {
             handlers.push({
                 title: item.label,
