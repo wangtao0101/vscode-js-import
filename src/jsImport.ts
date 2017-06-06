@@ -5,8 +5,6 @@ import ImportFixer from './importFixer';
 import { ImportAction } from './importAction';
 import { ImportCompletion } from "./importCompletion";
 
-// TODO: support ts file
-
 export default class JsImport {
 
     public static statusBar: vscode.StatusBarItem;
@@ -41,7 +39,6 @@ export default class JsImport {
         let shortcutImport = vscode.commands.registerCommand('extension.shortcutImport', () => {
             let editor = vscode.window.activeTextEditor;
             if (!editor) {
-                // this._statusBarItem.hide();
                 return;
             }
 
@@ -62,7 +59,7 @@ export default class JsImport {
             new ImportFixer(importObj, doc, range).fix();
         });
 
-        // suport config DocumentSelector
+        // TODO: suport config DocumentSelector
         let codeActionFixer = vscode.languages.registerCodeActionsProvider(
             ['javascript', 'typescript', 'javascriptreact', 'typescriptreact'], new ImportAction())
 
