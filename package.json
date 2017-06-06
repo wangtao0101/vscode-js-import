@@ -67,6 +67,11 @@
                     "type": "boolean",
                     "default": "true",
                     "description": "whether to enable codeCompletion"
+                },
+                "js-import.quote": {
+                    "type": "string",
+                    "default": "singlequote",
+                    "description": "whether to use singlequote or use doublequote"
                 }
             }
         }

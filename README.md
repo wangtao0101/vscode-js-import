@@ -67,13 +67,16 @@ Also, we can skip @flow or copyright comment.
 "js-import.filesToScan": "**/*.{jsx,js,ts}"
 
 //the insert position of new import statement, first means first of all imports, last means last of all imports, soon we will suport sort
-"js-import.insertPosition" : "last"
+"js-import.insertPosition": "last"
 
 //option for comma-dangle to generate import statement, like esline rule imports of comma-dangle, there are four options :　never, always, always-multiline, only-multiline
-"js-import.commaDangleImport" : "never"
+"js-import.commaDangleImport": "never"
 
 //whether to enable codeCompletion
-"js-import.codeCompletion" : true
+"js-import.codeCompletion": true
+
+//whether to use singlequote or use doublequote
+"js-import.quote": "singlequote"
 ```
 
 # TODO

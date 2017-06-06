@@ -6,6 +6,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [0.8.0] - 2017-06-06
 - add feature codeCompletion
 - add codeCompletion option
+- add quote option
 
 ## [0.7.0] - 2017-06-05
 - fix doublequote bug

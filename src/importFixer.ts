@@ -6,6 +6,7 @@ import { isIndexFile, isWin } from './help';
 const path = require('path');
 
 export default class ImportFixer {
+    queto: string;
     eol: string;
     doc: vscode.TextDocument;
     importObj: ImportObj;
@@ -17,6 +18,11 @@ export default class ImportFixer {
         this.range = range;
         if (doc != null) {
             this.eol = doc.eol === vscode.EndOfLine.LF ? '\n' : '\r\n';
+        }
+        let queto = vscode.workspace.getConfiguration('js-import').get<string>('quote');
+        this.queto = `'`;
+        if (queto === 'doublequote') {
+            this.queto = `"`;
         }
     }
 
@@ -223,15 +229,15 @@ export default class ImportFixer {
         }
 
         if (importedDefaultBinding !== null && nameSpaceImport !== null) {
-            return `import ${importedDefaultBinding}, { ${nameSpaceImport} } from '${importPath}'${endline ? this.eol : ''};`
+            return `import ${importedDefaultBinding}, { ${nameSpaceImport} } from ${this.queto}${importPath}${this.queto}${endline ? this.eol : ''};`
         } else if (importedDefaultBinding !== null && namedImports.length !== 0) {
-            return `import ${importedDefaultBinding}, { ${namedImportsText} } from '${importPath}'${endline ? this.eol : ''};`
+            return `import ${importedDefaultBinding}, { ${namedImportsText} } from ${this.queto}${importPath}${this.queto}${endline ? this.eol : ''};`
         } else if (importedDefaultBinding !== null) {
-            return `import ${importedDefaultBinding} from '${importPath}';${endline ? this.eol : ''}`
+            return `import ${importedDefaultBinding} from ${this.queto}${importPath}${this.queto};${endline ? this.eol : ''}`
         } else if (nameSpaceImport !== null) {
-            return `import ${nameSpaceImport} from '${importPath}';${endline ? this.eol : ''}`
+            return `import ${nameSpaceImport} from ${this.queto}${importPath}${this.queto};${endline ? this.eol : ''}`
         } else if (namedImports.length !== 0) {
-            return `import { ${namedImportsText} } from '${importPath}';${endline ? this.eol : ''}`
+            return `import { ${namedImportsText} } from ${this.queto}${importPath}${this.queto};${endline ? this.eol : ''}`
         } else {
             // do nothing
         }
@@ -287,7 +293,7 @@ export default class ImportFixer {
             });
         });
 
-        newText += `${this.eol}} from '${importPath}';`;
+        newText += `${this.eol}} from ${this.queto}${importPath}${this.queto};`;
         const comments = imp.middleComments.filter(comment => comment.identifier.type === 'From' || comment.identifier.type === 'ModuleSpecifier');
         if (comments.length != 0) {
             newText += ' ';
