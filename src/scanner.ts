@@ -131,6 +131,16 @@ export default class Scanner {
                         isNodeModule: true,
                     };
                 });
+                const parsedModules = this.interpreter.runMainFile(data, moduleName, mainFilePath);
+                parsedModules.forEach(m => {
+                    if (Scanner.nodeModuleCache[`${moduleName}-${m.name}`] == null) {
+                        Scanner.nodeModuleCache[`${moduleName}-${m.name}`] = {
+                            path: moduleName,
+                            module: m,
+                            isNodeModule: true,
+                        };
+                    }
+                });
                 JsImport.setStatusBar();
             });
         }

@@ -1,4 +1,5 @@
 import strip from 'parse-comment-es6';
+import findExports from "./findExports";
 
 export interface ModuleItem {
     name: string;
@@ -105,6 +106,31 @@ export default class Interpreter {
 
     isUnwantedName(name) {
         return Interpreter.unWantedName.includes(name);
+    }
+
+    public runMainFile(data, moduleName, mainFilePath) {
+        // { named: [], hasDefault: true }
+        const resultList : Array<ModuleItem> = [];
+        try {
+            const result = findExports(data, mainFilePath);
+            if (result.hasDefault) {
+                resultList.push({
+                    default: true,
+                    name: moduleName,
+                })
+            }
+            result.named.forEach(name => {
+                if (!this.isUnwantedName(name)) {
+                    resultList.push({
+                        default: false,
+                        name: name,
+                    })
+                }
+            });
+            return resultList;
+        } catch (error) {
+            return [];
+        }
     }
 }
 

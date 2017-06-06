@@ -38,7 +38,7 @@ export default class Resolver {
                     items.push(this.resolveFromModule(nodeModuleCache[key], doc, range));
                 }
             } else {
-                if (nodeModuleCache[key].module.name.toLowerCase().includes(value.toLowerCase())) {
+                if (nodeModuleCache[key].module.namet.toLowerCase().includes(value.toLowerCase())) {
                     items.push(this.resolveFromModule(nodeModuleCache[key], doc, range));
                 }
             }
