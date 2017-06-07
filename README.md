@@ -63,7 +63,7 @@ you should add the module into package.json. Besides, we support export style li
 
 We will watch the change of package.json, and auto add and remove module.
 
-## A cute icon shows that how many import statements in our workspace.
+## A cute icon shows that how many import statements in your workspace.
 ![GitHub Logo](https://github.com/wangtao0101/vscode-js-import/blob/master/img/icon.png?raw=true)
 
 # Setting
