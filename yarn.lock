@@ -1193,9 +1193,9 @@ parse-glob@^3.0.4:
     is-extglob "^1.0.0"
     is-glob "^2.0.0"
 
-parse-import-es6@^0.4.1:
-  version "0.4.1"
-  resolved "http://registry.npm.taobao.org/parse-import-es6/download/parse-import-es6-0.4.1.tgz#1e69ac8531c16aa96eb242aa18f51ebd4459b64e"
+parse-import-es6@^0.4.2:
+  version "0.4.2"
+  resolved "http://registry.npm.taobao.org/parse-import-es6/download/parse-import-es6-0.4.2.tgz#73b9644369f298257e97594d5c4c7f1aa08ae225"
   dependencies:
     parse-comment-es6 "^0.5.1"
 

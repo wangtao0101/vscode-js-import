@@ -89,6 +89,7 @@ Currently in beta, there are a lot of work to do;
 - [x] support auto fix by eslint rule
 - [ ] support import statement syntax check
 - [ ] support option for max-line like eslint rule max-line, auto split statement to mutilines
+- [ ] support shortcut goto module under cursor, spec react conpoment
 
 # Export RegExp
 ```

@@ -3,6 +3,9 @@ All notable changes to the "vscode-js-import" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.9.0] - 2017-06-07
+- fix bug, moduleSpecifier support _ and -
+
 ## [0.8.0] - 2017-06-06
 - add feature codeCompletion
 - add codeCompletion option
