@@ -56,8 +56,15 @@ Also, we can skip @flow or copyright comment.
 ## node_modules support
 
 We only process module form dependencies, devDependencies, peerDependencies, optionalDependencies in package.json,
-and only extract import from mainfile in module's package.json. If you want to import module using vscode-js-import,
-you should add the module into package.json. Heads up!!!, we support export style like module.exports = require('./lib/React');
+and only extract import from mainfile in module's package.json.
+
+If you want to import module using vscode-js-import,
+you should add the module into package.json. Besides, we support export style like module.exports = require('./lib/React');
+
+We will watch the change of package.json, and auto add and remove module.
+
+## A cute icon shows that how many import statements in our workspace.
+![GitHub Logo](https://github.com/wangtao0101/vscode-js-import/blob/master/img/icon.png?raw=true)
 
 # Setting
 ```
