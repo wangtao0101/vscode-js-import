@@ -158,19 +158,5 @@ export default class Interpreter {
 
 /**
  * TODO:
- * 1. module.exports = require('./lib/React');
- * 2. module.exports = React;
- *    var React = {
-          Children: {
-              map: ReactChildren.map,
-              forEach: ReactChildren.forEach,
-              count: ReactChildren.count,
-              toArray: ReactChildren.toArray,
-              only: onlyChild
-          },
-          createElement: createElement,
-          cloneElement: cloneElement,
-          isValidElement: ReactElement.isValidElement,
-      }
     3. ts文件，包括@types、index.d.ts
  */

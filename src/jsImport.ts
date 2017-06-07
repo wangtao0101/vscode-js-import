@@ -31,8 +31,12 @@ export default class JsImport {
                 scanner.scanAllImport();
             } else if (request.edit) {
                 scanner.scanFileImport(request.file);
-            } else {
+            } else if (request.delete) {
                 scanner.deleteFile(request.file);
+            } else if (request.nodeModule) {
+                scanner.findModulesInPackageJson();
+            } else {
+                // do nothing
             }
         });
 
@@ -74,15 +78,21 @@ export default class JsImport {
         let watcher = vscode.workspace.createFileSystemWatcher(glob);
         watcher.onDidChange((file: vscode.Uri) => {
             vscode.commands
-                .executeCommand('extension.scanImport', { file, edit: true, init: false });
+                .executeCommand('extension.scanImport', { file, edit: true, init: false, nodeModule: false });
         })
         watcher.onDidCreate((file: vscode.Uri) => {
             vscode.commands
-                .executeCommand('extension.scanImport', { file, edit: true, init: false });
+                .executeCommand('extension.scanImport', { file, edit: true, init: false, nodeModule: false });
         })
         watcher.onDidDelete((file: vscode.Uri) => {
             vscode.commands
-                .executeCommand('extension.scanImport', { file, delete: true, init: false });
+                .executeCommand('extension.scanImport', { file, delete: true, init: false, nodeModule: false });
+        })
+
+        let packageJsonWatcher = vscode.workspace.createFileSystemWatcher('**/package.json');
+        packageJsonWatcher.onDidChange((file: vscode.Uri) => {
+            vscode.commands
+                .executeCommand('extension.scanImport', { file: null, edit: false, delete: false, init: false, nodeModule: true });
         })
     }
 

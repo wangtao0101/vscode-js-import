@@ -5,6 +5,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [0.9.0] - 2017-06-07
 - fix bug, moduleSpecifier support _ and -
+- full suport in node_modules, only extract export form main file and support module.exports = require('./lib/React')
+- watch change of package.json, auto remove and add module
 
 ## [0.8.0] - 2017-06-06
 - add feature codeCompletion

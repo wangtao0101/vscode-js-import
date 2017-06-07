@@ -73,7 +73,7 @@ export default class Scanner {
         });
     }
 
-    private findModulesInPackageJson() {
+    public findModulesInPackageJson() {
         const modules = [];
         const packageJsonPath = path.join(vscode.workspace.rootPath, 'package.json');
         if (fs.existsSync(packageJsonPath)) {
@@ -92,9 +92,22 @@ export default class Scanner {
                         modules.push(...Object.keys(packageJson[key]));
                     }
                 })
+                this.deleteUnusedModules(modules);
                 this.cacheModules(modules);
             })
         }
+    }
+
+    private deleteUnusedModules(modules: Array<string>) {
+        const keys = Object.keys(Scanner.nodeModuleCache);
+        const notexists = keys.filter(key => !modules.includes(Scanner.nodeModuleCache[key].path));
+        notexists.forEach(name => {
+            if (Scanner.nodeModuleCache[name] != null) {
+                delete Scanner.nodeModuleVersion[Scanner.nodeModuleCache[name].path];
+                delete Scanner.nodeModuleCache[name];
+            }
+        })
+        JsImport.setStatusBar();
     }
 
     private cacheModules(modules) {

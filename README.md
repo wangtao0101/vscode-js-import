@@ -53,6 +53,12 @@ Also, we can skip @flow or copyright comment.
 ## Support auto code completion
 ![GitHub Logo](https://github.com/wangtao0101/vscode-js-import/blob/master/img/codecomplete.gif?raw=true)
 
+## node_modules support
+
+We only process module form dependencies, devDependencies, peerDependencies, optionalDependencies in package.json,
+and only extract import from mainfile in module's package.json. If you want to import module using vscode-js-import,
+you should add the module into package.json. Heads up!!!, we support export style like module.exports = require('./lib/React');
+
 # Setting
 ```
 //the source dir, currently we only support single root
@@ -81,7 +87,7 @@ Also, we can skip @flow or copyright comment.
 
 # TODO
 Currently in beta, there are a lot of work to do;
-- [ ] full suport in node_modules, currently only extract export form main file
+- [x] full suport in node_modules, only extract export form main file and support module.exports = require('./lib/React')
 - [x] full support import statement, such as 'feedline' in import statement
 - [x] option for insert position (ability to skip flow, Copyright, Lisence comment in top of file), currently we just insert statement into fisrtline.
 - [ ] sort import statement by eslint rule, deal with comment
@@ -93,18 +99,19 @@ Currently in beta, there are a lot of work to do;
 
 # Export RegExp
 ```
-export (default) (const|let|var|function|function*|class) abc;
-export default abc;
-exports.eee = eee
-exports["default"] = abc
-Object.defineProperty( exports , 'version', ...
-export {
-    a,
-    b,
-}
-module.exports = classNames;
-exports.default = _parseImport2.default; //webpack export default style
+exports.default\\s*=\\s*(\\w+).default
+module.exports\\s*=\\s*(\\w+)
+exports\\[[\\'\\"]default[\\'\\"]\\]\\s*=\\s*(\\w+)
+export\\s+(default\\s+){0,1}(?:(?:const|let|var|function|function\\*|class)\\s+){0,1}([\\w]+)
+exports\\.([\\w]+)\\s*=
+exports\\[\\"([\\w]+)\\"\\]\\s*=
+Object.defineProperty\\(\\s*exports\\s*,\\s*[\\'|\\"]([\\w]+)[\\'|\\"]
+export\\s+(?:default\\s+){0,1}(\\{[^\\}]+\\})
 ```
+
+## Contributing
+
+Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](https://github.com/wangtao0101/vscode-js-import/issues).
 
 # Thanks
 some code from [import-js](https://github.com/Galooshi/import-js)
