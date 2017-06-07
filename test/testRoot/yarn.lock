@@ -1549,9 +1549,9 @@ rc-trigger@1.x:
     rc-animate "2.x"
     rc-util "4.x"
 
-rc-upload@~2.3.0:
+rc-upload@^2.3.7, rc-upload@~2.3.0:
   version "2.3.7"
-  resolved "https://registry.npmjs.org/rc-upload/-/rc-upload-2.3.7.tgz#9f49e8e8a15919149ff71174ede8b50187ce2e63"
+  resolved "http://registry.npm.taobao.org/rc-upload/download/rc-upload-2.3.7.tgz#9f49e8e8a15919149ff71174ede8b50187ce2e63"
   dependencies:
     babel-runtime "6.x"
     classnames "^2.2.5"

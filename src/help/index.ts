@@ -11,3 +11,9 @@ const isW = /^win/.test(process.platform);
 export function isWin() {
     return isW;
 }
+
+export function kebab2camel(str) {
+    return str.replace(/(\-[A-Za-z])/g, function (m) {
+	    return m.toUpperCase().replace('-','');
+    });
+};

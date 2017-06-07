@@ -18,6 +18,7 @@ export default class Resolver {
     }
 
     resolveItems(value: string, doc: vscode.TextDocument, range: vscode.Range, completion : false) {
+        // TODO: need sort ?
         const cache = Scanner.cache;
         const nodeModuleCache = Scanner.nodeModuleCache;
         let items = [];

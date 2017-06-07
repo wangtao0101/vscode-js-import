@@ -23,12 +23,13 @@ export default class Interpreter {
        exports.default = _parseImport2.default;
      */
     private static importRegex = new RegExp(`
-        exports.default\\s*=\\s*_(\\w+)2.default
+        exports.default\\s*=\\s*(\\w+).default
+        |module.exports\\s*=\\s*(\\w+)
+        |exports\\[[\\'\\"]default[\\'\\"]\\]\\s*=\\s*(\\w+)
         |export\\s+(default\\s+){0,1}(?:(?:const|let|var|function|function\\*|class)\\s+){0,1}([\\w]+)
         |exports\\.([\\w]+)\\s*=
         |exports\\[\\"([\\w]+)\\"\\]\\s*=
         |Object.defineProperty\\(\\s*exports\\s*,\\s*[\\'|\\"]([\\w]+)[\\'|\\"]
-        |module.exports\\s*=\\s*([\\w]+)
         |export\\s+(?:default\\s+){0,1}(\\{[^\\}]+\\})
     `.replace(/\s*/g, ''), 'g');
 
@@ -40,28 +41,48 @@ export default class Interpreter {
         return this.extractModuleFromFile(strip(text).text, isIndex, moduleName, fileName);
     }
 
-    private extractModuleFromFile(text: string, isIndex: boolean, moduleName :string, fileName: string) {
+    private addDefaultName(name: string, moduleName: string, resultList: Array<ModuleItem>) {
+        // support export['default'] = _xxxx2 or _xxxx
+        const mt = name.match(/(?:^_(\w+)2)|(?:^_(\w+))/)
+        let defaultName = name;
+        if (mt != null) {
+            defaultName =  mt[1] != null ? mt[1] : mt[2];
+        }
+        if (!this.isUnwantedName(defaultName)) {
+            resultList.push({
+                default: true,
+                name: defaultName,
+            })
+        }
+        return name;
+    }
 
-        const nameList = [];
+    private extractModuleFromFile(text: string, isIndex: boolean, moduleName :string, fileName: string) {
+        const nameList: Array<string> = [];
         const resultList : Array<ModuleItem> = [];
         let res;
         let i = 0;
         while ((res = Interpreter.importRegex.exec(text)) != null) {
             if (res[1] != null) {
-                resultList.push({
-                    default: true,
-                    name: res[1],
-                })
+                this.addDefaultName(res[1], moduleName, resultList);
                 continue;
             }
             if (res[2] != null) {
+                this.addDefaultName(res[2], moduleName, resultList);
+                continue;
+            }
+            if (res[3] != null) {
+                this.addDefaultName(res[3], moduleName, resultList);
+                continue;
+            }
+            if (res[4] != null) {
                 resultList.push({
                     default: true,
-                    name: res[3],
+                    name: res[5],
                 })
                 continue;
             }
-            for (i = 3; i < 8; i+=1) {
+            for (i = 5; i < 9; i+=1) {
                 if (res[i] != null) {
                     if (!this.isUnwantedName(res[i]) && !nameList.includes(res[i])) {
                         nameList.push(res[i]);
@@ -69,8 +90,8 @@ export default class Interpreter {
                     break;
                 }
             }
-            if (res[8] != null) {
-                nameList.push(...this.extrachModuleFromExportBlock(res[8]))
+            if (res[9] != null) {
+                nameList.push(...this.extrachModuleFromExportBlock(res[9]))
             }
         }
         nameList.forEach((item) => {
@@ -104,7 +125,7 @@ export default class Interpreter {
         return result;
     }
 
-    isUnwantedName(name) {
+    public isUnwantedName(name) :boolean{
         return Interpreter.unWantedName.includes(name);
     }
 

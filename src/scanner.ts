@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import Interpreter from './interpreter';
 import JsImport from './jsImport';
+import { kebab2camel } from './help';
 const path = require('path');
 
 export interface ImportObj {
@@ -117,23 +118,34 @@ export default class Scanner {
     private cacheModulesFromMain(moduleName, modulePath, packageJson) {
         if (!packageJson.hasOwnProperty('main'))
             return;
-        const mainFilePath = path.join(modulePath, packageJson.main);
+        let mainFilePath = path.join(modulePath, packageJson.main);
+        if (!fs.existsSync(mainFilePath)) {
+            mainFilePath += '.js';
+        }
         if (fs.existsSync(mainFilePath)) {
             fs.readFile(mainFilePath, 'utf-8', (err, data) => {
                 if (err) {
                     return console.log(err);
                 }
-                const modules = this.interpreter.run(data, true, moduleName, '')
+                const moduleKebabName = kebab2camel(moduleName)
+                const modules = this.interpreter.run(data, true, moduleKebabName, '')
+                let defaultModule = null;
                 modules.forEach(m => {
                     Scanner.nodeModuleCache[`${moduleName}-${m.name}`] = {
                         path: moduleName,
                         module: m,
                         isNodeModule: true,
                     };
+                    if (m.default) {
+                        defaultModule = m;
+                    }
                 });
-                const parsedModules = this.interpreter.runMainFile(data, moduleName, mainFilePath);
+                const parsedModules = this.interpreter.runMainFile(data, moduleKebabName, mainFilePath);
                 parsedModules.forEach(m => {
                     if (Scanner.nodeModuleCache[`${moduleName}-${m.name}`] == null) {
+                        if (m.default && defaultModule != null) {
+                            return;
+                        }
                         Scanner.nodeModuleCache[`${moduleName}-${m.name}`] = {
                             path: moduleName,
                             module: m,

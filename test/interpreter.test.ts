@@ -50,7 +50,7 @@ suite("Interpreter Tests", () => {
             exports["default"] = _grid.Col;
         `
         // TODO: should interpreter the name
-        assert.deepEqual([{default: true, name: ''}], my.run(text, false, '', ''))
+        assert.deepEqual([{default: true, name: 'grid'}], my.run(text, false, '', ''))
     });
 
     test("defineProperty", () => {
@@ -77,12 +77,12 @@ suite("Interpreter Tests", () => {
         assert.deepEqual([{default: false, name: 'aaa'}, {default: false, name: 'bbb'}], my.run(text, false, '', ''))
     });
 
-    test("module.exports = classNames;", () => {
+    test("module.exports = _Sortable2.default;", () => {
         const my = new Interpreter();
         const text = `
-            module.exports = classNames;
+            module.exports = _Sortable2.default;
         `
-        assert.deepEqual([{default: false, name: 'classNames'}], my.run(text, false, '', ''))
+        assert.deepEqual([{default: true, name: 'Sortable'}], my.run(text, false, '', ''))
     });
 
     test("exports.default = _parseImport2.default;", () => {

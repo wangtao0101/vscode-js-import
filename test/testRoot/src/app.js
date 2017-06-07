@@ -12,13 +12,12 @@ import a, { /* *//*c*/
     b, // asdfasdf
     c as d, // asdfasdf
 } from './component';
+import Upload from 'rc-upload';
 
 
 Via
 comabc
 ccc
 
-
+react
 affix
-
-Sortable
