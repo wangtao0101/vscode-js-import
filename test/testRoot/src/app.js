@@ -12,7 +12,7 @@ import a, { /* *//*c*/
     b, // asdfasdf
     c as d, // asdfasdf
 } from './component';
-import Upload from 'rc-upload';
+import './via';
 
 
 Via
