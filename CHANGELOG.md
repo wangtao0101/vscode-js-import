@@ -4,7 +4,7 @@ All notable changes to the "vscode-js-import" extension will be documented in th
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
 ## [0.9.1] - 2017-06-08
-- delete word if the word is in single line after import
+- delete word if the word is in a single line after import
 - support recognize import 'module-name'
 
 ## [0.9.0] - 2017-06-07
