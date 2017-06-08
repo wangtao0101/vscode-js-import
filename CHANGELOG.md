@@ -3,6 +3,9 @@ All notable changes to the "vscode-js-import" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.9.1] -
+- delete word if the word is in single line after import
+
 ## [0.9.0] - 2017-06-07
 - fix bug, moduleSpecifier support _ and -
 - full suport in node_modules, only extract export form main file and support module.exports = require('./lib/React')

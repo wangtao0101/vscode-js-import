@@ -153,6 +153,7 @@ export default class ImportFixer {
         let edit: vscode.WorkspaceEdit = new vscode.WorkspaceEdit();
         edit.replace(this.doc.uri, new vscode.Range(imp.loc.start.line, imp.loc.start.column,
             imp.loc.end.line, imp.loc.end.column), importStatement);
+        this.deleteWordRange(edit);
         vscode.workspace.applyEdit(edit);
     }
 
@@ -209,6 +210,7 @@ export default class ImportFixer {
         }
         let edit: vscode.WorkspaceEdit = new vscode.WorkspaceEdit();
         edit.insert(this.doc.uri, position, newText);
+        this.deleteWordRange(edit);
         vscode.workspace.applyEdit(edit);
     }
 
@@ -304,7 +306,15 @@ export default class ImportFixer {
         });
         let edit: vscode.WorkspaceEdit = new vscode.WorkspaceEdit();
         edit.replace(this.doc.uri, new vscode.Range(startline, startcolumn, endline, endcolumn), newText);
+        this.deleteWordRange(edit);
         vscode.workspace.applyEdit(edit);
+    }
+
+    public deleteWordRange(edit: vscode.WorkspaceEdit) {
+        const line = this.doc.lineAt(this.range.start.line)
+        if (line.text.trim() === this.doc.getText(this.range)) {
+            edit.delete(this.doc.uri, line.rangeIncludingLineBreak);
+        }
     }
 }
 
