@@ -35,7 +35,7 @@ export default class Interpreter {
 
     private static importBlockRegex = /[\w]+/g;
 
-    private static unWantedName = ['__esModule', 'function', 'exports', 'require'];
+    private static unWantedName = ['__esModule', 'function', 'exports', 'require', 'default'];
 
     public run(text :string, isIndex: boolean, moduleName :string, fileName: string) {
         return this.extractModuleFromFile(strip(text).text, isIndex, moduleName, fileName);
