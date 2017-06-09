@@ -104,6 +104,7 @@ Currently in beta, there are a lot of work to do;
 - [ ] support option for max-line like eslint rule max-line, auto split statement to mutilines
 - [ ] support shortcut goto module under cursor, spec react conpoment
 - [x] support import "module-name"
+- [ ] autofix useless import statement or identifier by using eslint rule(no-unused-vars)
 - [ ] support import scss, css, less, json, bmp, gif, jpe, jpeg, png file
 
 # Export RegExp
