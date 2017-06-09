@@ -221,7 +221,6 @@ export default class ImportFixer {
      * @param endline
      */
     public getSingleLineImport(importedDefaultBinding, nameSpaceImport, namedImports, importPath: string, endline = false) {
-        // support import 'aaaaa';
         let commaDangleImport = vscode.workspace.getConfiguration('js-import').get<string>('commaDangleImport') || 'never';
         let namedImportsText = null;
         if (commaDangleImport === 'always' && namedImports.length !== 0) {

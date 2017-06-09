@@ -72,6 +72,11 @@
                     "type": "string",
                     "default": "singlequote",
                     "description": "whether to use singlequote or use doublequote"
+                },
+                "js-import.maxLen": {
+                    "type": "number",
+                    "default": "100",
+                    "description": "max-line length like eslint rule max-line"
                 }
             }
         }
