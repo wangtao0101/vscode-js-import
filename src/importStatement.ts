@@ -98,16 +98,17 @@ export default class ImportStatement {
     private namedImportString(multiLine = false) {
         const trailingCommas = this.option.commaDangle === 'always' ? true :
             (multiLine && this.option.commaDangle === 'always-multiline' ? true : false);
-        const elementBefore = multiLine? `${this.option.eol}    `: ' ';
-        const commentBefore = multiLine? '    ': ' ';
+        const elementBefore = multiLine ? `${this.option.eol}    ` : ' ';
         let statement = '{';
 
         this.namedImports.forEach((element, index) => {
-            // handle comment before identifier in previous line
-            const beforeNamedImportsComments = this.middleComments.filter(comment => comment.identifier.identifier === element && comment.loc.start.line < comment.identifier.loc.start.line);
-            beforeNamedImportsComments.forEach(comment => {
-                statement += `${commentBefore}${comment.raw}${this.option.eol}`;
-            });
+            // handle comment before identifier in previous line, actually here 'if' is redundant
+            if (multiLine) {
+                const beforeNamedImportsComments = this.middleComments.filter(comment => comment.identifier.identifier === element && comment.loc.start.line < comment.identifier.loc.start.line);
+                beforeNamedImportsComments.forEach(comment => {
+                    statement += `    ${comment.raw}${this.option.eol}`;
+                });
+            }
             if (trailingCommas) {
                 statement += `${elementBefore}${element}`;
             } else {
