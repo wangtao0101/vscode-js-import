@@ -98,14 +98,15 @@ export default class ImportStatement {
     private namedImportString(multiLine = false) {
         const trailingCommas = this.option.commaDangle === 'always' ? true :
             (multiLine && this.option.commaDangle === 'always-multiline' ? true : false);
-        const elementBefore = multiLine? `${this.option.eol}    `: ` `;
+        const elementBefore = multiLine? `${this.option.eol}    `: ' ';
+        const commentBefore = multiLine? '    ': ' ';
         let statement = '{';
 
         this.namedImports.forEach((element, index) => {
             // handle comment before identifier in previous line
             const beforeNamedImportsComments = this.middleComments.filter(comment => comment.identifier.identifier === element && comment.loc.start.line < comment.identifier.loc.start.line);
             beforeNamedImportsComments.forEach(comment => {
-                statement += `    ${comment.raw}${this.option.eol}`;
+                statement += `${commentBefore}${comment.raw}${this.option.eol}`;
             });
             if (trailingCommas) {
                 statement += `${elementBefore}${element}`;
@@ -116,7 +117,7 @@ export default class ImportStatement {
                     statement += `${elementBefore}${element},`;
                 }
             }
-            // handle comment after identifier
+            // handle comment after identifier or in the same line
             const afterNamedImportsComments = this.middleComments.filter(comment => comment.identifier.identifier === element && comment.loc.start.line >= comment.identifier.loc.start.line);
             if (afterNamedImportsComments.length != 0) {
                 statement += ' ';
