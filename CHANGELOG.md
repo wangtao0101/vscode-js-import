@@ -3,8 +3,9 @@ All notable changes to the "vscode-js-import" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [0.9.2] - 2017-xx-xx
+## [0.9.2] - 2017-06-12
 - filter import name 'default'
+- support export interface
 
 ## [0.9.1] - 2017-06-08
 - delete word if the word is in a single line after import

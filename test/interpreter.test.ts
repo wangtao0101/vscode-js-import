@@ -20,6 +20,14 @@ suite("Interpreter Tests", () => {
         assert.deepEqual([{default: false, name: 'xxx'}], my.run(text, false, '', ''))
     });
 
+    test("export interface ModuleItem", () => {
+        const my = new Interpreter();
+        const text = `
+            export interface ModuleItem;
+        `
+        assert.deepEqual([{default: false, name: 'ModuleItem'}], my.run(text, false, '', ''))
+    });
+
     test("export default config;", () => {
         const my = new Interpreter();
         const text = `
