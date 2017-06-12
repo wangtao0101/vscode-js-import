@@ -1,3 +1,5 @@
+import { ImportDeclaration } from "parse-import-es6";
+
 export interface ImportOption {
     eol: string,
     queto: string,
@@ -14,44 +16,14 @@ export interface Change {
 }
 
 export default class ImportStatement {
-    importedDefaultBinding: string;
-    namedImports: Array<string>;
-    nameSpaceImport: string;
-    loc: any;
-    range: any;
-    raw: string;
-    middleComments: any;
-    leadComments: any;
-    trailingComments: any;
-    moduleSpecifier: string;
-    error: number;
+    impd: ImportDeclaration;
     option: ImportOption;
 
     constructor(
-        importedDefaultBinding,
-        namedImports: Array<string>,
-        nameSpaceImport,
-        loc,
-        range,
-        raw,
-        middleComments,
-        leadComments,
-        trailingComments,
-        moduleSpecifier,
-        error,
+        impd: ImportDeclaration,
         option: ImportOption,
     ) {
-        this.importedDefaultBinding = importedDefaultBinding;
-        this.namedImports = namedImports;
-        this.nameSpaceImport = nameSpaceImport;
-        this.loc = loc;
-        this.range = range;
-        this.raw = raw;
-        this.middleComments = middleComments;
-        this.leadComments = leadComments;
-        this.trailingComments = trailingComments;
-        this.moduleSpecifier = moduleSpecifier;
-        this.error = error;
+        this.impd = impd;
         this.option = option;
     }
 
@@ -60,7 +32,7 @@ export default class ImportStatement {
      *
      */
     public toImportString() {
-        if (this.loc.start.line < this.loc.end.line) {
+        if (this.impd.loc.start.line < this.impd.loc.end.line) {
             return this.toMultipleLineString();
         }
         return this.toSingleLineString();
@@ -95,16 +67,16 @@ export default class ImportStatement {
          */
     }
 
-    private namedImportString(multiLine = false) {
+    public namedImportString(multiLine = false) {
         const trailingCommas = this.option.commaDangle === 'always' ? true :
             (multiLine && this.option.commaDangle === 'always-multiline' ? true : false);
         const elementBefore = multiLine ? `${this.option.eol}    ` : ' ';
         let statement = '{';
 
-        this.namedImports.forEach((element, index) => {
+        this.impd.namedImports.forEach((element, index) => {
             // handle comment before identifier in previous line, actually here 'if' is redundant
             if (multiLine) {
-                const beforeNamedImportsComments = this.middleComments.filter(comment => comment.identifier.identifier === element && comment.loc.start.line < comment.identifier.loc.start.line);
+                const beforeNamedImportsComments = this.impd.middleComments.filter(comment => comment.identifier.identifier === element && comment.loc.start.line < comment.identifier.loc.start.line);
                 beforeNamedImportsComments.forEach(comment => {
                     statement += `    ${comment.raw}${this.option.eol}`;
                 });
@@ -112,14 +84,14 @@ export default class ImportStatement {
             if (trailingCommas) {
                 statement += `${elementBefore}${element}`;
             } else {
-                if (index === this.namedImports.length - 1) {
+                if (index === this.impd.namedImports.length - 1) {
                     statement += `${elementBefore}${element}`;
                 } else {
                     statement += `${elementBefore}${element},`;
                 }
             }
             // handle comment after identifier or in the same line
-            const afterNamedImportsComments = this.middleComments.filter(comment => comment.identifier.identifier === element && comment.loc.start.line >= comment.identifier.loc.start.line);
+            const afterNamedImportsComments = this.impd.middleComments.filter(comment => comment.identifier.identifier === element && comment.loc.start.line >= comment.identifier.loc.start.line);
             if (afterNamedImportsComments.length != 0) {
                 statement += ' ';
             }

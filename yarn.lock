@@ -1184,6 +1184,10 @@ parse-comment-es6@^0.5.1:
   version "0.5.1"
   resolved "https://registry.npmjs.org/parse-comment-es6/-/parse-comment-es6-0.5.1.tgz#9b5e897e55bfab3afb2c8639c6b2bbadf084791b"
 
+parse-comment-es6@^0.5.3:
+  version "0.5.3"
+  resolved "https://registry.npmjs.org/parse-comment-es6/-/parse-comment-es6-0.5.3.tgz#173b641594c78a92de25921850f46d2dd7e06874"
+
 parse-glob@^3.0.4:
   version "3.0.4"
   resolved "http://registry.npm.taobao.org/parse-glob/download/parse-glob-3.0.4.tgz#b2c376cfb11f35513badd173ef0bb6e3a388391c"
