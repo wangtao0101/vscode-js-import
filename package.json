@@ -98,7 +98,7 @@
     "dependencies": {
         "babylon": "^6.17.2",
         "parse-comment-es6": "^0.5.3",
-        "parse-import-es6": "^0.5.1",
+        "parse-import-es6": "^0.5.3",
         "require-relative": "^0.8.7"
     }
 }

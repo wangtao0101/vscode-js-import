@@ -1180,13 +1180,13 @@ ordered-read-streams@^0.3.0:
     is-stream "^1.0.1"
     readable-stream "^2.0.1"
 
-parse-comment-es6@^0.5.1:
-  version "0.5.1"
-  resolved "https://registry.npmjs.org/parse-comment-es6/-/parse-comment-es6-0.5.1.tgz#9b5e897e55bfab3afb2c8639c6b2bbadf084791b"
-
 parse-comment-es6@^0.5.3:
   version "0.5.3"
   resolved "https://registry.npmjs.org/parse-comment-es6/-/parse-comment-es6-0.5.3.tgz#173b641594c78a92de25921850f46d2dd7e06874"
+
+parse-comment-es6@^0.5.4:
+  version "0.5.4"
+  resolved "https://registry.npmjs.org/parse-comment-es6/-/parse-comment-es6-0.5.4.tgz#79def8defecdc179c8cd3b109fca9e88ba820948"
 
 parse-glob@^3.0.4:
   version "3.0.4"
@@ -1197,11 +1197,11 @@ parse-glob@^3.0.4:
     is-extglob "^1.0.0"
     is-glob "^2.0.0"
 
-parse-import-es6@^0.5.1:
-  version "0.5.1"
-  resolved "http://registry.npm.taobao.org/parse-import-es6/download/parse-import-es6-0.5.1.tgz#2dd253711335f0cb69e67c5a1906f2e496f38d85"
+parse-import-es6@^0.5.3:
+  version "0.5.3"
+  resolved "https://registry.npmjs.org/parse-import-es6/-/parse-import-es6-0.5.3.tgz#4154a99c70f8bb480042d9bbf4e10a30b1453645"
   dependencies:
-    parse-comment-es6 "^0.5.1"
+    parse-comment-es6 "^0.5.4"
 
 path-dirname@^1.0.0:
   version "1.0.2"
