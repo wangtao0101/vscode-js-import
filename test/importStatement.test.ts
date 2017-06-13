@@ -16,9 +16,10 @@ suite("ImportStatement Tests", () => {
         const text = `
             import { a as b } from 'c';
         `
-        const imp = parseImport(text);
-        const my = new ImportStatement(imp, option);
-        const ccc = stripComment(text);
+        // const imp = parseImport(text);
+        // const my = new ImportStatement(imp, option);
+        // const ccc = stripComment(text);
+        // imp.
         // assert.deepEqual([{default: true, name: 'uuu'}], my.run(text, false, '', ''))
     });
 });
