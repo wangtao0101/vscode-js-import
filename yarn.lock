@@ -1184,6 +1184,10 @@ parse-comment-es6@^0.5.4:
   version "0.5.4"
   resolved "https://registry.npmjs.org/parse-comment-es6/-/parse-comment-es6-0.5.4.tgz#79def8defecdc179c8cd3b109fca9e88ba820948"
 
+parse-comment-es6@^0.5.5:
+  version "0.5.5"
+  resolved "http://registry.npm.taobao.org/parse-comment-es6/download/parse-comment-es6-0.5.5.tgz#ff314375eb07b87e2297001b8b0b18fbd101aa1f"
+
 parse-glob@^3.0.4:
   version "3.0.4"
   resolved "http://registry.npm.taobao.org/parse-glob/download/parse-glob-3.0.4.tgz#b2c376cfb11f35513badd173ef0bb6e3a388391c"
@@ -1193,9 +1197,9 @@ parse-glob@^3.0.4:
     is-extglob "^1.0.0"
     is-glob "^2.0.0"
 
-parse-import-es6@^0.5.4:
-  version "0.5.4"
-  resolved "http://registry.npm.taobao.org/parse-import-es6/download/parse-import-es6-0.5.4.tgz#535e1df28af2e8a6084398e687382de25d574577"
+parse-import-es6@^0.5.5:
+  version "0.5.5"
+  resolved "http://registry.npm.taobao.org/parse-import-es6/download/parse-import-es6-0.5.5.tgz#886a95ce8ccbceb73d32e7af69a1b78a82a32751"
   dependencies:
     parse-comment-es6 "^0.5.4"
 
