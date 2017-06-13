@@ -90,6 +90,10 @@ We will watch the change of package.json, and auto add and remove module.
 
 //whether to use singlequote or use doublequote
 "js-import.quote": "singlequote"
+
+//whether to autofix import when you select completion item, you can set it false to avoid mistaken import,
+//then we will only provide code completion and you can use shutcut or autofix to import identifier
+"js-import.codeCompletionAction": false
 ```
 
 # TODO

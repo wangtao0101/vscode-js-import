@@ -2,7 +2,7 @@
     "name": "vscode-js-import",
     "displayName": "vscode-js-import",
     "description": "Intelligent and fast import extension for js in vscode, support both TypeScript and JavaScript !!!.",
-    "version": "0.9.2",
+    "version": "0.9.3",
     "publisher": "wangtao0101",
     "repository": {
         "type": "git",
@@ -67,6 +67,11 @@
                     "type": "boolean",
                     "default": "true",
                     "description": "whether to enable codeCompletion"
+                },
+                "js-import.codeCompletionAction": {
+                    "type": "boolean",
+                    "default": "true",
+                    "description": "whether to autofix import when you select completion item, you can set it false to avoid mistaken import, then we will only provide code completion and you can use shutcut or autofix to import identifier"
                 },
                 "js-import.quote": {
                     "type": "string",

@@ -1,7 +1,8 @@
 # Change Log
-All notable changes to the "vscode-js-import" extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## [0.9.3] - 2017-06-13
+- filter current file export
+- add option codeCompletionAction
 
 ## [0.9.2] - 2017-06-12
 - filter import name 'default'

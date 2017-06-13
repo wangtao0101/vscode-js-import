@@ -24,6 +24,10 @@ export default class Resolver {
         const nodeModuleCache = Scanner.nodeModuleCache;
         let items = [];
         for (const key of Object.keys(Scanner.cache)) {
+            // skip current file export
+            if (cache[key].path === doc.fileName) {
+                continue;
+            }
             if (completion) {
                 if (cache[key].module.name.toLowerCase().startsWith(value.toLowerCase())) {
                     items.push(this.resolveFromFile(cache[key], doc, range));
