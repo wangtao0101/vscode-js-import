@@ -46,14 +46,14 @@ export default class ImportStatement {
         // TODO:
     }
 
-    private toSingleLineString() {
+    public toSingleLineString() {
         /**
          * 无需处理前置的注释，只处理import之后的注释，移到该行末尾
          * 判断是不是超出行范围了，如果超出，转入多行模式
          */
     }
 
-    private toMultipleLineString() {
+    public toMultipleLineString() {
         // TODO:
         /**
          * 没有namedImport情况下，处理成
@@ -78,11 +78,11 @@ export default class ImportStatement {
             if (multiLine) {
                 const beforeNamedImportsComments = this.impd.middleComments.filter(comment => comment.identifier.identifier === element && comment.loc.start.line < comment.identifier.loc.start.line);
                 beforeNamedImportsComments.forEach(comment => {
-                    statement += `    ${comment.raw}${this.option.eol}`;
+                    statement += `${elementBefore}${comment.raw}`;
                 });
             }
             if (trailingCommas) {
-                statement += `${elementBefore}${element}`;
+                statement += `${elementBefore}${element},`;
             } else {
                 if (index === this.impd.namedImports.length - 1) {
                     statement += `${elementBefore}${element}`;
@@ -92,16 +92,15 @@ export default class ImportStatement {
             }
             // handle comment after identifier or in the same line
             const afterNamedImportsComments = this.impd.middleComments.filter(comment => comment.identifier.identifier === element && comment.loc.start.line >= comment.identifier.loc.start.line);
-            if (afterNamedImportsComments.length != 0) {
-                statement += ' ';
-            }
             afterNamedImportsComments.forEach(comment => {
-                statement += comment.raw;
+                statement += ' ' + comment.raw;
             });
         });
 
         if (multiLine) {
             statement += `${this.option.eol}\}`;
+        } else {
+            statement += ' }';
         }
         return statement;
     }
@@ -110,3 +109,5 @@ export default class ImportStatement {
 
     }
 }
+
+// TODO: maybe we can format multiline comment, like padding 4 blank left, low priority
