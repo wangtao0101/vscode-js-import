@@ -48,9 +48,36 @@ export default class ImportStatement {
 
     public toSingleLineString() {
         /**
-         * 无需处理前置的注释，只处理import之后的注释，移到该行末尾
+         * 处理的注释，移到该行末尾
          * 判断是不是超出行范围了，如果超出，转入多行模式
          */
+        let hasIdentifier = false;
+        let statement = 'import';
+        if (this.impd.importedDefaultBinding != null) {
+            statement += ' ' + this.impd.importedDefaultBinding;
+            hasIdentifier = true;
+        }
+        if (this.impd.nameSpaceImport != null) {
+            if (hasIdentifier) {
+                statement += ', '
+            }
+            statement += ' ' + this.impd.nameSpaceImport;
+            hasIdentifier = true;
+        }
+        if (this.impd.namedImports.length != 0) {
+            if (hasIdentifier) {
+                statement += ', '
+            }
+            statement += ' ' + this.namedImportString();
+        }
+        statement += ` from ${this.option.queto}${this.impd.moduleSpecifier}${this.option.queto};`
+        this.impd.middleComments.forEach(comment => {
+            statement += ' ' + comment.raw;
+        });
+        if (this.isLineToLong(statement)) {
+            return this.toMultipleLineString();
+        }
+        return statement;
     }
 
     public toMultipleLineString() {
@@ -105,8 +132,8 @@ export default class ImportStatement {
         return statement;
     }
 
-    private isLineToLong() {
-
+    private isLineToLong(statement) {
+        return statement.length > this.option.maxLen;
     }
 }
 

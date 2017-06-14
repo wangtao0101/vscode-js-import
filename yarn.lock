@@ -1180,11 +1180,7 @@ ordered-read-streams@^0.3.0:
     is-stream "^1.0.1"
     readable-stream "^2.0.1"
 
-parse-comment-es6@^0.5.4:
-  version "0.5.4"
-  resolved "https://registry.npmjs.org/parse-comment-es6/-/parse-comment-es6-0.5.4.tgz#79def8defecdc179c8cd3b109fca9e88ba820948"
-
-parse-comment-es6@^0.5.5:
+parse-comment-es6@^0.5.4, parse-comment-es6@^0.5.5:
   version "0.5.5"
   resolved "http://registry.npm.taobao.org/parse-comment-es6/download/parse-comment-es6-0.5.5.tgz#ff314375eb07b87e2297001b8b0b18fbd101aa1f"
 
