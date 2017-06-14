@@ -160,3 +160,5 @@ export default class Interpreter {
  * TODO:
     3. ts文件，包括@types、index.d.ts
  */
+
+// TODO: export default xxxx(), 如果后面跟着括号，说明是调用函数，此时默认名称可以使用文件名
