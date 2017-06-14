@@ -7,6 +7,7 @@ export class ImportCompletion implements vscode.CompletionItemProvider {
         token: vscode.CancellationToken): Promise<vscode.CompletionItem[]> {
 
         let enabled = vscode.workspace.getConfiguration('js-import').get<string>('codeCompletion');
+        let autofix = vscode.workspace.getConfiguration('js-import').get<string>('codeCompletionAction');
 
         if (!enabled) {
             return Promise.resolve([]);
@@ -25,7 +26,7 @@ export class ImportCompletion implements vscode.CompletionItemProvider {
                         kind: vscode.CompletionItemKind.Reference,
                         detail: item.label,
                         documentation: '',
-                        command: { title: 'Autocomplete', command: 'extension.fixImport', arguments: [item.importObj, item.doc, item.range] }
+                        command: autofix ? { title: 'Autocomplete', command: 'extension.fixImport', arguments: [item.importObj, item.doc, item.range] } : null
                     });
                 });
                 return resolve(handlers);

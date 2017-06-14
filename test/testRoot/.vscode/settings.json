@@ -12,5 +12,6 @@
     },
     "js-import.filesToScan": "**/*.{jsx,js}",
     "js-import.commaDangleImport": "never",
-    "js-import.quote": "singlequote"
+    "js-import.quote": "singlequote",
+    "js-import.codeCompletionAction": false
 }

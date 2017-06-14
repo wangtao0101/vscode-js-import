@@ -90,21 +90,28 @@ We will watch the change of package.json, and auto add and remove module.
 
 //whether to use singlequote or use doublequote
 "js-import.quote": "singlequote"
+
+//whether to autofix import when you select completion item, you can set it false to avoid mistaken import,
+//then we will only provide code completion and you can use shutcut or autofix to import identifier
+"js-import.codeCompletionAction": false
 ```
 
 # TODO
 Currently in beta, there are a lot of work to do;
 - [x] full suport in node_modules, only extract export form main file and support module.exports = require('./lib/React')
 - [x] full support import statement, such as 'feedline' in import statement
-- [x] option for insert position (ability to skip flow, Copyright, Lisence comment in top of file), currently we just insert statement into fisrtline.
+- [x] option for insert position (ability to skip flow, Copyright, Lisence comment in top of file)
 - [ ] sort import statement by eslint rule, deal with comment
 - [x] support autocomplete
 - [x] support auto fix by eslint rule
-- [ ] support import statement syntax check
 - [ ] support option for max-line like eslint rule max-line, auto split statement to mutilines
 - [ ] support shortcut goto module under cursor, spec react conpoment
 - [x] support import "module-name"
+- [ ] autofix useless import statement or identifier by using eslint rule(no-unused-vars)
 - [ ] support import scss, css, less, json, bmp, gif, jpe, jpeg, png file
+- [ ] support commonjs, considering require nodejs built-in modules
+- [ ] full support typescript, using typescript parse
+- [ ] full support flow, export type and import type
 
 # Export RegExp
 ```
