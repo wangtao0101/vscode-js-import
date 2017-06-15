@@ -60,7 +60,7 @@ import {
     ccc, // eslint-disable-line
     /**
      * i am a comment
-    */
+     */
     ddd,
 // ccccc
 } from 'c';
