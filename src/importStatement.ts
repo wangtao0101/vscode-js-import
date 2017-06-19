@@ -48,7 +48,7 @@ export default class ImportStatement {
 
     public toSingleLineString() {
         /**
-         * 处理的注释，移到该行末尾
+         * 处理注释，移到该行末尾
          * 判断是不是超出行范围了，如果超出，转入多行模式
          */
         let hasIdentifier = false;
@@ -59,14 +59,14 @@ export default class ImportStatement {
         }
         if (this.impd.nameSpaceImport != null) {
             if (hasIdentifier) {
-                statement += ', '
+                statement += ','
             }
             statement += ' ' + this.impd.nameSpaceImport;
             hasIdentifier = true;
         }
         if (this.impd.namedImports.length != 0) {
             if (hasIdentifier) {
-                statement += ', '
+                statement += ','
             }
             statement += ' ' + this.namedImportString();
         }
