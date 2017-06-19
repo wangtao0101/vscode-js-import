@@ -27,10 +27,6 @@ export default class ImportStatement {
         this.option = option;
     }
 
-    /**
-     * 返回change格式
-     *
-     */
     public toImportString() {
         if (this.impd.loc.start.line < this.impd.loc.end.line) {
             return this.toMultipleLineString();
@@ -47,10 +43,6 @@ export default class ImportStatement {
     }
 
     public toSingleLineString() {
-        /**
-         * 处理注释，移到该行末尾
-         * 判断是不是超出行范围了，如果超出，转入多行模式
-         */
         let hasIdentifier = false;
         let statement = 'import';
         if (this.impd.importedDefaultBinding != null) {
@@ -81,27 +73,71 @@ export default class ImportStatement {
     }
 
     public toMultipleLineString() {
-        // TODO:
         /**
-         * 没有namedImport情况下，处理成
          * import xxx as xxxxxxxx, // comment
          *     from 'xxxx';
-         * 有namedImport情况下, 处理成
+         * or
          * import xxx as xxxx, {
          *     xx as xxxxx;
          * } from 'xxx';
-         * 处理完毕后，无需检查每一行是否太长。
          */
+        let hasIdentifier = false;
+        let statement = 'import ';
+        if (this.impd.importedDefaultBinding != null) {
+            statement += this.impd.importedDefaultBinding;
+            hasIdentifier = true;
+        }
+        if (this.impd.nameSpaceImport != null) {
+            if (hasIdentifier) {
+                statement += ', '
+            }
+            statement += this.impd.nameSpaceImport;
+            hasIdentifier = true;
+        }
+        const extraComments = this.impd.middleComments.filter(
+            comment =>
+                comment.identifier.type === 'Import'
+                || comment.identifier.type === 'ImportedDefaultBinding'
+                || comment.identifier.type === 'NameSpaceImport'
+        );
+        let extraCommentString = '';
+        extraComments.forEach(comment => {
+            extraCommentString += ` ${comment.raw}`;
+        });
+        if (this.impd.namedImports.length === 0) {
+            statement += `${extraCommentString}${this.option.eol}    `;
+        } else {
+            if (hasIdentifier) {
+                statement += ', '
+            }
+            statement += this.namedImportString(true, extraCommentString) + ' ';
+        }
+        statement += `from ${this.option.queto}${this.impd.moduleSpecifier}${this.option.queto};`;
+        const endComments = this.impd.middleComments.filter(
+            comment =>
+                comment.identifier.type === 'From'
+                || comment.identifier.type === 'ModuleSpecifier'
+        );
+        if (endComments.length !== 0) {
+            endComments.forEach(comment => {
+                statement += ` ${comment.raw}`;
+            });
+        }
+        return statement;
     }
 
-    public namedImportString(multiLine = false) {
+    public namedImportString(multiLine = false, extraComment = '') {
         const trailingCommas = this.option.commaDangle === 'always' ? true :
             (multiLine && this.option.commaDangle === 'always-multiline' ? true : false);
         const elementBefore = multiLine ? `${this.option.eol}    ` : ' ';
-        let statement = '{';
+        let statement = `{`;
+        // only multLine can add extraComment, extraComment must be some single line comments
+        if (multiLine && extraComment !== '') {
+            statement += extraComment;
+        }
 
         this.impd.namedImports.forEach((element, index) => {
-            // handle comment before identifier in previous line, actually here 'if' is redundant
+            // handle comment before identifier in previous line, actually here 'if (multiLine) ' is redundant
             if (multiLine) {
                 const beforeNamedImportsComments = this.impd.middleComments.filter(comment => comment.identifier.identifier === element && comment.loc.start.line < comment.identifier.loc.start.line);
                 beforeNamedImportsComments.forEach(comment => {

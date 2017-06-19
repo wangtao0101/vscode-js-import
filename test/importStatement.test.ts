@@ -21,6 +21,20 @@ suite("test namedImportString", () => {
         assert.equal('{ a as b, ccc, ddd, }', my.namedImportString());
     });
 
+    test("return namedImportString with extra comment correctly", () => {
+        const text = `
+            import { a as b, ccc, ddd } from 'c';
+        `
+        const imp = parseImport(text);
+        const my = new ImportStatement(imp[0], option);
+        assert.equal(
+`{ //aaa
+    a as b,
+    ccc,
+    ddd,
+}`, my.namedImportString(true, ' //aaa'));
+    });
+
     test("return namedImportString with never commaDangle correctly", () => {
         const text = `
             import { a as b, ccc, ddd } from 'c';
@@ -85,7 +99,7 @@ assert.equal(`{
 });
 
 
-suite.only("test toSingleLineString", () => {
+suite("test toSingleLineString", () => {
     test("return toSingleLineString correctly", () => {
         const text = `
             import { a as b, ccc, ddd, } from 'c';
@@ -147,5 +161,88 @@ suite.only("test toSingleLineString", () => {
         const imp = parseImport(text);
         const my = new ImportStatement(imp[0], option);
         assert.equal(`import a, * as b from 'c'; /* a */ //aaaa`, my.toSingleLineString());
+    });
+});
+
+
+suite("test toMultipleLineString", () => {
+    test("return toSingleLineString when has only nameImports correctly", () => {
+        const text = `
+            import { a as b, ccc, ddd, } from 'c';
+        `
+        const imp = parseImport(text);
+        const my = new ImportStatement(imp[0], option);
+        assert.equal(
+`import {
+    a as b,
+    ccc,
+    ddd,
+} from 'c';`, my.toMultipleLineString());
+    });
+
+    test("return toSingleLineString when has only default import correctly", () => {
+        const text = `
+            import a from 'c';
+        `
+        const imp = parseImport(text);
+        const my = new ImportStatement(imp[0], option);
+        assert.equal(
+`import a
+    from 'c';`, my.toMultipleLineString());
+    });
+
+    test("return toSingleLineString when has only name space import correctly", () => {
+        const text = `
+            import * as c from 'c';
+        `
+        const imp = parseImport(text);
+        const my = new ImportStatement(imp[0], option);
+        assert.equal(
+`import * as c
+    from 'c';`, my.toMultipleLineString());
+    });
+
+    test("return toSingleLineString when has default import and name space import correctly", () => {
+        const text = `
+            import a, * as c from 'c';
+        `
+        const imp = parseImport(text);
+        const my = new ImportStatement(imp[0], option);
+        assert.equal(
+`import a, * as c
+    from 'c';`, my.toMultipleLineString());
+});
+
+    test("return toSingleLineString when has default import and named import correctly", () => {
+        const text = `
+            import a, { a as b, ccc, ddd, } from 'c';
+        `
+        const imp = parseImport(text);
+        const my = new ImportStatement(imp[0], option);
+        assert.equal(
+`import a, {
+    a as b,
+    ccc,
+    ddd,
+} from 'c';`, my.toMultipleLineString());
+    });
+
+    test("return toSingleLineString with comments correctly", () => {
+        const text = `
+            /* aaa */ import a, {// i am a comment
+                // i am a comment
+                a as b, // i am a comment
+                ccc, ddd,
+            } from 'c'; // i am a comment
+        `
+        const imp = parseImport(text);
+        const my = new ImportStatement(imp[0], option);
+        assert.equal(
+`import a, { /* aaa */ // i am a comment
+    // i am a comment
+    a as b, // i am a comment
+    ccc,
+    ddd,
+} from 'c'; // i am a comment`, my.toMultipleLineString());
     });
 });
