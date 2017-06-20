@@ -61,7 +61,10 @@ export default class ImportFixer {
         if (aliasMatch !== null) {
             const filename = path.basename(importObj.path);
             const aliasPath = path.join(rootPath, aliasMatch);
-            const relativePath = path.relative(aliasPath, path.dirname(importObj.path));
+            let relativePath = path.relative(aliasPath, path.dirname(importObj.path));
+            if (isWin()) {
+                relativePath = relativePath.replace(/\\/g, '/');
+            }
             if (isIndexFile(filename)) {
                 importPath = relativePath === '' ? aliasKey : `${aliasKey}/${relativePath}`
             } else {
