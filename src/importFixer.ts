@@ -43,6 +43,7 @@ export default class ImportFixer {
         return importObj.path;
     }
 
+    // TODO: use relative path if importObj and doc.uri are in the same alias path
     public extractImportPathFromAlias(importObj: ImportObj) {
         let aliasMatch = null;
         let aliasKey = null;
