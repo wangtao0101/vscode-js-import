@@ -246,3 +246,47 @@ suite("test toMultipleLineString", () => {
 } from 'c'; // i am a comment`, my.toMultipleLineString());
     });
 });
+
+suite.only("test getEditChange", () => {
+    test("return getEditChange with multiple line import correctly", () => {
+        const text = `
+            const c = 10;
+            /* aaa */ import a, {// i am a comment
+                // i am a comment
+                a as b, // i am a comment
+                ccc, ddd,
+            } from 'c'; // i am a comment
+        `
+        const imp = parseImport(text);
+        const my = new ImportStatement(imp[0], option);
+        const imptext = `import a, { /* aaa */ // i am a comment
+    // i am a comment
+    a as b, // i am a comment
+    ccc,
+    ddd,
+} from 'c'; // i am a comment`;
+        assert.deepEqual({
+            text: imptext,
+            endColumn: 41,
+            endLine: 6,
+            startColumn: 12,
+            startLine: 2,
+        }, my.getEditChange());
+    });
+
+    test("return getEditChange with single line import correctly", () => {
+        const text = `
+            /* a */ import a, * as b from 'c';//aaaa
+        `
+        const imp = parseImport(text);
+        const my = new ImportStatement(imp[0], option);
+        assert.equal(`import a, * as b from 'c'; /* a */ //aaaa`, my.toSingleLineString());
+        assert.deepEqual({
+            text: `import a, * as b from 'c'; /* a */ //aaaa`,
+            endColumn: 52,
+            endLine: 1,
+            startColumn: 12,
+            startLine: 1,
+        }, my.getEditChange());
+    });
+});

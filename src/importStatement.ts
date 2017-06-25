@@ -7,12 +7,12 @@ export interface ImportOption {
     maxLen: number
 }
 
-export interface Change {
+export interface EditChange {
     text: string,
-    sline: number,
-    scolumn: number,
-    eline: number,
-    ecolumn: number,
+    startLine: number,
+    startColumn: number,
+    endLine: number,
+    endColumn: number,
 }
 
 export default class ImportStatement {
@@ -27,14 +27,33 @@ export default class ImportStatement {
         this.option = option;
     }
 
-    public toImportString() {
+    public getEditChange() : EditChange{
+        let text = null;
         if (this.impd.loc.start.line < this.impd.loc.end.line) {
-            return this.toMultipleLineString();
+            text =  this.toMultipleLineString();
+        } else {
+            text = this.toSingleLineString();
         }
-        return this.toSingleLineString();
+        let startColumn = this.impd.loc.start.column;
+        let endColumn = this.impd.loc.end.column;
+        const importComments = this.impd.middleComments.filter(comment => comment.identifier.type === 'Import');
+        importComments.forEach(comment => {
+            startColumn = Math.min(startColumn, comment.loc.start.column);
+        });
+        const moduleSpecifierComments = this.impd.middleComments.filter(comment => comment.identifier.type === 'ModuleSpecifier');
+        moduleSpecifierComments.forEach(comment => {
+            endColumn = Math.max(endColumn, comment.loc.end.column);
+        });
+        return {
+            text,
+            startLine: this.impd.loc.start.line,
+            startColumn,
+            endLine: this.impd.loc.end.line,
+            endColumn,
+        }
     }
 
-    public toImportStringWithComments() {
+    public getEditChangeWithComments() {
         // TODO:
     }
 
@@ -42,6 +61,9 @@ export default class ImportStatement {
         // TODO:
     }
 
+    /**
+     * get import statement string if nowarp
+     */
     public toSingleLineString() {
         let hasIdentifier = false;
         let statement = 'import';
@@ -72,15 +94,16 @@ export default class ImportStatement {
         return statement;
     }
 
+    /**
+     * get multiple line import statement including middle comments
+     * import xxx as xxxxxxxx, // comment
+     *     from 'xxxx';
+     * or
+     * import xxx as xxxx, {
+     *     xx as xxxxx;
+     * } from 'xxx';
+     */
     public toMultipleLineString() {
-        /**
-         * import xxx as xxxxxxxx, // comment
-         *     from 'xxxx';
-         * or
-         * import xxx as xxxx, {
-         *     xx as xxxxx;
-         * } from 'xxx';
-         */
         let hasIdentifier = false;
         let statement = 'import ';
         if (this.impd.importedDefaultBinding != null) {
@@ -126,6 +149,11 @@ export default class ImportStatement {
         return statement;
     }
 
+    /**
+     * get namedImport string including comments of named import identifier
+     * @param multiLine line mode
+     * @param extraComment comments after '{' in multiple line mode
+     */
     public namedImportString(multiLine = false, extraComment = '') {
         const trailingCommas = this.option.commaDangle === 'always' ? true :
             (multiLine && this.option.commaDangle === 'always-multiline' ? true : false);
