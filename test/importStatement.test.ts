@@ -247,7 +247,7 @@ suite("test toMultipleLineString", () => {
     });
 });
 
-suite.only("test getEditChange", () => {
+suite("test getEditChange", () => {
     test("return getEditChange with multiple line import correctly", () => {
         const text = `
             const c = 10;
