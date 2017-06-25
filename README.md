@@ -95,7 +95,8 @@ We will watch the change of package.json, and auto add and remove module.
 //then we will only provide code completion and you can use shutcut or autofix to import identifier
 "js-import.codeCompletionAction": false
 
-//max-line length like eslint rule max-line, the -1 will disable the rule
+//max-line length like eslint rule max-line, the -1 will disable the rule,
+//if import statement exceed maxLen, the statement will be split into multiple lines.
 "js-import.maxLen": 100
 ```
 
