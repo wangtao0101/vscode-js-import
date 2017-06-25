@@ -21,7 +21,7 @@ To enable the feature, you should install enable [eslint](https://marketplace.vi
 ![GitHub Logo](https://github.com/wangtao0101/vscode-js-import/blob/master/img/autofix.gif?raw=true)
 
 ## Support import in multiple line and support comment in any where
-If origin import statement occupies multiple lines or exceed max-line option , we will turn into multiple line mode and carefully handle comments.
+If origin import statement occupies multiple lines or exceed maxLine option , we will turn into multiple line mode and carefully handle comments.
 
 Here we add a new namedImport 'e':
 
@@ -94,6 +94,9 @@ We will watch the change of package.json, and auto add and remove module.
 //whether to autofix import when you select completion item, you can set it false to avoid mistaken import,
 //then we will only provide code completion and you can use shutcut or autofix to import identifier
 "js-import.codeCompletionAction": false
+
+//max-line length like eslint rule max-line, the -1 will disable the rule
+"js-import.maxLen": 100
 ```
 
 # TODO
@@ -104,7 +107,7 @@ Currently in beta, there are a lot of work to do;
 - [ ] sort import statement by eslint rule, deal with comment
 - [x] support autocomplete
 - [x] support auto fix by eslint rule
-- [ ] support option for max-line like eslint rule max-line, auto split statement to mutilines
+- [x] support option for max-line like eslint rule max-line, auto split statement to mutilines
 - [ ] support shortcut goto module under cursor, spec react conpoment
 - [x] support import "module-name"
 - [ ] autofix useless import statement or identifier by using eslint rule(no-unused-vars)

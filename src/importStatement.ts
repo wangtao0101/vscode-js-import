@@ -197,7 +197,7 @@ export default class ImportStatement {
     }
 
     private isLineToLong(statement) {
-        return statement.length > this.option.maxLen;
+        return this.option.maxLen !== -1 && statement.length > this.option.maxLen;
     }
 }
 

@@ -1,3 +1,5 @@
+import * as vscode from 'vscode';
+import { ImportOption } from '../importStatement';
 
 /**
  * if the given filename's extname is index.jsx or index.js or index.ts
@@ -17,3 +19,12 @@ export function kebab2camel(str) {
 	    return m.toUpperCase().replace('-','');
     });
 };
+
+export function getImportOption(eol): ImportOption {
+    return {
+        eol,
+        queto: vscode.workspace.getConfiguration('js-import').get<string>('quote') === 'doublequote' ? '"' : "'",
+        commaDangle: vscode.workspace.getConfiguration('js-import').get<string>('commaDangleImport'),
+        maxLen: parseInt(vscode.workspace.getConfiguration('js-import').get<string>('maxLen')),
+    }
+}

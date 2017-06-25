@@ -2,7 +2,7 @@
     "name": "vscode-js-import",
     "displayName": "vscode-js-import",
     "description": "Intelligent and fast import extension for js in vscode, support both TypeScript and JavaScript !!!.",
-    "version": "0.9.4",
+    "version": "0.10.0",
     "publisher": "wangtao0101",
     "repository": {
         "type": "git",
@@ -81,7 +81,7 @@
                 "js-import.maxLen": {
                     "type": "number",
                     "default": "100",
-                    "description": "max-line length like eslint rule max-line"
+                    "description": "max-line length like eslint rule max-line, the -1 will disable the rule"
                 }
             }
         }

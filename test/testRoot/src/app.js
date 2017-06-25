@@ -3,7 +3,7 @@
 copyright
 */
 
-import { fff } from './component/com';
+import c,  { fff, aaaaaaaaaaaaaaa, bbbbbbbbbbbbbbb, ccccccccccccccccccccccccccc, ddddddddddddddddddd, } from './component/com'; // aaaaa
 import { abc as c } from 'helpalias/api';
 import a, { /* *//*c*/
     /**

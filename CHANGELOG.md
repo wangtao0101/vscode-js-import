@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.10.0] - 2017-
+- refact code, prepare for sort import
+- make code testable and add more test
+- add option maxLen
+
 ## [0.9.4] - 2017-06-20
 - fix relative path bug on window
 
