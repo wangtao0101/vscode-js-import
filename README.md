@@ -21,7 +21,7 @@ To enable the feature, you should install enable [eslint](https://marketplace.vi
 ![GitHub Logo](https://github.com/wangtao0101/vscode-js-import/blob/master/img/autofix.gif?raw=true)
 
 ## Support import in multiple line and support comment in any where
-If origin import statement occupies multiple lines(import must have namedImports, it is not necessary to split statement when there is no namedImports), we will turn into multiple line mode and carefully handle comments.
+If origin import statement occupies multiple lines or exceed max-line option , we will turn into multiple line mode and carefully handle comments.
 
 Here we add a new namedImport 'e':
 

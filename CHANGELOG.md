@@ -1,5 +1,8 @@
 # Change Log
 
+## [0.9.4] - 2017-06-20
+- fix relative path bug on window
+
 ## [0.9.3] - 2017-06-13
 - filter current file export
 - add option codeCompletionAction
