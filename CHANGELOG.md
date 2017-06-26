@@ -1,6 +1,6 @@
 # Change Log
 
-## [0.10.0] - 2017-
+## [0.10.0] - 2017-06-26
 - refact code, prepare for sort import
 - make code testable and add more test
 - add option maxLen

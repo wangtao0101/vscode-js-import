@@ -17,6 +17,14 @@ export default class Resolver {
         })
     }
 
+    /**
+     * get items by value
+     * TODO: sort by value
+     * @param value desc value
+     * @param doc
+     * @param range
+     * @param completion
+     */
     resolveItems(value: string, doc: vscode.TextDocument, range: vscode.Range, completion : false) {
         // TODO: need sort ?
         // TODO: filter current file export
