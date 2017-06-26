@@ -32,6 +32,8 @@ We split comments into every identifier:
 2. There are two kinds of comment related to namedImports, comments in previous line or in the same line of namedImports, comments in previous will be in previous also, and comments in the same line will be moved after ','
 3. Comments in the same line with 'from' word or moduleSpecifier will be moved after ';'
 
+Tips: We don't know how to put the comment of the statement in somewhere after spliting the single line import statement, so we move the comment after moduleSpecifier, then you should move comment to the right position by your self. (comments like eslint-disable-line)
+
 ## Suport insert position option
 There are two positions we can insert new statement, before all import statements or after all import statements. (soon we can support sort option)
 
