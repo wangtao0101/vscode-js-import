@@ -8,6 +8,7 @@ const option : ImportOption = {
     queto: '\'',
     commaDangle: 'always',
     maxLen: 100,
+    needLineFeed: false,
 };
 
 suite("test namedImportString", () => {
@@ -287,6 +288,19 @@ suite("test getEditChange", () => {
             endLine: 1,
             startColumn: 12,
             startLine: 1,
+        }, my.getEditChange());
+    });
+
+    test("return getEditChange with needLineEnd correctly", () => {
+        const text = `import a, * as b from 'c';`
+        const imp = parseImport(text);
+        const my = new ImportStatement(imp[0], Object.assign({}, option, { needLineFeed: true }));
+        assert.deepEqual({
+            text: `import a, * as b from 'c';\n`,
+            endColumn: 26,
+            endLine: 0,
+            startColumn: 0,
+            startLine: 0,
         }, my.getEditChange());
     });
 });

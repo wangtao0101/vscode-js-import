@@ -4,7 +4,8 @@ export interface ImportOption {
     eol: string,
     queto: string,
     commaDangle: string,
-    maxLen: number
+    maxLen: number,
+    needLineFeed: boolean,
 }
 
 export interface EditChange {
@@ -44,6 +45,9 @@ export default class ImportStatement {
         moduleSpecifierComments.forEach(comment => {
             endColumn = Math.max(endColumn, comment.loc.end.column);
         });
+        if (this.option.needLineFeed) {
+            text += this.option.eol;
+        }
         return {
             text,
             startLine: this.impd.loc.start.line,

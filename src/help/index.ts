@@ -20,11 +20,12 @@ export function kebab2camel(str) {
     });
 };
 
-export function getImportOption(eol): ImportOption {
+export function getImportOption(eol, needLineFeed = false): ImportOption {
     return {
         eol,
         queto: vscode.workspace.getConfiguration('js-import').get<string>('quote') === 'doublequote' ? '"' : "'",
         commaDangle: vscode.workspace.getConfiguration('js-import').get<string>('commaDangleImport'),
         maxLen: parseInt(vscode.workspace.getConfiguration('js-import').get<string>('maxLen')),
+        needLineFeed,
     }
 }

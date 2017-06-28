@@ -1,5 +1,8 @@
 # Change Log
 
+## [0.10.1] - 2017-
+- fix bug: add line feed after insert new import statement
+
 ## [0.10.0] - 2017-06-26
 - refact code, prepare for sort import
 - make code testable and add more test

@@ -132,12 +132,12 @@ export default class ImportFixer {
             if (this.importObj.module.default) {
                 importStatement = new ImportStatement(
                     getImportDeclaration(this.importObj.module.name, null, [], importPath, position),
-                    getImportOption(this.eol),
+                    getImportOption(this.eol, true),
                 );
             } else {
                 importStatement = new ImportStatement(
                     getImportDeclaration(null, null, [this.importObj.module.name], importPath, position),
-                    getImportOption(this.eol),
+                    getImportOption(this.eol, true),
                 );
             }
         } else {
