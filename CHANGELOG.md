@@ -1,7 +1,9 @@
 # Change Log
 
-## [0.10.1] - 2017-
+## [0.10.1] - 2017-06-29
 - fix bug: add line feed after insert new import statement
+- fix bug: support $ in identifier
+- open github issue when enconter bugs
 
 ## [0.10.0] - 2017-06-26
 - refact code, prepare for sort import
