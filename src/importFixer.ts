@@ -5,6 +5,7 @@ import { ImportObj } from './scanner';
 import { isIndexFile, isWin, getImportOption } from './help';
 import ImportStatement, { EditChange } from './importStatement';
 const path = require('path');
+var open = require("open");
 
 function getImportDeclaration(importedDefaultBinding, nameSpaceImport, namedImports,
     importPath: string, position: vscode.Position): ImportDeclaration {
@@ -48,16 +49,29 @@ export default class ImportFixer {
     }
 
     public fix() {
-        let importPath;
-        if (this.importObj.isNodeModule) {
-            importPath = this.extractImportPathFromNodeModules(this.importObj);
-        } else {
-            importPath = this.extractImportPathFromAlias(this.importObj)
-            if (importPath === null) {
-                importPath = this.extractImportFromRoot(this.importObj, this.doc.uri.fsPath);
+        try {
+            let importPath;
+            if (this.importObj.isNodeModule) {
+                importPath = this.extractImportPathFromNodeModules(this.importObj);
+            } else {
+                importPath = this.extractImportPathFromAlias(this.importObj)
+                if (importPath === null) {
+                    importPath = this.extractImportFromRoot(this.importObj, this.doc.uri.fsPath);
+                }
             }
+            this.resolveImport(importPath);
+        } catch (error) {
+            console.log('Sorry, some bugs may exist in vscode-js-import extension.');
+            console.log('Please go to https://github.com/wangtao0101/vscode-js-import/issues to report the bug.');
+            console.log("You'd better copy the below error stack and the current source file to the issue.");
+            console.error(error);
+            let body = '';
+            body = this.doc.getText() + '\n\n';
+            if (error && error.stack) {
+                body += error.stack;
+            }
+            open('https://github.com/wangtao0101/vscode-js-import/issues/new?title=new&body=' + encodeURIComponent(body));
         }
-        this.resolveImport(importPath);
     }
 
     public extractImportPathFromNodeModules(importObj: ImportObj) {
