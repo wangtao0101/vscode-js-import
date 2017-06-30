@@ -2,6 +2,7 @@
 
 ## [0.11.0] - 2017-xx-xx
 - feature: sort resover item by edit distance
+- imporve: support find nested default import name, like 'React'
 
 ## [0.10.1] - 2017-06-29
 - fix bug: add line feed after insert new import statement
