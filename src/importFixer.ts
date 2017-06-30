@@ -4,6 +4,7 @@ import strip from 'parse-comment-es6';
 import { ImportObj } from './scanner';
 import { isIndexFile, isWin, getImportOption } from './help';
 import ImportStatement, { EditChange } from './importStatement';
+import JsImport from './jsImport';
 const path = require('path');
 var open = require("open");
 
@@ -61,10 +62,7 @@ export default class ImportFixer {
             }
             this.resolveImport(importPath);
         } catch (error) {
-            console.log('Sorry, some bugs may exist in vscode-js-import extension.');
-            console.log('Please go to https://github.com/wangtao0101/vscode-js-import/issues to report the bug.');
-            console.log("You'd better copy the below error stack and the current source file to the issue.");
-            console.error(error);
+            JsImport.consoleError(error);
             let body = '';
             body = this.doc.getText() + '\n\n';
             if (error && error.stack) {

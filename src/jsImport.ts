@@ -100,4 +100,11 @@ export default class JsImport {
         JsImport.statusBar.text = `$(database) ${Object.keys(Scanner.cache).length + Object.keys(Scanner.nodeModuleCache).length}`;
         JsImport.statusBar.tooltip = `JsImport : ${Object.keys(Scanner.cache).length + Object.keys(Scanner.nodeModuleCache).length} import statements`;
     }
+
+    public static consoleError(error) {
+        console.log('Sorry, some bugs may exist in vscode-js-import extension.');
+        console.log('Please go to https://github.com/wangtao0101/vscode-js-import/issues to report the bug.');
+        console.log("You'd better copy the below error stack and the current source file to the issue.");
+        console.error(error);
+    }
 }

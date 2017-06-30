@@ -137,7 +137,7 @@ export default class Interpreter {
             if (result.hasDefault) {
                 resultList.push({
                     default: true,
-                    name: moduleName,
+                    name: result.defaultName != null ?  result.defaultName : moduleName,
                 })
             }
             result.named.forEach(name => {

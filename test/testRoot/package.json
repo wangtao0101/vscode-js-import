@@ -31,6 +31,7 @@
     "antd": "^2.10.0",
     "immutable": "^3.8.1",
     "parse-comment-es6": "^0.5.1",
-    "parse-import-es6": "^0.4.2"
+    "parse-import-es6": "^0.4.2",
+    "react": "^15.6.1"
   }
 }

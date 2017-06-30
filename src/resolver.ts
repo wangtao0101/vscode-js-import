@@ -1,6 +1,7 @@
 import Scanner, { ImportObj } from "./scanner";
 import * as vscode from 'vscode';
 import { isWin } from './help';
+import JsImport from './jsImport';
 
 const path = require('path');
 const leven = require('leven');
@@ -11,7 +12,7 @@ export default class Resolver {
         const nodeModuleCache = Scanner.nodeModuleCache;
         let quickPickItems = this.resolveItems(value, doc, range, false);
         vscode.window.showQuickPick(quickPickItems).then(item => {
-            if(item) {
+            if (item) {
                 vscode.commands.executeCommand('extension.fixImport',
                     item.importObj, item.doc, item.range);
             }
@@ -32,39 +33,43 @@ export default class Resolver {
      * @param range
      * @param completion
      */
-    resolveItems(value: string, doc: vscode.TextDocument, range: vscode.Range, completion : false) {
+    resolveItems(value: string, doc: vscode.TextDocument, range: vscode.Range, completion: false) {
         // TODO: need sort ?
         // TODO: filter current file export
-        const cache = Scanner.cache;
-        const nodeModuleCache = Scanner.nodeModuleCache;
-        let items = [];
-        for (const key of Object.keys(Scanner.cache)) {
-            // skip current file export
-            if (cache[key].path === doc.fileName) {
-                continue;
-            }
-            if (completion) {
-                if (cache[key].module.name.toLowerCase().startsWith(value.toLowerCase())) {
-                    items.push(this.resolveFromFile(cache[key], doc, range));
+        try {
+            const cache = Scanner.cache;
+            const nodeModuleCache = Scanner.nodeModuleCache;
+            let items = [];
+            for (const key of Object.keys(Scanner.cache)) {
+                // skip current file export
+                if (cache[key].path === doc.fileName) {
+                    continue;
                 }
-            } else {
-                if (cache[key].module.name.toLowerCase().includes(value.toLowerCase())) {
-                    items.push(this.resolveFromFile(cache[key], doc, range));
+                if (completion) {
+                    if (cache[key].module.name.toLowerCase().startsWith(value.toLowerCase())) {
+                        items.push(this.resolveFromFile(cache[key], doc, range));
+                    }
+                } else {
+                    if (cache[key].module.name.toLowerCase().includes(value.toLowerCase())) {
+                        items.push(this.resolveFromFile(cache[key], doc, range));
+                    }
                 }
             }
+            for (const key of Object.keys(nodeModuleCache)) {
+                if (completion) {
+                    if (nodeModuleCache[key].module.name.toLowerCase().startsWith(value.toLowerCase())) {
+                        items.push(this.resolveFromModule(nodeModuleCache[key], doc, range));
+                    }
+                } else {
+                    if (nodeModuleCache[key].module.name.toLowerCase().includes(value.toLowerCase())) {
+                        items.push(this.resolveFromModule(nodeModuleCache[key], doc, range));
+                    }
+                }
+            }
+            return items.sort(this.sortItem(value));
+        } catch (error) {
+            JsImport.consoleError(error);
         }
-        for (const key of Object.keys(nodeModuleCache)) {
-            if (completion) {
-                if (nodeModuleCache[key].module.name.toLowerCase().startsWith(value.toLowerCase())) {
-                    items.push(this.resolveFromModule(nodeModuleCache[key], doc, range));
-                }
-            } else {
-                if (nodeModuleCache[key].module.name.toLowerCase().includes(value.toLowerCase())) {
-                    items.push(this.resolveFromModule(nodeModuleCache[key], doc, range));
-                }
-            }
-        }
-        return items.sort(this.sortItem(value));
     }
 
     resolveFromFile(importObj: ImportObj, doc: vscode.TextDocument, range: vscode.Range) {
@@ -76,7 +81,7 @@ export default class Resolver {
             label: `import ${importObj.module.name} from ${rp} [js-import]`,
             description: '',
             importObj: importObj,
-            doc:doc,
+            doc: doc,
             range: range,
         }
     }
@@ -86,7 +91,7 @@ export default class Resolver {
             label: `import ${importObj.module.name} from node_modules/${importObj.path} [js-import]`,
             description: '',
             importObj: importObj,
-            doc:doc,
+            doc: doc,
             range: range,
         }
     }

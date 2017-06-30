@@ -224,8 +224,9 @@ function findNamedExports(
     return result;
 }
 
-function hasDefaultExport(nodes) {
-    return nodes.some((node) => {
+function getDefaultExport(nodes) {
+    let defaultName = null;
+    nodes.some((node) => {
         if (node.type === 'ExportDefaultDeclaration') {
             return true;
         }
@@ -244,8 +245,12 @@ function hasDefaultExport(nodes) {
             // foo = 'bar';
             return false;
         }
-        return left.object.name === 'module' && left.property.name === 'exports';
+        if (left.object.name === 'module' && left.property.name === 'exports') {
+            defaultName = right.name;
+            return true;
+        }
     });
+    return defaultName;
 }
 
 const DEFAULT_EXPORT_PATTERN = /\smodule\.exports\s*=\s*(\w+)/;
@@ -299,6 +304,7 @@ export default function findExports(data, absolutePathToFile) {
         return {
             named: Object.keys(JSON.parse(data)),
             hasDefault: true,
+            defaultName: null,
         };
     }
     const ast = parse(data);
@@ -313,7 +319,8 @@ export default function findExports(data, absolutePathToFile) {
         definedNames,
         aliasesForExports,
     });
-    let hasDefault = hasDefaultExport(rootNodes) || aliasesForExports.size > 1;
+    const defaultName = getDefaultExport(rootNodes);
+    let hasDefault = defaultName !== null || aliasesForExports.size > 1;
     if (!hasDefault) {
         const rawExportedId = findRawDefaultExport(data);
         hasDefault = !!rawExportedId;
@@ -327,5 +334,6 @@ export default function findExports(data, absolutePathToFile) {
     return {
         named,
         hasDefault,
+        defaultName,
     };
 }
