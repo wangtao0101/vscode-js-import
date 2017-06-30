@@ -3,6 +3,7 @@ import * as vscode from 'vscode';
 import { isWin } from './help';
 
 const path = require('path');
+const leven = require('leven');
 
 export default class Resolver {
     resolve(value: string, doc: vscode.TextDocument, range: vscode.Range) {
@@ -15,6 +16,12 @@ export default class Resolver {
                     item.importObj, item.doc, item.range);
             }
         })
+    }
+
+    sortItem(value: string) {
+        return (a, b) => {
+            return leven(value, a.importObj.module.name) - leven(value, b.importObj.module.name);
+        }
     }
 
     /**
@@ -57,7 +64,7 @@ export default class Resolver {
                 }
             }
         }
-        return items;
+        return items.sort(this.sortItem(value));
     }
 
     resolveFromFile(importObj: ImportObj, doc: vscode.TextDocument, range: vscode.Range) {

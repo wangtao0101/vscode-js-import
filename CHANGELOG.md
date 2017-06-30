@@ -1,5 +1,8 @@
 # Change Log
 
+## [0.11.0] - 2017-xx-xx
+- feature: sort resover item by edit distance
+
 ## [0.10.1] - 2017-06-29
 - fix bug: add line feed after insert new import statement
 - fix bug: support $ in identifier

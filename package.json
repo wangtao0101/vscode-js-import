@@ -102,6 +102,7 @@
     },
     "dependencies": {
         "babylon": "^6.17.2",
+        "leven": "^2.1.0",
         "open": "^0.0.5",
         "parse-comment-es6": "^0.5.5",
         "parse-import-es6": "^0.5.7",
