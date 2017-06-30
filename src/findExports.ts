@@ -56,8 +56,11 @@ function resolveNestedNamedExports(node, absolutePathToFile) {
 
         const requiredFileContent = fs.readFileSync(pathToRequiredFile, 'utf8');
         // eslint-disable-next-line no-use-before-define
-        const { named } = findExports(requiredFileContent, pathToRequiredFile);
-        return named;
+        const { named, defaultName } = findExports(requiredFileContent, pathToRequiredFile);
+        return {
+            named,
+            defaultName,
+        };
     }
     return undefined;
 }
@@ -211,17 +214,25 @@ function findNamedExports(
   },
 ) {
     const result = [];
+    let defaultName = null;
     nodes.forEach((node) => {
         result.push(...findESNamedExports(node));
-        result.push(
-            ...findCommonJSExports(node, {
-                definedNames,
-                absolutePathToFile,
-                aliasesForExports,
-            }),
-        );
+        const named = findCommonJSExports(node, {
+            definedNames,
+            absolutePathToFile,
+            aliasesForExports,
+        })
+        if (Array.isArray(named)) {
+            result.push(...named);
+        } else {
+            result.push(...named.named);
+            defaultName = named.defaultName;
+        }
     });
-    return result;
+    return {
+        named: result,
+        defaultName,
+    };
 }
 
 function getDefaultExport(nodes) {
@@ -314,13 +325,13 @@ export default function findExports(data, absolutePathToFile) {
     rootNodes.forEach((node) => {
         findDefinedNames(node, definedNames);
     });
-    const named = findNamedExports(rootNodes, {
+    let { named, defaultName } = findNamedExports(rootNodes, {
         absolutePathToFile,
         definedNames,
         aliasesForExports,
     });
-    const defaultName = getDefaultExport(rootNodes);
-    let hasDefault = defaultName !== null || aliasesForExports.size > 1;
+    const defaultNameOrigin = getDefaultExport(rootNodes);
+    let hasDefault = defaultNameOrigin != null || defaultName != null || aliasesForExports.size > 1;
     if (!hasDefault) {
         const rawExportedId = findRawDefaultExport(data);
         hasDefault = !!rawExportedId;
@@ -334,6 +345,6 @@ export default function findExports(data, absolutePathToFile) {
     return {
         named,
         hasDefault,
-        defaultName,
+        defaultName: defaultName || defaultNameOrigin,
     };
 }
