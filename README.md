@@ -10,7 +10,7 @@ Intelligent and fast import extension for js in vscode, support both TypeScript 
 ![GitHub Logo](https://github.com/wangtao0101/vscode-js-import/blob/master/img/newimport.gif?raw=true)
 
 # Heads up
-We have to move shortcut from ctrl + alt + h  (mac cmd + alt + h)!!!
+We have to move shortcut to ctrl + alt + h  (mac cmd + alt + h)!!!
 
 # Shortcuts
 ctrl + alt + h  (mac cmd + alt + h)
