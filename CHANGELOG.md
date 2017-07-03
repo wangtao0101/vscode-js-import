@@ -1,7 +1,7 @@
 # Change Log
 
-## [0.11.0] - 2017-xx-xx
-- feature: sort resover item by edit distance
+## [0.11.0] - 2017-07-03
+- feature: sort resover items by edit distance
 - imporve: support find nested default import name, like 'React'
 
 ## [0.10.1] - 2017-06-29
