@@ -1,5 +1,8 @@
 # Change Log
 
+## [0.11.1] - 2017-07-03
+- feature: move shutcut to ctrl + alt + h  (mac cmd + alt + h)
+
 ## [0.11.0] - 2017-07-03
 - feature: sort resover items by edit distance
 - imporve: support find nested default import name, like 'React'

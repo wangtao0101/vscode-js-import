@@ -2,7 +2,7 @@
     "name": "vscode-js-import",
     "displayName": "vscode-js-import",
     "description": "Intelligent and fast import extension for js in vscode, support both TypeScript and JavaScript !!!.",
-    "version": "0.11.0",
+    "version": "0.11.1",
     "publisher": "wangtao0101",
     "repository": {
         "type": "git",
@@ -29,8 +29,8 @@
         "keybindings": [
             {
                 "command": "extension.shortcutImport",
-                "key": "ctrl+alt+j",
-                "mac": "cmd+alt+j",
+                "key": "ctrl+alt+h",
+                "mac": "cmd+alt+h",
                 "when": "editorFocus"
             }
         ],
