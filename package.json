@@ -50,7 +50,7 @@
                 },
                 "js-import.filesToScan": {
                     "type": "string",
-                    "default": "**/*.{jsx,js,ts}",
+                    "default": "**/*.{jsx,js,ts,tsx}",
                     "description": "Glob for files to watch and scan, e.g ./src/** ./src/app/**/*.js. Defaults to **/*.{jsx,js,ts}"
                 },
                 "js-import.insertPosition": {

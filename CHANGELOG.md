@@ -1,11 +1,14 @@
 # Change Log
 
+## [0.11.2] - 2017-xx-xx
+- improve: default filesToScan change to **/*.{jsx,js,ts,tsx}
+
 ## [0.11.1] - 2017-07-03
 - feature: move shutcut to ctrl + alt + h  (mac cmd + alt + h)
 
 ## [0.11.0] - 2017-07-03
 - feature: sort resover items by edit distance
-- imporve: support find nested default import name, like 'React'
+- improve: support find nested default import name, like 'React'
 
 ## [0.10.1] - 2017-06-29
 - fix bug: add line feed after insert new import statement
