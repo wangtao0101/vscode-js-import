@@ -82,8 +82,8 @@ We will watch the change of package.json, and auto add and remove module.
     "helpalias": "src/package/"
 }
 
-//Glob for files to watch and scan, e.g ./src/** ./src/app/**/*.js. Defaults to **/*.{jsx,js,ts}
-"js-import.filesToScan": "**/*.{jsx,js,ts}"
+//Glob for files to watch and scan, e.g ./src/** ./src/app/**/*.js. Defaults to **/*.{jsx,js,ts,tsx}
+"js-import.filesToScan": "**/*.{jsx,js,ts,tsx}"
 
 //the insert position of new import statement, first means first of all imports, last means last of all imports, soon we will suport sort
 "js-import.insertPosition": "last"
