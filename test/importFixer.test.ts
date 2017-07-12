@@ -16,13 +16,21 @@ suite("extractImportPathFromAlias", () => {
 
     test("should return alias module name", () => {
         const importFixer = new ImportFixer(null, null, null);
-        assert.equal('helpalias', importFixer.extractImportPathFromAlias(importObj))
+        assert.equal('helpalias', importFixer.extractImportPathFromAlias(importObj, 'a'))
     });
 
     test("should return aliasname/$1", () => {
         const importFixer = new ImportFixer(null, null, null);
-        importObj.path = path.join(vscode.workspace.rootPath, 'src/package/help/index.js')
-        assert.equal('helpalias/help', importFixer.extractImportPathFromAlias(importObj))
+        const newImportObj = Object.assign({}, importObj, {
+            path: path.join(vscode.workspace.rootPath, 'src/package/help/index.js'),
+        })
+        assert.equal('helpalias/help', importFixer.extractImportPathFromAlias(newImportObj, 'a'))
+    });
+
+    test("should return relative when file path is in alias path", () => {
+        const importFixer = new ImportFixer(null, null, null);
+        assert.equal('.', importFixer.extractImportPathFromAlias(
+            importObj, path.join(vscode.workspace.rootPath, 'src/package/api.js')))
     });
 });
 

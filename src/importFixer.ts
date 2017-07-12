@@ -55,7 +55,7 @@ export default class ImportFixer {
             if (this.importObj.isNodeModule) {
                 importPath = this.extractImportPathFromNodeModules(this.importObj);
             } else {
-                importPath = this.extractImportPathFromAlias(this.importObj)
+                importPath = this.extractImportPathFromAlias(this.importObj, this.doc.uri.fsPath);
                 if (importPath === null) {
                     importPath = this.extractImportFromRoot(this.importObj, this.doc.uri.fsPath);
                 }
@@ -76,7 +76,7 @@ export default class ImportFixer {
         return importObj.path;
     }
 
-    public extractImportPathFromAlias(importObj: ImportObj) {
+    public extractImportPathFromAlias(importObj: ImportObj, fsPath: string) {
         let aliasMatch = null;
         let aliasKey = null;
         const rootPath = vscode.workspace.rootPath;
@@ -97,11 +97,11 @@ export default class ImportFixer {
              * absolute path of current alias module
              */
             const aliasPath = path.join(rootPath, aliasMatch);
-            if (this.doc.uri.fsPath.startsWith(aliasPath)) {
+            if (fsPath.startsWith(aliasPath)) {
                 /**
                  * use relative path if doc.uri is in aliasPath
                  */
-                return this.extractImportFromRoot(importObj, this.doc.uri.fsPath);
+                return this.extractImportFromRoot(importObj, fsPath);
             }
             let relativePath = path.relative(aliasPath, path.dirname(importObj.path));
             if (isWin()) {
