@@ -76,7 +76,6 @@ export default class ImportFixer {
         return importObj.path;
     }
 
-    // TODO: use relative path if importObj and doc.uri are in the same alias path
     public extractImportPathFromAlias(importObj: ImportObj) {
         let aliasMatch = null;
         let aliasKey = null;
@@ -94,7 +93,16 @@ export default class ImportFixer {
         let importPath = null;
         if (aliasMatch !== null) {
             const filename = path.basename(importObj.path);
+            /**
+             * absolute path of current alias module
+             */
             const aliasPath = path.join(rootPath, aliasMatch);
+            if (this.doc.uri.fsPath.startsWith(aliasPath)) {
+                /**
+                 * use relative path if doc.uri is in aliasPath
+                 */
+                return this.extractImportFromRoot(importObj, this.doc.uri.fsPath);
+            }
             let relativePath = path.relative(aliasPath, path.dirname(importObj.path));
             if (isWin()) {
                 relativePath = relativePath.replace(/\\/g, '/');
