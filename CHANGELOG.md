@@ -2,6 +2,7 @@
 
 ## [0.11.2] - 2017-xx-xx
 - improve: default filesToScan change to **/*.{jsx,js,ts,tsx}
+- feature: use relative path when file path is in alias path
 
 ## [0.11.1] - 2017-07-03
 - feature: move shutcut to ctrl + alt + h  (mac cmd + alt + h)
