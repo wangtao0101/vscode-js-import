@@ -122,6 +122,7 @@ Currently in beta, there are a lot of work to do;
 - [ ] support commonjs, considering require nodejs built-in modules
 - [ ] full support typescript, using typescript parse
 - [ ] full support flow, export type and import type
+- [ ] support action for remove unused import identifier using eslint or tslint
 
 # Export RegExp
 ```
