@@ -1,6 +1,6 @@
 # Change Log
 
-## [0.11.2] - 2017-xx-xx
+## [0.11.2] - 2017-07-14
 - improve: default filesToScan change to **/*.{jsx,js,ts,tsx}
 - feature: use relative path when file path is in alias path
 
