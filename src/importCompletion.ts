@@ -17,6 +17,19 @@ export class ImportCompletion implements vscode.CompletionItemProvider {
             let wordToComplete = '';
             let range = document.getWordRangeAtPosition(position);
             if (range) {
+                const startPosition = range.start;
+                if (startPosition.character > 0) {
+                    /**
+                     * if the charator before word is '.', we don't need to return any items.
+                     */
+                    const start = new vscode.Position(startPosition.line, startPosition.character - 1);
+                    const end = new vscode.Position(startPosition.line, startPosition.character);
+                    const charBeforeRange = document.getText(new vscode.Range(start, end));
+                    if (charBeforeRange === '.') {
+                        return resolve([]);
+                    }
+                }
+
                 wordToComplete = document.getText(new vscode.Range(range.start, position)).toLowerCase();
                 const items = new Resolver().resolveItems(wordToComplete, document, range, false);
                 const handlers = [];
