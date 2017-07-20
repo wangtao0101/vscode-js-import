@@ -44,8 +44,7 @@ export default class Scanner {
 
     private processFiles(files: vscode.Uri[]) {
         let pruned = files.filter((f) => {
-            return f.fsPath.indexOf('typings') === -1 &&
-                f.fsPath.indexOf('node_modules') === -1
+            return f.fsPath.indexOf('node_modules') === -1
         });
         pruned.forEach(file => {
             this.processFile(file);
