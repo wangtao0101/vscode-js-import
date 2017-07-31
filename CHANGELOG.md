@@ -1,6 +1,6 @@
 # Change Log
 
-## [0.11.3] - 2017-xx-xx
+## [0.11.3] - 2017-07-31
 - improve: if the charator before autocomplete word is '.', we don't need to return any items
 - fix bugs
 
