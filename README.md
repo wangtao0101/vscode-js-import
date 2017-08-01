@@ -59,6 +59,33 @@ Also, we can skip @flow or copyright comment.
 ## Support auto code completion
 ![GitHub Logo](https://github.com/wangtao0101/vscode-js-import/blob/master/img/codecomplete.gif?raw=true)
 
+## Support multi-packages like [lerna](https://github.com/lerna/lerna) style
+If you have a file system that looks like this:
+```
+my-lerna-repo/
+  package.json
+  packages/
+    package-1/
+      abc.js
+      def.js
+      package.json
+    package-2/
+      package.json
+```
+Then you can config looks like this:
+```
+"js-import.root": "packages"
+"js-import.alias": {
+    "package-1": "packages/package-1/"
+    "package-2": "packages/package-2/"
+}
+```
+If you you want to import the identifier abc in abc.js, the statement looks like this:
+```
+import abc from 'package-1/abc'
+```
+If the target file and source file are in same package, the extension wil use relative path.
+
 ## node_modules support
 
 We only process module form dependencies, devDependencies, peerDependencies, optionalDependencies in package.json,
