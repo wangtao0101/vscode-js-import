@@ -1,11 +1,14 @@
 # Change Log
 
+## [0.11.4] - 2017-08-04
+- fix bug: TypeError in getIdentifierLoc #2
+
 ## [0.11.3] - 2017-07-31
 - improve: if the charator before autocomplete word is '.', we don't need to return any items
 - fix bugs
 
 ## [0.11.2] - 2017-07-14
-- improve: default filesToScan change to **/*.{jsx,js,ts,tsx}
+- improve: default filesToScan change to **/*.{jsx,js,tsx,ts}
 - feature: use relative path when file path is in alias path
 
 ## [0.11.1] - 2017-07-03

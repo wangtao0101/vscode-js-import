@@ -2,7 +2,7 @@
     "name": "vscode-js-import",
     "displayName": "vscode-js-import",
     "description": "Intelligent and fast import extension for js in vscode, support both TypeScript and JavaScript !!!.",
-    "version": "0.11.3",
+    "version": "0.11.4",
     "publisher": "wangtao0101",
     "repository": {
         "type": "git",
@@ -50,7 +50,7 @@
                 },
                 "js-import.filesToScan": {
                     "type": "string",
-                    "default": "**/*.{jsx,js,ts,tsx}",
+                    "default": "**/*.{jsx,js,tsx,ts}",
                     "description": "Glob for files to watch and scan, e.g ./src/** ./src/app/**/*.js. Defaults to **/*.{jsx,js,ts}"
                 },
                 "js-import.insertPosition": {
@@ -105,7 +105,7 @@
         "leven": "^2.1.0",
         "open": "^0.0.5",
         "parse-comment-es6": "^0.5.5",
-        "parse-import-es6": "^0.5.7",
+        "parse-import-es6": "^0.5.8",
         "require-relative": "^0.8.7"
     }
 }
