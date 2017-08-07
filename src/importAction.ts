@@ -12,6 +12,8 @@ export class ImportAction implements vscode.CodeActionProvider {
     // Cannot find name 'isWin'.
     static tsUndefRegExp = /^Cannot find name \'(\w+)\'\.$/;
 
+    // TODO: ''PropTypes' is declared but never used.'
+
     public provideCodeActions(document: vscode.TextDocument, range: vscode.Range,
         context: vscode.CodeActionContext, token: vscode.CancellationToken): vscode.Command[] {
 
