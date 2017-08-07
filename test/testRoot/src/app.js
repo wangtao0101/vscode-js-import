@@ -13,6 +13,7 @@ import a, { /* *//*c*/
     c as d, // asdfasdf
 } from './component';
 import './via';
+import io from '';
 import $ from 'jquery';
 
 
