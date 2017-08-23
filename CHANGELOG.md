@@ -1,5 +1,8 @@
 # Change Log
 
+## [0.12.0] - 2017-08-23
+- feature: support import plain file like .less .css .jpg
+
 ## [0.11.4] - 2017-08-04
 - fix bug: TypeError in getIdentifierLoc #2
 

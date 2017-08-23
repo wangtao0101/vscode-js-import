@@ -4,7 +4,7 @@
 [![Build Status](https://img.shields.io/travis/wangtao0101/vscode-js-import.svg?style=flat)](https://travis-ci.org/wangtao0101/vscode-js-import)
 [![Marketplace Version](http://vsmarketplacebadge.apphb.com/trending-monthly/wangtao0101.vscode-js-import.svg)](https://marketplace.visualstudio.com/items?itemName=wangtao0101.vscode-js-import)
 
-Intelligent and fast import extension for js in vscode, support both TypeScript and JavaScript !!!
+Intelligent and fast import extension for js in vscode, support import position option and adding import to existing import statement. !!!
 
 # Introduce
 ![GitHub Logo](https://github.com/wangtao0101/vscode-js-import/blob/master/img/newimport.gif?raw=true)
@@ -59,6 +59,9 @@ Also, we can skip @flow or copyright comment.
 ## Support auto code completion
 ![GitHub Logo](https://github.com/wangtao0101/vscode-js-import/blob/master/img/codecomplete.gif?raw=true)
 
+## Support import scss, css, less, json, bmp, gif, jpe, jpeg, png ... file, support css-modules
+see config js-import.plainFileSuffix and js-import.plainFileSuffixWithDefaultMember
+
 ## Support multi-packages like [lerna](https://github.com/lerna/lerna) style
 If you have a file system that looks like this:
 ```
@@ -111,6 +114,16 @@ We will watch the change of package.json, and auto add and remove module.
 
 //Glob for files to watch and scan, e.g ./src/** ./src/app/**/*.js. Defaults to **/*.{jsx,js,ts,tsx}
 "js-import.filesToScan": "**/*.{jsx,js,tsx,ts}"
+
+//suffix of plainFiles. Defaults to css,less,sass
+//When import file with these suffixes, the import statement only has 'import' and 'model-name' like 'import 'xxx.less'.
+//if you use css modules, you can remove css,less,sass in here, see config js-import.plainFileSuffixWithDefaultMember
+"js-import.plainFileSuffix": "css,less,sass"
+
+//suffix of plainFiles which should be imported with default member. Defaults to json,bmp,gif,jpe,jpeg,png
+//When import file with these suffixes, the import statement has default import like 'import json form 'xxx.json'
+//if you use css modules, you can add css,less,sass in here
+"js-import.plainFileSuffixWithDefaultMember": "json,bmp,gif,jpe,jpeg,png"
 
 //the insert position of new import statement, first means first of all imports, last means last of all imports, soon we will suport sort
 "js-import.insertPosition": "last"
