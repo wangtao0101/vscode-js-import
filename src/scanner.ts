@@ -2,14 +2,28 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import Interpreter from './interpreter';
 import JsImport from './jsImport';
-import { kebab2camel } from './help';
+import { kebab2camel, base2camel } from './help';
 const path = require('path');
 
 export interface ImportObj {
     path: string;
     module: {
+        /**
+         * identifier名称
+         */
         name: string;
+        /**
+         * 是否是default identifier
+         */
         default: boolean;
+        /**
+         * 是否是文本文件
+         */
+        isPlainFile?: boolean;
+        /**
+         * 否要被加入import语句中，例如css，less文件
+         */
+        isNotMember?: boolean;
     };
     isNodeModule: boolean;
 }
@@ -26,6 +40,7 @@ export default class Scanner {
         vscode.workspace.findFiles(filesToScan, '{**∕node_modules∕**}', 99999)
             .then((files) => this.processFiles(files));
         this.findModulesInPackageJson();
+        this.processPlainFiles();
     }
 
     public scanFileImport(file: vscode.Uri) {
@@ -40,6 +55,42 @@ export default class Scanner {
                 delete Scanner.cache[key];
             }
         }
+    }
+
+    private processPlainFiles() {
+        const emptyMemberPlainFiles = ['.css', '.less', '.sass'];
+        const defaultMemberPlainFiles = ['.png'];
+        vscode.workspace.findFiles('**/*.{css,less,sass,png}', '{**/node_modules/**}', 99999)
+        .then((files) => {
+            files.filter((f) => {
+                return f.fsPath.indexOf('node_modules') === -1
+            }).map((url) => {
+                const parsedFile = path.parse(url.fsPath);
+                const name = base2camel(parsedFile.name);
+                if (emptyMemberPlainFiles.includes(parsedFile.ext)) {
+                    Scanner.cache[`${url.fsPath}-${name}`] = {
+                        path: url.fsPath,
+                        module: {
+                            default: true,
+                            name,
+                            isPlainFile: true,
+                            isNotMember: true,
+                        },
+                        isNodeModule: false,
+                    };
+                } else {
+                    Scanner.cache[`${url.fsPath}-${name}`] = {
+                        path: url.fsPath,
+                        module: {
+                            default: true,
+                            name,
+                            isPlainFile: true,
+                        },
+                        isNodeModule: false,
+                    };
+                }
+            })
+        });
     }
 
     private processFiles(files: vscode.Uri[]) {

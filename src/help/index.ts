@@ -20,6 +20,12 @@ export function kebab2camel(str) {
     });
 };
 
+export function base2camel(str) {
+    return str.replace(/(\.[A-Za-z])/g, function (m) {
+	    return m.toUpperCase().replace('.','');
+    });
+};
+
 export function getImportOption(eol, needLineFeed = false): ImportOption {
     return {
         eol,

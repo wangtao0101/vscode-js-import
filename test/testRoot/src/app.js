@@ -24,3 +24,5 @@ ccc
 react
 affix
 abc
+icon
+index

@@ -107,10 +107,11 @@ export default class ImportFixer {
             if (isWin()) {
                 relativePath = relativePath.replace(/\\/g, '/');
             }
-            if (isIndexFile(filename)) {
+            if (!importObj.module.isPlainFile && isIndexFile(filename)) {
                 importPath = relativePath === '' ? aliasKey : `${aliasKey}/${relativePath}`
             } else {
-                const filename = path.parse(importObj.path).name;
+                const parsePath = path.parse(importObj.path);
+                const filename = importObj.module.isPlainFile ? parsePath.base : parsePath.name;
                 importPath = relativePath === '' ? `${aliasKey}/${filename}` : `${aliasKey}/${relativePath}/${filename}`
             }
         }
@@ -129,13 +130,14 @@ export default class ImportFixer {
             dir = dir.replace(/\\/g, '/');
         }
         dir = dir.replace(/../, '.');
-        if (isIndexFile(parsePath.base)) {
+        if (!importObj.module.isPlainFile && isIndexFile(parsePath.base)) {
             importPath = `${dir}`
         } else {
+            const name = importObj.module.isPlainFile ? parsePath.base : parsePath.name;
             if (dir.startsWith('./..')) {
-                importPath = `${dir.substr(2, dir.length - 2)}/${parsePath.name}`;
+                importPath = `${dir.substr(2, dir.length - 2)}/${name}`;
             } else {
-                importPath = `${dir}/${parsePath.name}`;
+                importPath = `${dir}/${name}`;
             }
         }
         return importPath;
@@ -149,7 +151,12 @@ export default class ImportFixer {
         let importStatement: ImportStatement = null;
         if (filteredImports.length === 0) {
             const position = this.getNewImportPositoin(imports);
-            if (this.importObj.module.default) {
+            if (this.importObj.module.isNotMember) {
+                importStatement = new ImportStatement(
+                    getImportDeclaration(null, null, [], importPath, position),
+                    getImportOption(this.eol, true),
+                );
+            } else if (this.importObj.module.default) {
                 importStatement = new ImportStatement(
                     getImportDeclaration(this.importObj.module.name, null, [], importPath, position),
                     getImportOption(this.eol, true),
@@ -163,6 +170,9 @@ export default class ImportFixer {
         } else {
             // TODO: merge import
             const imp = filteredImports[0];
+            if (this.importObj.module.isNotMember) {
+                return;
+            }
             if (this.importObj.module.default) {
                 if (imp.importedDefaultBinding !== null && imp.importedDefaultBinding === this.importObj.module.name) {
                     // TODO: we can format code

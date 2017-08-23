@@ -27,6 +27,17 @@ suite("extractImportPathFromAlias", () => {
         assert.equal('helpalias/help', importFixer.extractImportPathFromAlias(newImportObj, 'a'))
     });
 
+    test("should return aliasname/$1/filename if plainfile", () => {
+        const importFixer = new ImportFixer(null, null, null);
+        const newImportObj = Object.assign({}, importObj, {
+            path: path.join(vscode.workspace.rootPath, 'src/package/help/index.less'),
+            module: {
+                isPlainFile: true
+            }
+        })
+        assert.equal('helpalias/help/index.less', importFixer.extractImportPathFromAlias(newImportObj, 'a'))
+    });
+
     test("should return relative when file path is in alias path", () => {
         const importFixer = new ImportFixer(null, null, null);
         assert.equal('.', importFixer.extractImportPathFromAlias(
@@ -54,9 +65,22 @@ suite("extractImportFromRoot", () => {
         assert.equal('./via', importFixer.extractImportFromRoot(importObj, path.join(vscode.workspace.rootPath, 'src/app.js')))
     });
 
+    test("should return ./ + dir base if plainfile", () => {
+        const importFixer = new ImportFixer(null, null, null);
+        const obj = Object.assign({}, importObj,
+            {
+                path: path.join(vscode.workspace.rootPath, 'src/index.less'),
+                module: {
+                    isPlainFile: true
+                }
+            });
+        console.log(obj)
+        assert.equal('./index.less', importFixer.extractImportFromRoot(obj, path.join(vscode.workspace.rootPath, 'src/app.js')))
+    });
+
     test("should return ./ + dirname exclude filename if filaname is index.js or index.jsx ", () => {
         const importFixer = new ImportFixer(null, null, null);
         importObj.path = path.join(vscode.workspace.rootPath, 'src/component/index.js'),
-        assert.equal('./component', importFixer.extractImportFromRoot(importObj, path.join(vscode.workspace.rootPath, 'src/app.js')))
+            assert.equal('./component', importFixer.extractImportFromRoot(importObj, path.join(vscode.workspace.rootPath, 'src/app.js')))
     });
 });

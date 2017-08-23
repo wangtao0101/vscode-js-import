@@ -87,12 +87,19 @@ export default class ImportStatement {
                 statement += ','
             }
             statement += ' ' + this.namedImportString();
+            hasIdentifier = true;
         }
-        statement += ` from ${this.option.queto}${this.impd.moduleSpecifier}${this.option.queto};`
+        if (hasIdentifier) {
+            statement += ' from'
+        }
+        statement += ` ${this.option.queto}${this.impd.moduleSpecifier}${this.option.queto};`
         this.impd.middleComments.forEach(comment => {
             statement += ' ' + comment.raw;
         });
-        if (this.isLineToLong(statement)) {
+        /**
+         * multiple mode must has identifier
+         */
+        if (hasIdentifier && this.isLineToLong(statement)) {
             return this.toMultipleLineString();
         }
         return statement;
