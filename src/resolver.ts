@@ -77,8 +77,10 @@ export default class Resolver {
         if (isWin) {
             rp = rp.replace(/\\/g, '/');
         }
+        const label = importObj.module.isNotMember ?
+            `import ${rp} [js-import]` : `import ${importObj.module.name} from ${rp} [js-import]`
         return {
-            label: `import ${importObj.module.name} from ${rp} [js-import]`,
+            label,
             description: '',
             importObj: importObj,
             doc: doc,

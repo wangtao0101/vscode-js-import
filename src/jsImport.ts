@@ -8,12 +8,25 @@ import { ImportCompletion } from "./importCompletion";
 export default class JsImport {
 
     public static statusBar: vscode.StatusBarItem;
+    public static emptyMemberPlainFiles = [];
+    public static defaultMemberPlainFiles = [];
+    public static plainFilesGlob = '';
 
     public run(context: vscode.ExtensionContext) {
         let root = vscode.workspace.rootPath;
         if (!root) {
             return;
         }
+
+        /**
+         * init config
+         */
+        const plainFileSuffix = vscode.workspace.getConfiguration('js-import').get<string>('plainFileSuffix');
+        const plainFileSuffixWithDefaultMember = vscode.workspace.getConfiguration('js-import').get<string>('plainFileSuffixWithDefaultMember');
+        JsImport.emptyMemberPlainFiles = plainFileSuffix.split(',').map((x) => x.trim());
+        JsImport.defaultMemberPlainFiles = plainFileSuffixWithDefaultMember.split(',').map((x) => x.trim());
+        JsImport.plainFilesGlob = `**/*.{${JsImport.emptyMemberPlainFiles.concat(JsImport.defaultMemberPlainFiles).join(',')}}`;
+
         this.attachCommands(context);
         this.attachFileWatcher();
         JsImport.statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
@@ -37,6 +50,14 @@ export default class JsImport {
                 scanner.findModulesInPackageJson();
             } else {
                 // do nothing
+            }
+        });
+
+        let importPlainFileScanner = vscode.commands.registerCommand('extension.scanPlainFileImport', (request) => {
+            if (request.create) {
+                scanner.processPlainFile(request.file);
+            } else {
+                scanner.deleteFile(request.file);
             }
         });
 
@@ -70,7 +91,7 @@ export default class JsImport {
         let completetion = vscode.languages.registerCompletionItemProvider(
             ['javascript', 'typescript', 'javascriptreact', 'typescriptreact'], new ImportCompletion());
 
-        context.subscriptions.push(importScanner, shortcutImport, codeActionFixer, completetion);
+        context.subscriptions.push(importScanner, importPlainFileScanner, shortcutImport, codeActionFixer, completetion);
     }
 
     public attachFileWatcher() {
@@ -93,6 +114,16 @@ export default class JsImport {
         packageJsonWatcher.onDidChange((file: vscode.Uri) => {
             vscode.commands
                 .executeCommand('extension.scanImport', { file: null, edit: false, delete: false, init: false, nodeModule: true });
+        })
+
+        let plainFilesGlobWatcher = vscode.workspace.createFileSystemWatcher(JsImport.plainFilesGlob);
+        plainFilesGlobWatcher.onDidDelete((file: vscode.Uri) => {
+            vscode.commands
+                .executeCommand('extension.scanPlainFileImport', { file, create: false });
+        })
+        plainFilesGlobWatcher.onDidCreate((file: vscode.Uri) => {
+            vscode.commands
+                .executeCommand('extension.scanPlainFileImport', { file, create: true });
         })
     }
 

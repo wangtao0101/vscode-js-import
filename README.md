@@ -145,7 +145,7 @@ Currently in beta, there are a lot of work to do;
 - [ ] support shortcut goto module under cursor, spec react conpoment
 - [x] support import "module-name"
 - [ ] autofix useless import statement or identifier by using eslint rule(no-unused-vars)
-- [ ] support import scss, css, less, json, bmp, gif, jpe, jpeg, png file
+- [x] support import scss, css, less, json, bmp, gif, jpe, jpeg, png file
 - [ ] support commonjs, considering require nodejs built-in modules
 - [ ] full support typescript, using typescript parse
 - [ ] full support flow, export type and import type

@@ -53,6 +53,16 @@
                     "default": "**/*.{jsx,js,tsx,ts}",
                     "description": "Glob for files to watch and scan, e.g ./src/** ./src/app/**/*.js. Defaults to **/*.{jsx,js,ts}"
                 },
+                "js-import.plainFileSuffix": {
+                    "type": "string",
+                    "default": "css,less,sass",
+                    "description": "suffix of plainFiles, import statement is like 'import 'xxx.less';'. Defaults to css,less,sass"
+                },
+                "js-import.plainFileSuffixWithDefaultMember": {
+                    "type": "string",
+                    "default": "json,bmp,gif,jpe,jpeg,png",
+                    "description": "suffix of plainFiles which should be imported with default member, import statement is like 'import json form 'xxx.json';'. Defaults to json,bmp,gif,jpe,jpeg,png"
+                },
                 "js-import.insertPosition": {
                     "type": "string",
                     "default": "last",

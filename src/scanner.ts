@@ -58,39 +58,42 @@ export default class Scanner {
     }
 
     private processPlainFiles() {
-        const emptyMemberPlainFiles = ['.css', '.less', '.sass'];
-        const defaultMemberPlainFiles = ['.png'];
-        vscode.workspace.findFiles('**/*.{css,less,sass,png}', '{**/node_modules/**}', 99999)
+        vscode.workspace.findFiles(JsImport.plainFilesGlob, '{**/node_modules/**}', 99999)
         .then((files) => {
             files.filter((f) => {
                 return f.fsPath.indexOf('node_modules') === -1
             }).map((url) => {
-                const parsedFile = path.parse(url.fsPath);
-                const name = base2camel(parsedFile.name);
-                if (emptyMemberPlainFiles.includes(parsedFile.ext)) {
-                    Scanner.cache[`${url.fsPath}-${name}`] = {
-                        path: url.fsPath,
-                        module: {
-                            default: true,
-                            name,
-                            isPlainFile: true,
-                            isNotMember: true,
-                        },
-                        isNodeModule: false,
-                    };
-                } else {
-                    Scanner.cache[`${url.fsPath}-${name}`] = {
-                        path: url.fsPath,
-                        module: {
-                            default: true,
-                            name,
-                            isPlainFile: true,
-                        },
-                        isNodeModule: false,
-                    };
-                }
+                this.processPlainFile(url);
             })
         });
+    }
+
+    public processPlainFile(url: vscode.Uri) {
+        const parsedFile = path.parse(url.fsPath);
+        const name = base2camel(parsedFile.name);
+        if (JsImport.emptyMemberPlainFiles.includes(parsedFile.ext.replace('\.', ''))) {
+            Scanner.cache[`${url.fsPath}-${name}`] = {
+                path: url.fsPath,
+                module: {
+                    default: true,
+                    name,
+                    isPlainFile: true,
+                    isNotMember: true,
+                },
+                isNodeModule: false,
+            };
+        } else {
+            Scanner.cache[`${url.fsPath}-${name}`] = {
+                path: url.fsPath,
+                module: {
+                    default: true,
+                    name,
+                    isPlainFile: true,
+                },
+                isNodeModule: false,
+            };
+        }
+        JsImport.setStatusBar();
     }
 
     private processFiles(files: vscode.Uri[]) {
