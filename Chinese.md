@@ -4,46 +4,41 @@
 [![Build Status](https://img.shields.io/travis/wangtao0101/vscode-js-import.svg?style=flat)](https://travis-ci.org/wangtao0101/vscode-js-import)
 [![Marketplace Version](http://vsmarketplacebadge.apphb.com/trending-monthly/wangtao0101.vscode-js-import.svg)](https://marketplace.visualstudio.com/items?itemName=wangtao0101.vscode-js-import)
 
-Intelligent and fast import extension for js in vscode, support import position option and adding import to existing import statement. !!!
+智能快速的插入import语句的vscode插件，支持配置插入import的位置和插入到已有的import语句中。
 
-[以中文查看](./Chinese.md)
-
-# Introduce
+# 介绍
 ![GitHub Logo](https://github.com/wangtao0101/vscode-js-import/blob/master/img/newimport.gif?raw=true)
 
-# Heads up
-We have to move shortcut to ctrl + alt + h  (mac cmd + alt + h)!!!
-
-# Shortcuts
+# 快捷键
 ctrl + alt + h  (mac cmd + alt + h)
 
-Move cursor into target word and enter shortcuts, then select the match import.
+在需要导入的单词上按下快捷键，然后选中需要导入的包。
 
-# Feature
-## Support autofix by using eslint rule(no-undef) or ts compiler error
+# 特性
+## 支持识别eslint rule(no-undef)和ts compiler的错误，并提供autofix功能
 
-To enable the feature, you should install enable [eslint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) in vscode or enable ts compiler.
+如果要开启这个功能, 你的vscode需要安装 [eslint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)。
 
 ![GitHub Logo](https://github.com/wangtao0101/vscode-js-import/blob/master/img/autofix.gif?raw=true)
 
-## Support import in multiple line and support comment in any where
-If origin import statement occupies multiple lines or exceed maxLine option , we will turn into multiple line mode and carefully handle comments.
+## 支持import语句的多行格式，支持注释
+如果原来的import语句是多行格式或者超过了单行的字符限制，我们会将该import语句转成多行格式，并小心的处理注释。
 
-Here we add a new namedImport 'e':
+下面我们添加了一个新的namedImport 'e':
 
 ![GitHub Logo](https://github.com/wangtao0101/vscode-js-import/blob/master/img/mer.png?raw=true)
 
-We split comments into every identifier:
-1. Comments in the same line with defaultImport or 'import' word will be moved after '{'.
-2. There are two kinds of comment related to namedImports, comments in previous line or in the same line of namedImports, comments in previous will be in previous also, and comments in the same line will be moved after ','
-3. Comments in the same line with 'from' word or moduleSpecifier will be moved after ';'
+注意我们处理注释的规则，我们把每个注释分配到每个单词:
+1. 如果注释和defaultImport或者import在同一行，那么这个注释会被移动到'{'后面。
+2. 对于namedImports有两种情况，如果注释和namedImports在上一行，那么注释仍然在上一行，如果注释和namedImports在同一行，那么注释会被移动到namedImports同行的逗号后面。
+3. 如果注释和from或者moduleSpecifier在同一行，那么注释会被移动到该行的分号后面
 
-Tips: We don't know how to put the comment of the statement in somewhere after spliting the single line import statement, so we move the comment after moduleSpecifier, then you should move comment to the right position by your self. (comments like eslint-disable-line)
+Tips：如果我们尝试将单行语句分成多行，我们可能不知道要将注释放在哪一行，如果遇到这种情况我们会把注释都移到moduleSpecifier的分号后面。如果你使用了eslint的eslint-disable-line，你可能需要自动移动一下注释。
 
-## Suport insert position option
-There are two positions we can insert new statement, before all import statements or after all import statements. (soon we can support sort option)
+## 支持配置插入语句的位置
+有两个可插入的位置，一个是在所有import语句的前面，一个是在所有import语句的后面（未来会支持插入排序）。
 
-You should know how we deal with comments.
+你需要知道在插入一个有注释的import语句时我们是怎么识别注释的：
 ```
 // i am leading comment of import a from 'b';
 import a from 'b';
@@ -54,18 +49,18 @@ import a from 'b';
 // i am leading comment of import c from 'd';
 import c from 'd';
 ```
-So, if you want to comment after import in a new line, you should not forget to add a empty line after comment.
+空行会区分注释到底归属于上一个import的还是后一个import。因此，如果我们想在import语句后插入一行注释，别忘了在注释后加空行。
 
-Also, we can skip @flow or copyright comment.
+当然，插入的时候我们会跳过@flow注释和copyright注释。
 
-## Support auto code completion
+## 支持auto code completion
 ![GitHub Logo](https://github.com/wangtao0101/vscode-js-import/blob/master/img/codecomplete.gif?raw=true)
 
-## Support import scss, css, less, json, bmp, gif, jpe, jpeg, png ... file, support css-modules
-see config js-import.plainFileSuffix and js-import.plainFileSuffixWithDefaultMember
+## 支持导入 scss, css, less, json, bmp, gif, jpe, jpeg, png 等文件, 支持 css-modules
+请看配置项 js-import.plainFileSuffix and js-import.plainFileSuffixWithDefaultMember
 
-## Support multi-packages like [lerna](https://github.com/lerna/lerna) style
-If you have a file system that looks like this:
+## 支持配置像[lerna](https://github.com/lerna/lerna)风格的多个单独包的目录
+如果你有一个类似下面的目录：
 ```
 my-lerna-repo/
   package.json
@@ -77,7 +72,7 @@ my-lerna-repo/
     package-2/
       package.json
 ```
-Then you can config looks like this:
+你可以在settings.json中像这样配置：
 ```
 "js-import.root": "packages"
 "js-import.alias": {
@@ -85,31 +80,29 @@ Then you can config looks like this:
     "package-2": "packages/package-2/"
 }
 ```
-If you you want to import the identifier abc in abc.js, the statement looks like this:
+如果你想导入abc.js文件中的abc，导入语句为：
 ```
 import abc from 'package-1/abc'
 ```
-If the target file and source file are in same package, the extension wil use relative path.
+如果目标文件和源文件在同一个包中，我们会使用相对路径。
 
-## node_modules support
+## 支持node_modules
+为了优化性能，我们只会处理在package.json中明确依赖的包，包括dependencies, devDependencies, peerDependencies, optionalDependencies，并且
+我们只会导入这些包中package.json中的mainfile中的导出项。
 
-We only process module form dependencies, devDependencies, peerDependencies, optionalDependencies in package.json,
-and only extract import from mainfile in module's package.json.
+如果你想要导入node_modules中的内容，不要忘记把需要的包添加到package.json中。另外，我们支持嵌套导入，类似 module.exports = require('./lib/React')。
 
-If you want to import module using vscode-js-import,
-you should add the module into package.json. Besides, we support export style like module.exports = require('./lib/React');
+我们会自动检测package.json的变化，并自动新增或者移除包。
 
-We will watch the change of package.json, and auto add and remove module.
-
-## A cute icon shows that how many export statements in your workspace.
+## 一个可爱的图标，显示了插件能够检测到的可导出包的数量。
 ![GitHub Logo](https://github.com/wangtao0101/vscode-js-import/blob/master/img/icon.png?raw=true)
 
-# Setting
+# 配置
 ```
-//the source dir, currently we only support single root
+//根目录，我们仅支持单个根目录（lerna风格就是把包都放在同一个根目录）
 "js-import.root": "src"
 
-//module alias like webpack resolve.alias 或者 typescript compilerOptions.paths, not support nested alias path, e.g { util: 'src/util/' }
+// 类似于webpack的resolve.alias或者typescript的compilerOptions.paths, 不支持嵌套
 "js-import.alias": {
     "helpalias": "src/package/"
 }
@@ -117,14 +110,14 @@ We will watch the change of package.json, and auto add and remove module.
 //Glob for files to watch and scan, e.g ./src/** ./src/app/**/*.js. Defaults to **/*.{jsx,js,ts,tsx}
 "js-import.filesToScan": "**/*.{jsx,js,tsx,ts}"
 
-//suffix of plainFiles. Defaults to css,less,sass
-//When import file with these suffixes, the import statement only has 'import' and 'model-name' like 'import 'xxx.less'.
-//if you use css modules, you can remove css,less,sass in here, see config js-import.plainFileSuffixWithDefaultMember
+//配置文件格式导入的后缀格式，默认为css、less、sass
+//导入这类文件的语句仅会有import和model-name，例如：'import 'xxx.less'。
+//如果你使用了css modules，你可以将css、less、sass从这里移除。
 "js-import.plainFileSuffix": "css,less,sass"
 
-//suffix of plainFiles which should be imported with default member. Defaults to json,bmp,gif,jpe,jpeg,png
-//When import file with these suffixes, the import statement has default import like 'import json form 'xxx.json'
-//if you use css modules, you can add css,less,sass in here
+//配置文件格式导入的后缀格式，默认为json,bmp,gif,jpe,jpeg,png
+//导入这类文件的语句会有defaultImport，例如：'import json form 'xxx.json'。
+//如果你使用了css modules，你可以将css、less、sass添加到这里。
 "js-import.plainFileSuffixWithDefaultMember": "json,bmp,gif,jpe,jpeg,png"
 
 //the insert position of new import statement, first means first of all imports, last means last of all imports, soon we will suport sort

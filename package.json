@@ -45,7 +45,7 @@
                 },
                 "js-import.alias": {
                     "type": "object",
-                    "description": "module alias like webpack alias, not support nested alias path, e.g { util: 'src/util/' }",
+                    "description": "module alias like webpack resolve.alias 或者 typescript compilerOptions.paths, not support nested alias path, e.g { util: 'src/util/' }",
                     "default": ""
                 },
                 "js-import.filesToScan": {
