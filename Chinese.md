@@ -4,7 +4,7 @@
 [![Build Status](https://img.shields.io/travis/wangtao0101/vscode-js-import.svg?style=flat)](https://travis-ci.org/wangtao0101/vscode-js-import)
 [![Marketplace Version](http://vsmarketplacebadge.apphb.com/trending-monthly/wangtao0101.vscode-js-import.svg)](https://marketplace.visualstudio.com/items?itemName=wangtao0101.vscode-js-import)
 
-智能快速的插入import语句的vscode插件，支持配置插入import的位置和插入到已有的import语句中。
+智能快速插入import语句的vscode插件，支持配置插入import语句的位置和插入到已有的import语句中。
 
 # 介绍
 ![GitHub Logo](https://github.com/wangtao0101/vscode-js-import/blob/master/img/newimport.gif?raw=true)
@@ -30,10 +30,10 @@ ctrl + alt + h  (mac cmd + alt + h)
 
 注意我们处理注释的规则，我们把每个注释分配到每个单词:
 1. 如果注释和defaultImport或者import在同一行，那么这个注释会被移动到'{'后面。
-2. 对于namedImports有两种情况，如果注释和namedImports在上一行，那么注释仍然在上一行，如果注释和namedImports在同一行，那么注释会被移动到namedImports同行的逗号后面。
+2. 对于namedImports有两种情况，如果注释在namedImports的上一行，那么注释仍然在上一行，如果注释和namedImports在同一行，那么注释会被移动到namedImports同行的逗号后面。
 3. 如果注释和from或者moduleSpecifier在同一行，那么注释会被移动到该行的分号后面
 
-Tips：如果我们尝试将单行语句分成多行，我们可能不知道要将注释放在哪一行，如果遇到这种情况我们会把注释都移到moduleSpecifier的分号后面。如果你使用了eslint的eslint-disable-line，你可能需要自动移动一下注释。
+Tips：如果我们尝试将单行语句分成多行，我们可能不知道要将注释放在哪一行，如果遇到这种情况我们会把注释都移到moduleSpecifier的分号后面。如果你使用了eslint的eslint-disable-line，你可能需要自己移动一下注释。
 
 ## 支持配置插入语句的位置
 有两个可插入的位置，一个是在所有import语句的前面，一个是在所有import语句的后面（未来会支持插入排序）。
@@ -49,7 +49,7 @@ import a from 'b';
 // i am leading comment of import c from 'd';
 import c from 'd';
 ```
-空行会区分注释到底归属于上一个import的还是后一个import。因此，如果我们想在import语句后插入一行注释，别忘了在注释后加空行。
+空行会区分注释到底归属于上一个import还是后一个import。因此，如果我们想在import语句后插入一行注释，别忘了在注释后加空行。
 
 当然，插入的时候我们会跳过@flow注释和copyright注释。
 
@@ -87,8 +87,7 @@ import abc from 'package-1/abc'
 如果目标文件和源文件在同一个包中，我们会使用相对路径。
 
 ## 支持node_modules
-为了优化性能，我们只会处理在package.json中明确依赖的包，包括dependencies, devDependencies, peerDependencies, optionalDependencies，并且
-我们只会导入这些包中package.json中的mainfile中的导出项。
+为了优化性能，我们只会处理在package.json中明确依赖的包，包括dependencies, devDependencies, peerDependencies, optionalDependencies，并且我们只会导入这些包中package.json中的mainfile中的导出项。
 
 如果你想要导入node_modules中的内容，不要忘记把需要的包添加到package.json中。另外，我们支持嵌套导入，类似 module.exports = require('./lib/React')。
 
@@ -104,18 +103,19 @@ import abc from 'package-1/abc'
 
 // 类似于webpack的resolve.alias或者typescript的compilerOptions.paths, 不支持嵌套
 "js-import.alias": {
-    "helpalias": "src/package/"
+    "helpalias": "src/package/packageA"
 }
+//你可以像这样导入packageA包中的内容：import abc from 'helpalias/abc'，import ccc from 'helpalias/xxx/xx'。
 
 //Glob for files to watch and scan, e.g ./src/** ./src/app/**/*.js. Defaults to **/*.{jsx,js,ts,tsx}
 "js-import.filesToScan": "**/*.{jsx,js,tsx,ts}"
 
-//配置文件格式导入的后缀格式，默认为css、less、sass
+//配置文件后缀，默认为css、less、sass
 //导入这类文件的语句仅会有import和model-name，例如：'import 'xxx.less'。
 //如果你使用了css modules，你可以将css、less、sass从这里移除。
 "js-import.plainFileSuffix": "css,less,sass"
 
-//配置文件格式导入的后缀格式，默认为json,bmp,gif,jpe,jpeg,png
+//配置文件后缀，默认为json,bmp,gif,jpe,jpeg,png
 //导入这类文件的语句会有defaultImport，例如：'import json form 'xxx.json'。
 //如果你使用了css modules，你可以将css、less、sass添加到这里。
 "js-import.plainFileSuffixWithDefaultMember": "json,bmp,gif,jpe,jpeg,png"

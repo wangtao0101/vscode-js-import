@@ -111,8 +111,9 @@ We will watch the change of package.json, and auto add and remove module.
 
 //module alias like webpack resolve.alias 或者 typescript compilerOptions.paths, not support nested alias path, e.g { util: 'src/util/' }
 "js-import.alias": {
-    "helpalias": "src/package/"
+    "helpalias": "src/package/packageA"
 }
+//you can import statement from packageA like: import abc from 'helpalias/abc'，import ccc from 'helpalias/xxx/xx'.
 
 //Glob for files to watch and scan, e.g ./src/** ./src/app/**/*.js. Defaults to **/*.{jsx,js,ts,tsx}
 "js-import.filesToScan": "**/*.{jsx,js,tsx,ts}"
@@ -147,42 +148,3 @@ We will watch the change of package.json, and auto add and remove module.
 //if import statement exceed maxLen, the statement will be split into multiple lines.
 "js-import.maxLen": 100
 ```
-
-# TODO
-Currently in beta, there are a lot of work to do;
-- [x] full suport in node_modules, only extract export form main file and support module.exports = require('./lib/React')
-- [x] full support import statement, such as 'feedline' in import statement
-- [x] option for insert position (ability to skip flow, Copyright, Lisence comment in top of file)
-- [ ] sort import statement by eslint rule, deal with comment
-- [x] support autocomplete
-- [x] support auto fix by eslint rule
-- [x] support option for max-line like eslint rule max-line, auto split statement to mutilines
-- [ ] support shortcut goto module under cursor, spec react conpoment
-- [x] support import "module-name"
-- [ ] autofix useless import statement or identifier by using eslint rule(no-unused-vars)
-- [x] support import scss, css, less, json, bmp, gif, jpe, jpeg, png file
-- [ ] support commonjs, considering require nodejs built-in modules
-- [ ] full support typescript, using typescript parse
-- [ ] full support flow, export type and import type
-- [ ] support action for remove unused import identifier using eslint or tslint
-
-# Export RegExp
-```
-exports.default\\s*=\\s*(\\w+).default
-module.exports\\s*=\\s*(\\w+)
-exports\\[[\\'\\"]default[\\'\\"]\\]\\s*=\\s*(\\w+)
-export\\s+(default\\s+){0,1}(?:(?:const|let|var|function|function\\*|class)\\s+){0,1}([\\w]+)
-exports\\.([\\w]+)\\s*=
-exports\\[\\"([\\w]+)\\"\\]\\s*=
-Object.defineProperty\\(\\s*exports\\s*,\\s*[\\'|\\"]([\\w]+)[\\'|\\"]
-export\\s+(?:default\\s+){0,1}(\\{[^\\}]+\\})
-```
-
-## Contributing
-
-Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](https://github.com/wangtao0101/vscode-js-import/issues).
-
-# Thanks
-some code from [import-js](https://github.com/Galooshi/import-js)
-
-# [CHANGELOG](https://github.com/wangtao0101/vscode-js-import/blob/master/CHANGELOG.md)
