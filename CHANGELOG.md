@@ -1,5 +1,8 @@
 # Change Log
 
+## [0.12.1] - 2017-10-11
+- fix bug: bug about '$$' #5
+
 ## [0.12.0] - 2017-08-23
 - feature: support import plain file like .less .css .jpg
 

@@ -115,7 +115,7 @@
         "leven": "^2.1.0",
         "open": "^0.0.5",
         "parse-comment-es6": "^0.5.5",
-        "parse-import-es6": "^0.5.8",
+        "parse-import-es6": "^0.5.9",
         "require-relative": "^0.8.7"
     }
 }
