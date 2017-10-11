@@ -17,6 +17,9 @@ import io from '';
 import $ from 'jquery';
 
 
+import { $$ } from './foo';
+
+
 Via
 comabc
 ccc
