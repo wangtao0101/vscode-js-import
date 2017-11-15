@@ -6,6 +6,7 @@ export interface ImportOption {
     commaDangle: string,
     maxLen: number,
     needLineFeed: boolean,
+    semicolon: string,
 }
 
 export interface EditChange {
@@ -37,10 +38,16 @@ export default class ImportStatement {
         }
         let startColumn = this.impd.loc.start.column;
         let endColumn = this.impd.loc.end.column;
+        /**
+         * comment of type Import will be move after { or the end of import statement
+         */
         const importComments = this.impd.middleComments.filter(comment => comment.identifier.type === 'Import');
         importComments.forEach(comment => {
             startColumn = Math.min(startColumn, comment.loc.start.column);
         });
+        /**
+         * comment of type ModuleSpecifier will be move to the end of import statement
+         */
         const moduleSpecifierComments = this.impd.middleComments.filter(comment => comment.identifier.type === 'ModuleSpecifier');
         moduleSpecifierComments.forEach(comment => {
             endColumn = Math.max(endColumn, comment.loc.end.column);
@@ -92,7 +99,7 @@ export default class ImportStatement {
         if (hasIdentifier) {
             statement += ' from'
         }
-        statement += ` ${this.option.queto}${this.impd.moduleSpecifier}${this.option.queto};`
+        statement += ` ${this.option.queto}${this.impd.moduleSpecifier}${this.option.queto}${this.option.semicolon}`
         this.impd.middleComments.forEach(comment => {
             statement += ' ' + comment.raw;
         });
@@ -146,7 +153,7 @@ export default class ImportStatement {
             }
             statement += this.namedImportString(true, extraCommentString) + ' ';
         }
-        statement += `from ${this.option.queto}${this.impd.moduleSpecifier}${this.option.queto};`;
+        statement += `from ${this.option.queto}${this.impd.moduleSpecifier}${this.option.queto}${this.option.semicolon}`;
         const endComments = this.impd.middleComments.filter(
             comment =>
                 comment.identifier.type === 'From'

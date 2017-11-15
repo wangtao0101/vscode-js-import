@@ -88,6 +88,11 @@
                     "default": "singlequote",
                     "description": "whether to use singlequote or use doublequote"
                 },
+                "js-import.semicolon": {
+                    "type": "boolean",
+                    "default": "true",
+                    "description": "whether to add semicolon after import statement"
+                },
                 "js-import.maxLen": {
                     "type": "number",
                     "default": "100",

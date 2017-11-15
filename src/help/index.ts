@@ -33,5 +33,6 @@ export function getImportOption(eol, needLineFeed = false): ImportOption {
         commaDangle: vscode.workspace.getConfiguration('js-import').get<string>('commaDangleImport'),
         maxLen: parseInt(vscode.workspace.getConfiguration('js-import').get<string>('maxLen')),
         needLineFeed,
+        semicolon: vscode.workspace.getConfiguration('js-import').get<boolean>('semicolon') ? ';' : '',
     }
 }

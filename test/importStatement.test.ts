@@ -9,6 +9,7 @@ const option : ImportOption = {
     commaDangle: 'always',
     maxLen: 100,
     needLineFeed: false,
+    semicolon: ';',
 };
 
 suite("test namedImportString", () => {
@@ -163,11 +164,20 @@ suite("test toSingleLineString", () => {
         const my = new ImportStatement(imp[0], option);
         assert.equal(`import a, * as b from 'c'; /* a */ //aaaa`, my.toSingleLineString());
     });
+
+    test("return toSingleLineString when has no semicolon correctly", () => {
+        const text = `
+            /* a */ import a, * as b from 'c';//aaaa
+        `
+        const imp = parseImport(text);
+        const my = new ImportStatement(imp[0], Object.assign({} ,option, { semicolon: ''}));
+        assert.equal(`import a, * as b from 'c' /* a */ //aaaa`, my.toSingleLineString());
+    });
 });
 
 
 suite("test toMultipleLineString", () => {
-    test("return toSingleLineString when has only nameImports correctly", () => {
+    test("return toMultipleLineString when has only nameImports correctly", () => {
         const text = `
             import { a as b, ccc, ddd, } from 'c';
         `
@@ -181,7 +191,21 @@ suite("test toMultipleLineString", () => {
 } from 'c';`, my.toMultipleLineString());
     });
 
-    test("return toSingleLineString when has only default import correctly", () => {
+    test("return toMultipleLineString when has no semicolon correctly", () => {
+        const text = `
+            import { a as b, ccc, ddd, } from 'c';
+        `
+        const imp = parseImport(text);
+        const my = new ImportStatement(imp[0], Object.assign({} ,option, { semicolon: ''}));
+        assert.equal(
+`import {
+    a as b,
+    ccc,
+    ddd,
+} from 'c'`, my.toMultipleLineString());
+    });
+
+    test("return toMultipleLineString when has only default import correctly", () => {
         const text = `
             import a from 'c';
         `
@@ -192,7 +216,7 @@ suite("test toMultipleLineString", () => {
     from 'c';`, my.toMultipleLineString());
     });
 
-    test("return toSingleLineString when has only name space import correctly", () => {
+    test("return toMultipleLineString when has only name space import correctly", () => {
         const text = `
             import * as c from 'c';
         `
@@ -203,7 +227,7 @@ suite("test toMultipleLineString", () => {
     from 'c';`, my.toMultipleLineString());
     });
 
-    test("return toSingleLineString when has default import and name space import correctly", () => {
+    test("return toMultipleLineString when has default import and name space import correctly", () => {
         const text = `
             import a, * as c from 'c';
         `
@@ -214,7 +238,7 @@ suite("test toMultipleLineString", () => {
     from 'c';`, my.toMultipleLineString());
 });
 
-    test("return toSingleLineString when has default import and named import correctly", () => {
+    test("return toMultipleLineString when has default import and named import correctly", () => {
         const text = `
             import a, { a as b, ccc, ddd, } from 'c';
         `
@@ -228,7 +252,7 @@ suite("test toMultipleLineString", () => {
 } from 'c';`, my.toMultipleLineString());
     });
 
-    test("return toSingleLineString with comments correctly", () => {
+    test("return toMultipleLineString with comments correctly", () => {
         const text = `
             /* aaa */ import a, {// i am a comment
                 // i am a comment
