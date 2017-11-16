@@ -9,7 +9,7 @@
         "url": "https://github.com/wangtao0101/vscode-js-import.git"
     },
     "engines": {
-        "vscode": "^1.12.0"
+        "vscode": "^1.17.0"
     },
     "categories": [
         "Other"
@@ -113,7 +113,7 @@
         "cross-env": "^5.0.0",
         "mocha": "^2.3.3",
         "typescript": "^2.0.3",
-        "vscode": "^1.0.0"
+        "vscode": "1.1.7"
     },
     "dependencies": {
         "babylon": "^6.17.2",
