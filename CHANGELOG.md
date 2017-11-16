@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.13.0] - 2017-10-11
+- fix bug: findFiles bug in vscode 1.18.0
+- feature: add config for semicolon #7
+
 ## [0.12.1] - 2017-10-11
 - fix bug: bug about '$$' #5
 

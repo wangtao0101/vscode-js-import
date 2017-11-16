@@ -147,6 +147,9 @@ We will watch the change of package.json, and auto add and remove module.
 //max-line length like eslint rule max-line, the -1 will disable the rule,
 //if import statement exceed maxLen, the statement will be split into multiple lines.
 "js-import.maxLen": 100
+
+//whether to add semicolon after import statement
+"js-import.semicolon": true
 ```
 
 # TODO

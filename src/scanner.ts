@@ -37,7 +37,7 @@ export default class Scanner {
 
     public scanAllImport() {
         const filesToScan = vscode.workspace.getConfiguration('js-import').get<string>('filesToScan');
-        vscode.workspace.findFiles(filesToScan, '{**∕node_modules∕**}', 99999)
+        vscode.workspace.findFiles(filesToScan, '{**/node_modules/**}', 99999)
             .then((files) => this.processFiles(files));
         this.findModulesInPackageJson();
         this.processPlainFiles();
@@ -97,10 +97,7 @@ export default class Scanner {
     }
 
     private processFiles(files: vscode.Uri[]) {
-        let pruned = files.filter((f) => {
-            return f.fsPath.indexOf('node_modules') === -1
-        });
-        pruned.forEach(file => {
+        files.forEach(file => {
             this.processFile(file);
         });
         return;
