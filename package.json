@@ -41,62 +41,74 @@
                 "js-import.root": {
                     "type": "string",
                     "default": "/src",
-                    "description": "the source dir, currently we only support single root"
+                    "description": "the source dir, currently we only support single root",
+                    "scope": "resource"
                 },
                 "js-import.alias": {
                     "type": "object",
                     "description": "module alias like webpack resolve.alias 或者 typescript compilerOptions.paths, not support nested alias path, e.g { util: 'src/util/' }",
-                    "default": ""
+                    "default": "",
+                    "scope": "resource"
                 },
                 "js-import.filesToScan": {
                     "type": "string",
                     "default": "**/*.{jsx,js,tsx,ts}",
-                    "description": "Glob for files to watch and scan, e.g ./src/** ./src/app/**/*.js. Defaults to **/*.{jsx,js,ts}"
+                    "description": "Glob for files to watch and scan, e.g ./src/** ./src/app/**/*.js. Defaults to **/*.{jsx,js,ts}",
+                    "scope": "resource"
                 },
                 "js-import.plainFileSuffix": {
                     "type": "string",
                     "default": "css,less,sass",
-                    "description": "suffix of plainFiles, import statement is like 'import 'xxx.less';'. Defaults to css,less,sass"
+                    "description": "suffix of plainFiles, import statement is like 'import 'xxx.less';'. Defaults to css,less,sass",
+                    "scope": "resource"
                 },
                 "js-import.plainFileSuffixWithDefaultMember": {
                     "type": "string",
                     "default": "json,bmp,gif,jpe,jpeg,png",
-                    "description": "suffix of plainFiles which should be imported with default member, import statement is like 'import json form 'xxx.json';'. Defaults to json,bmp,gif,jpe,jpeg,png"
+                    "description": "suffix of plainFiles which should be imported with default member, import statement is like 'import json form 'xxx.json';'. Defaults to json,bmp,gif,jpe,jpeg,png",
+                    "scope": "resource"
                 },
                 "js-import.insertPosition": {
                     "type": "string",
                     "default": "last",
-                    "description": "the insert position of new import statement, first means first of all imports, last means last of all imports, soon we will suport sort"
+                    "description": "the insert position of new import statement, first means first of all imports, last means last of all imports, soon we will suport sort",
+                    "scope": "resource"
                 },
                 "js-import.commaDangleImport": {
                     "type": "string",
                     "default": "never",
-                    "description": "option for comma-dangle to generate import statement, like esline rule imports of comma-dangle, there are four options :　never, always, always-multiline, only-multiline"
+                    "description": "option for comma-dangle to generate import statement, like esline rule imports of comma-dangle, there are four options :　never, always, always-multiline, only-multiline",
+                    "scope": "resource"
                 },
                 "js-import.codeCompletion": {
                     "type": "boolean",
                     "default": "true",
-                    "description": "whether to enable codeCompletion"
+                    "description": "whether to enable codeCompletion",
+                    "scope": "resource"
                 },
                 "js-import.codeCompletionAction": {
                     "type": "boolean",
                     "default": "true",
-                    "description": "whether to autofix import when you select completion item, you can set it false to avoid mistaken import, then we will only provide code completion and you can use shutcut or autofix to import identifier"
+                    "description": "whether to autofix import when you select completion item, you can set it false to avoid mistaken import, then we will only provide code completion and you can use shutcut or autofix to import identifier",
+                    "scope": "resource"
                 },
                 "js-import.quote": {
                     "type": "string",
                     "default": "singlequote",
-                    "description": "whether to use singlequote or use doublequote"
+                    "description": "whether to use singlequote or use doublequote",
+                    "scope": "resource"
                 },
                 "js-import.semicolon": {
                     "type": "boolean",
                     "default": "true",
-                    "description": "whether to add semicolon after import statement"
+                    "description": "whether to add semicolon after import statement",
+                    "scope": "resource"
                 },
                 "js-import.maxLen": {
                     "type": "number",
                     "default": "100",
-                    "description": "max-line length like eslint rule max-line, the -1 will disable the rule"
+                    "description": "max-line length like eslint rule max-line, the -1 will disable the rule",
+                    "scope": "resource"
                 }
             }
         }
