@@ -28,7 +28,10 @@ export default class JsImport {
         JsImport.plainFilesGlob = `**/*.{${JsImport.emptyMemberPlainFiles.concat(JsImport.defaultMemberPlainFiles).join(',')}}`;
 
         this.attachCommands(context);
+        // TODO: should redesign file watcher in muti root version
         this.attachFileWatcher();
+
+        // TODO: should reshow search status after add new workspaceFolder
         JsImport.statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
         JsImport.statusBar.text = '$(search)...';
         JsImport.statusBar.tooltip = 'JsImport: Building import cache...';
@@ -95,6 +98,7 @@ export default class JsImport {
     }
 
     public attachFileWatcher() {
+        // TODO: should add or delete filewatch after add or close workspaceFolder
         let glob = vscode.workspace.getConfiguration('js-import').get<string>('filesToScan');
         let watcher = vscode.workspace.createFileSystemWatcher(glob);
         watcher.onDidChange((file: vscode.Uri) => {
