@@ -23,6 +23,9 @@ import { $$ } from './foo';
 Via
 comabc
 ccc
+Type
+abs
+dabs
 
 react
 affix

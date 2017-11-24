@@ -20,6 +20,14 @@ suite("Interpreter Tests", () => {
         assert.deepEqual([{default: false, name: 'uuu'}], my.run(text, false, '', ''))
     });
 
+    test("export abstract class uuu;", () => {
+        const my = new Interpreter();
+        const text = `
+            export abstract class uuu;
+        `
+        assert.deepEqual([{default: false, name: 'uuu'}], my.run(text, false, '', ''))
+    });
+
     test("export function* xxx;", () => {
         const my = new Interpreter();
         const text = `
