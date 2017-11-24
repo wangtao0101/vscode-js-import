@@ -12,6 +12,14 @@ suite("Interpreter Tests", () => {
         assert.deepEqual([{default: true, name: 'uuu'}], my.run(text, false, '', ''))
     });
 
+    test("export enum uuu;", () => {
+        const my = new Interpreter();
+        const text = `
+            export enum uuu;
+        `
+        assert.deepEqual([{default: false, name: 'uuu'}], my.run(text, false, '', ''))
+    });
+
     test("export function* xxx;", () => {
         const my = new Interpreter();
         const text = `
