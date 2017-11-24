@@ -170,6 +170,7 @@ Currently in beta, there are a lot of work to do;
 - [ ] full support flow, export type and import type
 - [ ] support action for remove unused import identifier using eslint or tslint
 - [ ] support config for extra module path, such as module in node_modules but not in dependenciess
+- [ ] support config for css modules, import less css sass like import * as css from 'xxx.less'
 
 # Export RegExp
 ```
