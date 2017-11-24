@@ -175,7 +175,7 @@ Currently in beta, there are a lot of work to do;
 exports.default\\s*=\\s*(\\w+).default
 module.exports\\s*=\\s*(\\w+)
 exports\\[[\\'\\"]default[\\'\\"]\\]\\s*=\\s*(\\w+)
-export\\s+(default\\s+){0,1}(?:(?:const|let|var|function|function\\*|class)\\s+){0,1}([\\w]+)
+export\\s+(default\\s+){0,1}(?:(?:const|let|var|interface|enum|function|function\\*|class|abstract\\sclass)\\s+){0,1}([\\w]+)
 exports\\.([\\w]+)\\s*=
 exports\\[\\"([\\w]+)\\"\\]\\s*=
 Object.defineProperty\\(\\s*exports\\s*,\\s*[\\'|\\"]([\\w]+)[\\'|\\"]

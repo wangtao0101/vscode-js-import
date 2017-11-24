@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.14.0] - 2017-
+- feature: support export enum, abstract class
+- improve: upgrade vscode engines version and task lanuch version
+
 ## [0.13.0] - 2017-10-11
 - fix bug: findFiles bug in vscode 1.18.0
 - feature: add config for semicolon #7

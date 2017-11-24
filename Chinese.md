@@ -120,7 +120,7 @@ import abc from 'package-1/abc'
 //如果你使用了css modules，你可以将css、less、sass添加到这里。
 "js-import.plainFileSuffixWithDefaultMember": "json,bmp,gif,jpe,jpeg,png"
 
-//the insert position of new import statement, first means first of all imports, last means last of all imports, soon we will suport sort
+//配置插入import语句的位置，支持last和first两种，以后会支持sort
 "js-import.insertPosition": "last"
 
 //option for comma-dangle to generate import statement, like esline rule imports of comma-dangle, there are four options :　never, always, always-multiline, only-multiline
@@ -139,4 +139,7 @@ import abc from 'package-1/abc'
 //max-line length like eslint rule max-line, the -1 will disable the rule,
 //if import statement exceed maxLen, the statement will be split into multiple lines.
 "js-import.maxLen": 100
+
+//whether to add semicolon after import statement
+"js-import.semicolon": true
 ```
