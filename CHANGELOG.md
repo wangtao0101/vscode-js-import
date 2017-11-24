@@ -1,6 +1,6 @@
 # Change Log
 
-## [0.14.0] - 2017-
+## [0.14.0] - 2017-11-24
 - feature: support export enum, abstract class
 - improve: upgrade vscode engines version and task lanuch version
 
