@@ -3,41 +3,58 @@ import * as fs from 'fs';
 import Interpreter from './interpreter';
 import JsImport from './jsImport';
 import { kebab2camel, base2camel } from './help';
+import { WorkspaceFolder, RelativePattern } from 'vscode';
 const path = require('path');
 
 export interface ImportObj {
     path: string;
     module: {
         /**
-         * identifier名称
+         * identifier name
          */
         name: string;
         /**
-         * 是否是default identifier
+         * is default identifier
          */
         default: boolean;
         /**
-         * 是否是文本文件
+         * is plain file
          */
         isPlainFile?: boolean;
         /**
-         * 否要被加入import语句中，例如css，less文件
+         * should add member to import statement like import 'file.less'
          */
         isNotMember?: boolean;
     };
     isNodeModule: boolean;
 }
 
-export default class Scanner {
+export interface RootOptions {
+    emptyMemberPlainFiles: Array<string>,
+    defaultMemberPlainFiles : Array<string>,
+    plainFilesGlob: string,
+    filesToScan: string;
+}
+
+export default class RootScanner {
 
     private interpreter = new Interpreter();
-    public static cache = {};
-    public static nodeModuleCache = {};
-    public static nodeModuleVersion = {};
+    private workspaceFolder: WorkspaceFolder;
+    private options: RootOptions;
+
+    public cache = {};
+    public nodeModuleCache = {};
+    public nodeModuleVersion = {};
+
+    constructor(workspaceFolder: WorkspaceFolder, options) {
+        this.workspaceFolder = workspaceFolder;
+        this.options = options;
+    }
 
     public scanAllImport() {
-        const filesToScan = vscode.workspace.getConfiguration('js-import').get<string>('filesToScan');
-        vscode.workspace.findFiles(filesToScan, '{**/node_modules/**}', 99999)
+        const relativePattern = new RelativePattern(this.workspaceFolder, this.options.filesToScan);
+        // TODO: filter file not in src
+        vscode.workspace.findFiles(relativePattern, '{**/node_modules/**}', 99999)
             .then((files) => this.processFiles(files));
         this.findModulesInPackageJson();
         this.processPlainFiles();
@@ -49,16 +66,17 @@ export default class Scanner {
     }
 
     public deleteFile(file: vscode.Uri) {
-        const keys = Object.keys(Scanner.cache);
+        const keys = Object.keys(this.cache);
         for (const key of keys) {
             if (key.startsWith(file.fsPath)) {
-                delete Scanner.cache[key];
+                delete this.cache[key];
             }
         }
     }
 
     private processPlainFiles() {
-        vscode.workspace.findFiles(JsImport.plainFilesGlob, '{**/node_modules/**}', 99999)
+        const relativePattern = new vscode.RelativePattern(this.workspaceFolder, this.options.plainFilesGlob);
+        vscode.workspace.findFiles(relativePattern, '{**/node_modules/**}', 99999)
         .then((files) => {
             files.filter((f) => {
                 return f.fsPath.indexOf('node_modules') === -1
@@ -71,8 +89,8 @@ export default class Scanner {
     public processPlainFile(url: vscode.Uri) {
         const parsedFile = path.parse(url.fsPath);
         const name = base2camel(parsedFile.name);
-        if (JsImport.emptyMemberPlainFiles.includes(parsedFile.ext.replace('\.', ''))) {
-            Scanner.cache[`${url.fsPath}-${name}`] = {
+        if (this.options.emptyMemberPlainFiles.includes(parsedFile.ext.replace('\.', ''))) {
+            this.cache[`${url.fsPath}-${name}`] = {
                 path: url.fsPath,
                 module: {
                     default: true,
@@ -83,7 +101,7 @@ export default class Scanner {
                 isNodeModule: false,
             };
         } else {
-            Scanner.cache[`${url.fsPath}-${name}`] = {
+            this.cache[`${url.fsPath}-${name}`] = {
                 path: url.fsPath,
                 module: {
                     default: true,
@@ -113,7 +131,7 @@ export default class Scanner {
             const isIndex = fileName === 'index';
             const modules = this.interpreter.run(data, isIndex, moduleName, fileName);
             modules.forEach(m => {
-                Scanner.cache[`${file.fsPath}-${m.name}`] = {
+                this.cache[`${file.fsPath}-${m.name}`] = {
                     path: file.fsPath,
                     module: m,
                     isNodeModule: false,
@@ -125,7 +143,7 @@ export default class Scanner {
 
     public findModulesInPackageJson() {
         const modules = [];
-        const packageJsonPath = path.join(vscode.workspace.rootPath, 'package.json');
+        const packageJsonPath = path.join(this.workspaceFolder.uri.fsPath, 'package.json');
         if (fs.existsSync(packageJsonPath)) {
             fs.readFile(packageJsonPath, 'utf8', (err, data) => {
                 if (err) {
@@ -149,12 +167,12 @@ export default class Scanner {
     }
 
     private deleteUnusedModules(modules: Array<string>) {
-        const keys = Object.keys(Scanner.nodeModuleCache);
-        const notexists = keys.filter(key => !modules.includes(Scanner.nodeModuleCache[key].path));
+        const keys = Object.keys(this.nodeModuleCache);
+        const notexists = keys.filter(key => !modules.includes(this.nodeModuleCache[key].path));
         notexists.forEach(name => {
-            if (Scanner.nodeModuleCache[name] != null) {
-                delete Scanner.nodeModuleVersion[Scanner.nodeModuleCache[name].path];
-                delete Scanner.nodeModuleCache[name];
+            if (this.nodeModuleCache[name] != null) {
+                delete this.nodeModuleVersion[this.nodeModuleCache[name].path];
+                delete this.nodeModuleCache[name];
             }
         })
         JsImport.setStatusBar();
@@ -162,7 +180,7 @@ export default class Scanner {
 
     private cacheModules(modules) {
         modules.forEach((moduleName) => {
-            const modulePath = path.join(vscode.workspace.rootPath, 'node_modules', moduleName);
+            const modulePath = path.join(this.workspaceFolder.uri.fsPath, 'node_modules', moduleName);
             const packageJsonPath = path.join(modulePath, 'package.json');
             if (fs.existsSync(packageJsonPath)) {
                 fs.readFile(packageJsonPath, 'utf-8', (err, data) => {
@@ -194,7 +212,7 @@ export default class Scanner {
                 const modules = this.interpreter.run(data, true, moduleKebabName, '')
                 let defaultModule = null;
                 modules.forEach(m => {
-                    Scanner.nodeModuleCache[`${moduleName}-${m.name}`] = {
+                    this.nodeModuleCache[`${moduleName}-${m.name}`] = {
                         path: moduleName,
                         module: m,
                         isNodeModule: true,
@@ -205,11 +223,11 @@ export default class Scanner {
                 });
                 const parsedModules = this.interpreter.runMainFile(data, moduleKebabName, mainFilePath);
                 parsedModules.forEach(m => {
-                    if (Scanner.nodeModuleCache[`${moduleName}-${m.name}`] == null) {
+                    if (this.nodeModuleCache[`${moduleName}-${m.name}`] == null) {
                         if (m.default && defaultModule != null) {
                             return;
                         }
-                        Scanner.nodeModuleCache[`${moduleName}-${m.name}`] = {
+                        this.nodeModuleCache[`${moduleName}-${m.name}`] = {
                             path: moduleName,
                             module: m,
                             isNodeModule: true,
@@ -223,15 +241,15 @@ export default class Scanner {
 
     public isCachedByVersion(moduleName, packageJson) {
         if (packageJson.hasOwnProperty('version')) {
-            if (Scanner.nodeModuleVersion[moduleName] != null) {
-                if (Scanner.nodeModuleVersion[moduleName] === packageJson.version) {
+            if (this.nodeModuleVersion[moduleName] != null) {
+                if (this.nodeModuleVersion[moduleName] === packageJson.version) {
                     return true
                 } else {
-                    Scanner.nodeModuleVersion[moduleName] = packageJson.version;
+                    this.nodeModuleVersion[moduleName] = packageJson.version;
                     return false;
                 }
             } else {
-                Scanner.nodeModuleVersion[moduleName] = packageJson.version;
+                this.nodeModuleVersion[moduleName] = packageJson.version;
                 return false;
             }
         }

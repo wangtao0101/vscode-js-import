@@ -1,10 +1,11 @@
 import parseImport, { ImportDeclaration } from 'parse-import-es6';
 import * as vscode from 'vscode';
 import strip from 'parse-comment-es6';
-import { ImportObj } from './scanner';
 import { isIndexFile, isWin, getImportOption } from './help';
 import ImportStatement, { EditChange } from './importStatement';
 import JsImport from './jsImport';
+import { ImportObj } from './rootScanner';
+import { Uri } from 'vscode';
 const path = require('path');
 var open = require("open");
 
@@ -39,14 +40,16 @@ export default class ImportFixer {
     doc: vscode.TextDocument;
     importObj: ImportObj;
     range: vscode.Range;
+    options;
 
-    constructor(importObj: ImportObj, doc: vscode.TextDocument, range: vscode.Range) {
+    constructor(importObj: ImportObj, doc: vscode.TextDocument, range: vscode.Range, options) {
         this.importObj = importObj;
         this.doc = doc;
         this.range = range;
         if (doc != null) {
             this.eol = doc.eol === vscode.EndOfLine.LF ? '\n' : '\r\n';
         }
+        this.options = options;
     }
 
     public fix() {
@@ -79,11 +82,13 @@ export default class ImportFixer {
     public extractImportPathFromAlias(importObj: ImportObj, fsPath: string) {
         let aliasMatch = null;
         let aliasKey = null;
-        const rootPath = vscode.workspace.rootPath;
+        const uri = Uri.file(fsPath);
+        const rootPath = vscode.workspace.getWorkspaceFolder(uri).uri.fsPath;
+
         /**
          * pick up the first alias, currently not support nested alias
          */
-        const alias = vscode.workspace.getConfiguration('js-import').get<string>('alias') || {};
+        const alias = this.options.alias;
         for (const key of Object.keys(alias)) {
             if (importObj.path.startsWith(path.join(rootPath, alias[key]))) {
                 aliasMatch = alias[key];
@@ -119,7 +124,7 @@ export default class ImportFixer {
     }
 
     public extractImportFromRoot(importObj: ImportObj, filePath: string) {
-        const rootPath = vscode.workspace.rootPath;
+        const rootPath = vscode.workspace.getWorkspaceFolder(Uri.file(filePath));
         let importPath = path.relative(filePath, importObj.path);
         const parsePath = path.parse(importPath);
         /**
@@ -151,20 +156,21 @@ export default class ImportFixer {
         let importStatement: ImportStatement = null;
         if (filteredImports.length === 0) {
             const position = this.getNewImportPositoin(imports);
+            // TODO: skip name === 'name as cc'
             if (this.importObj.module.isNotMember) {
                 importStatement = new ImportStatement(
                     getImportDeclaration(null, null, [], importPath, position),
-                    getImportOption(this.eol, true),
+                    getImportOption(this.eol, true, this.options),
                 );
             } else if (this.importObj.module.default) {
                 importStatement = new ImportStatement(
                     getImportDeclaration(this.importObj.module.name, null, [], importPath, position),
-                    getImportOption(this.eol, true),
+                    getImportOption(this.eol, true, this.options),
                 );
             } else {
                 importStatement = new ImportStatement(
                     getImportDeclaration(null, null, [this.importObj.module.name], importPath, position),
-                    getImportOption(this.eol, true),
+                    getImportOption(this.eol, true, this.options),
                 );
             }
         } else {
@@ -184,7 +190,7 @@ export default class ImportFixer {
                     // imp.importedDefaultBinding === null
                     importStatement = new ImportStatement(
                         Object.assign(imp, { importedDefaultBinding: this.importObj.module.name }),
-                        getImportOption(this.eol),
+                        getImportOption(this.eol, false, this.options),
                     );
                 }
             } else {
@@ -198,7 +204,7 @@ export default class ImportFixer {
                 }
                 importStatement = new ImportStatement(
                     Object.assign(imp, { namedImports: imp.namedImports.concat([this.importObj.module.name]) }),
-                    getImportOption(this.eol),
+                    getImportOption(this.eol, false, this.options),
                 );
             }
         }
@@ -212,7 +218,7 @@ export default class ImportFixer {
 
     public getNewImportPositoin(imports) {
         let position: vscode.Position = null;
-        let pos = vscode.workspace.getConfiguration('js-import').get<string>('insertPosition') || 'last';
+        let pos = this.options.insertPosition;
         if (pos !== 'first' && pos !== 'last') {
             pos = 'last'
         }
