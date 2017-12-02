@@ -1,66 +1,76 @@
 import * as vscode from 'vscode';
-import Scanner from './scanner';
-import Resolver from './resolver';
 import ImportFixer from './importFixer';
 import { ImportAction } from './importAction';
 import { ImportCompletion } from "./importCompletion";
+import RootCache from './rootCache';
+const throttle = require('throttleit');
 
 export default class JsImport {
 
     public static statusBar: vscode.StatusBarItem;
-    public static emptyMemberPlainFiles = [];
-    public static defaultMemberPlainFiles = [];
-    public static plainFilesGlob = '';
+
+    public static rootCaches = {};
 
     public run(context: vscode.ExtensionContext) {
-        let root = vscode.workspace.rootPath;
-        if (!root) {
-            return;
-        }
-
-        /**
-         * init config
-         */
-        const plainFileSuffix = vscode.workspace.getConfiguration('js-import').get<string>('plainFileSuffix');
-        const plainFileSuffixWithDefaultMember = vscode.workspace.getConfiguration('js-import').get<string>('plainFileSuffixWithDefaultMember');
-        JsImport.emptyMemberPlainFiles = plainFileSuffix.split(',').map((x) => x.trim());
-        JsImport.defaultMemberPlainFiles = plainFileSuffixWithDefaultMember.split(',').map((x) => x.trim());
-        JsImport.plainFilesGlob = `**/*.{${JsImport.emptyMemberPlainFiles.concat(JsImport.defaultMemberPlainFiles).join(',')}}`;
+        vscode.workspace.workspaceFolders.map(item => {
+            const cache = new RootCache(item);
+            JsImport.rootCaches[item.uri.fsPath] = cache;
+        })
 
         this.attachCommands(context);
-        // TODO: should redesign file watcher in muti root version
-        this.attachFileWatcher();
 
         // TODO: should reshow search status after add new workspaceFolder
         JsImport.statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
         JsImport.statusBar.text = '$(search)...';
         JsImport.statusBar.tooltip = 'JsImport: Building import cache...';
         JsImport.statusBar.show();
-        vscode.commands.executeCommand('extension.scanImport', { init: true });
+
+        JsImport.setStatusBar = throttle(JsImport.setStatusBar, 1000);
+        setTimeout(JsImport.setStatusBar, 5000);
     }
 
     private attachCommands(context: vscode.ExtensionContext) {
-        const scanner = new Scanner();
+        const wfWatcher = vscode.workspace.onDidChangeWorkspaceFolders((event) => {
+            event.added.map(item => {
+                const cache = new RootCache(item);
+                JsImport.rootCaches[item.uri.fsPath] = cache;
+            })
+            event.removed.map(item => {
+                const rootCache = JsImport.rootCaches[item.uri.fsPath];
+                if(rootCache) {
+                    rootCache.dispose();
+                    delete JsImport.rootCaches[item.uri.fsPath];
+                }
+            });
+            JsImport.setStatusBar();
+        })
 
         let importScanner = vscode.commands.registerCommand('extension.scanImport', (request) => {
-            if (request.init) {
-                scanner.scanAllImport();
-            } else if (request.edit) {
-                scanner.scanFileImport(request.file);
+            const rootCache = JsImport.getWorkspaceFolder(request.file);
+            if (rootCache == null) {
+                return;
+            }
+
+            if (request.edit) {
+                rootCache.scanner.scanFileImport(request.file);
             } else if (request.delete) {
-                scanner.deleteFile(request.file);
+                rootCache.scanner.deleteFile(request.file);
             } else if (request.nodeModule) {
-                scanner.findModulesInPackageJson();
+                rootCache.scanner.findModulesInPackageJson();
             } else {
                 // do nothing
             }
         });
 
         let importPlainFileScanner = vscode.commands.registerCommand('extension.scanPlainFileImport', (request) => {
+            const rootCache = JsImport.getWorkspaceFolder(request.file);
+            if (rootCache == null) {
+                return;
+            }
             if (request.create) {
-                scanner.processPlainFile(request.file);
+                rootCache.scanner.processPlainFile(request.file);
             } else {
-                scanner.deleteFile(request.file);
+                rootCache.scanner.deleteFile(request.file);
             }
         });
 
@@ -76,7 +86,14 @@ export default class JsImport {
                 if (selection.start.isEqual(selection.end)) {
                     const wordRange = doc.getWordRangeAtPosition(selection.start)
                     const value = doc.getText().substring(doc.offsetAt(wordRange.start), doc.offsetAt(wordRange.end));
-                    new Resolver().resolve(value, doc, wordRange);
+
+                    let quickPickItems = JsImport.resolveItems(value, doc, wordRange, false);
+                    vscode.window.showQuickPick(quickPickItems).then(item => {
+                        if (item) {
+                            vscode.commands.executeCommand('extension.fixImport',
+                                item.importObj, item.doc, item.range);
+                        }
+                    })
                 } else {
                     // do nothing
                 }
@@ -89,51 +106,39 @@ export default class JsImport {
 
         // TODO: suport config DocumentSelector
         let codeActionFixer = vscode.languages.registerCodeActionsProvider(
-            ['javascript', 'typescript', 'javascriptreact', 'typescriptreact'], new ImportAction())
+            ['javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'vue'], new ImportAction())
 
         let completetion = vscode.languages.registerCompletionItemProvider(
-            ['javascript', 'typescript', 'javascriptreact', 'typescriptreact'], new ImportCompletion());
+            ['javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'vue'], new ImportCompletion());
 
-        context.subscriptions.push(importScanner, importPlainFileScanner, shortcutImport, codeActionFixer, completetion);
+        context.subscriptions.push(wfWatcher, shortcutImport, codeActionFixer, completetion);
     }
 
-    public attachFileWatcher() {
-        // TODO: should add or delete filewatch after add or close workspaceFolder
-        let glob = vscode.workspace.getConfiguration('js-import').get<string>('filesToScan');
-        let watcher = vscode.workspace.createFileSystemWatcher(glob);
-        watcher.onDidChange((file: vscode.Uri) => {
-            vscode.commands
-                .executeCommand('extension.scanImport', { file, edit: true, init: false, nodeModule: false });
-        })
-        watcher.onDidCreate((file: vscode.Uri) => {
-            vscode.commands
-                .executeCommand('extension.scanImport', { file, edit: true, init: false, nodeModule: false });
-        })
-        watcher.onDidDelete((file: vscode.Uri) => {
-            vscode.commands
-                .executeCommand('extension.scanImport', { file, delete: true, init: false, nodeModule: false });
-        })
+    public static getWorkspaceFolder(uri): RootCache {
+        const workspaceFolder = vscode.workspace.getWorkspaceFolder(uri);
+        return JsImport.rootCaches[workspaceFolder.uri.fsPath];
+    }
 
-        let packageJsonWatcher = vscode.workspace.createFileSystemWatcher('**/package.json');
-        packageJsonWatcher.onDidChange((file: vscode.Uri) => {
-            vscode.commands
-                .executeCommand('extension.scanImport', { file: null, edit: false, delete: false, init: false, nodeModule: true });
-        })
-
-        let plainFilesGlobWatcher = vscode.workspace.createFileSystemWatcher(JsImport.plainFilesGlob);
-        plainFilesGlobWatcher.onDidDelete((file: vscode.Uri) => {
-            vscode.commands
-                .executeCommand('extension.scanPlainFileImport', { file, create: false });
-        })
-        plainFilesGlobWatcher.onDidCreate((file: vscode.Uri) => {
-            vscode.commands
-                .executeCommand('extension.scanPlainFileImport', { file, create: true });
-        })
+    public static resolveItems(value: string, doc: vscode.TextDocument, range: vscode.Range, completion: false) {
+        const rootCache: RootCache = JsImport.getWorkspaceFolder(doc.uri)
+        if (rootCache) {
+            return rootCache.resolveItems(value, doc, range, completion);
+        }
+        return [];
     }
 
     public static setStatusBar() {
-        JsImport.statusBar.text = `$(database) ${Object.keys(Scanner.cache).length + Object.keys(Scanner.nodeModuleCache).length}`;
-        JsImport.statusBar.tooltip = `JsImport : ${Object.keys(Scanner.cache).length + Object.keys(Scanner.nodeModuleCache).length} import statements`;
+        const showList = [];
+        let all = 0;
+        Object.keys(JsImport.rootCaches).map(key => {
+            const root: RootCache = JsImport.rootCaches[key];
+            const number =  Object.keys(root.scanner.cache).length +  Object.keys(root.scanner.nodeModuleCache).length;
+            showList.push(`\n${root.workspaceFolder.name} : ${number}`);
+            all += number;
+        })
+        JsImport.statusBar.text = `$(database) ${all}`;
+        JsImport.statusBar.tooltip = `JsImport\nall: ${all} import statements${showList.join('')}`;
+        JsImport.statusBar.show();
     }
 
     public static consoleError(error) {

@@ -1,6 +1,5 @@
-import Scanner, { ImportObj } from "./scanner";
-import Resolver from "./resolver";
 import * as vscode from 'vscode';
+import JsImport from "./jsImport";
 const path = require('path');
 
 
@@ -41,7 +40,7 @@ export class ImportAction implements vscode.CodeActionProvider {
         if (name == null) {
             return handlers;
         }
-        const items = new Resolver().resolveItems(name, document, range, false);
+        const items = JsImport.resolveItems(name, document, range, false);
         items.forEach(item => {
             handlers.push({
                 title: item.label,

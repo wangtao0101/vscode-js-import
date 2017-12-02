@@ -1,10 +1,11 @@
 import parseImport, { ImportDeclaration } from 'parse-import-es6';
 import * as vscode from 'vscode';
 import strip from 'parse-comment-es6';
-import { ImportObj } from './scanner';
 import { isIndexFile, isWin, getImportOption } from './help';
 import ImportStatement, { EditChange } from './importStatement';
 import JsImport from './jsImport';
+import { ImportObj } from './rootScanner';
+import { Uri } from 'vscode';
 const path = require('path');
 var open = require("open");
 
@@ -79,11 +80,13 @@ export default class ImportFixer {
     public extractImportPathFromAlias(importObj: ImportObj, fsPath: string) {
         let aliasMatch = null;
         let aliasKey = null;
-        const rootPath = vscode.workspace.rootPath;
+        const uri = Uri.file(fsPath);
+        const rootPath = vscode.workspace.getWorkspaceFolder(uri).uri.fsPath;
+
         /**
          * pick up the first alias, currently not support nested alias
          */
-        const alias = vscode.workspace.getConfiguration('js-import').get<string>('alias') || {};
+        const alias = vscode.workspace.getConfiguration('js-import', uri).get<string>('alias') || {};
         for (const key of Object.keys(alias)) {
             if (importObj.path.startsWith(path.join(rootPath, alias[key]))) {
                 aliasMatch = alias[key];
@@ -119,7 +122,7 @@ export default class ImportFixer {
     }
 
     public extractImportFromRoot(importObj: ImportObj, filePath: string) {
-        const rootPath = vscode.workspace.rootPath;
+        const rootPath = vscode.workspace.getWorkspaceFolder(Uri.file(filePath));
         let importPath = path.relative(filePath, importObj.path);
         const parsePath = path.parse(importPath);
         /**
@@ -154,17 +157,17 @@ export default class ImportFixer {
             if (this.importObj.module.isNotMember) {
                 importStatement = new ImportStatement(
                     getImportDeclaration(null, null, [], importPath, position),
-                    getImportOption(this.eol, true),
+                    getImportOption(this.eol, true, this.doc.uri),
                 );
             } else if (this.importObj.module.default) {
                 importStatement = new ImportStatement(
                     getImportDeclaration(this.importObj.module.name, null, [], importPath, position),
-                    getImportOption(this.eol, true),
+                    getImportOption(this.eol, true, this.doc.uri),
                 );
             } else {
                 importStatement = new ImportStatement(
                     getImportDeclaration(null, null, [this.importObj.module.name], importPath, position),
-                    getImportOption(this.eol, true),
+                    getImportOption(this.eol, true, this.doc.uri),
                 );
             }
         } else {
@@ -184,7 +187,7 @@ export default class ImportFixer {
                     // imp.importedDefaultBinding === null
                     importStatement = new ImportStatement(
                         Object.assign(imp, { importedDefaultBinding: this.importObj.module.name }),
-                        getImportOption(this.eol),
+                        getImportOption(this.eol, false, this.doc.uri),
                     );
                 }
             } else {
@@ -198,7 +201,7 @@ export default class ImportFixer {
                 }
                 importStatement = new ImportStatement(
                     Object.assign(imp, { namedImports: imp.namedImports.concat([this.importObj.module.name]) }),
-                    getImportOption(this.eol),
+                    getImportOption(this.eol, false, this.doc.uri),
                 );
             }
         }
@@ -212,7 +215,7 @@ export default class ImportFixer {
 
     public getNewImportPositoin(imports) {
         let position: vscode.Position = null;
-        let pos = vscode.workspace.getConfiguration('js-import').get<string>('insertPosition') || 'last';
+        let pos = vscode.workspace.getConfiguration('js-import', this.doc.uri).get<string>('insertPosition') || 'last';
         if (pos !== 'first' && pos !== 'last') {
             pos = 'last'
         }
