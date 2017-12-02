@@ -6,6 +6,8 @@
 
 Intelligent and fast import extension for js in vscode, support import position option and adding import to existing import statement. !!!
 
+# Multi-root workspace Ready!
+
 [以中文查看](./Chinese.md)
 
 # Introduce

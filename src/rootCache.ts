@@ -129,7 +129,7 @@ export default class RootCache {
     }
 
     private resolveFromFile(importObj: ImportObj, doc: vscode.TextDocument, range: vscode.Range) {
-        let rp = path.relative(vscode.workspace.rootPath, importObj.path);
+        let rp = path.relative(vscode.workspace.getWorkspaceFolder(doc.uri).uri.fsPath, importObj.path);
         if (isWin) {
             rp = rp.replace(/\\/g, '/');
         }
