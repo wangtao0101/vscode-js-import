@@ -3,6 +3,7 @@ import ImportFixer from './importFixer';
 import { ImportAction } from './importAction';
 import { ImportCompletion } from "./importCompletion";
 import RootCache from './rootCache';
+import { getRootOption } from './help';
 const throttle = require('throttleit');
 
 export default class JsImport {
@@ -101,7 +102,8 @@ export default class JsImport {
         });
 
         let importFixer = vscode.commands.registerCommand('extension.fixImport', (importObj, doc, range) => {
-            new ImportFixer(importObj, doc, range).fix();
+            const options = getRootOption(doc.uri)
+            new ImportFixer(importObj, doc, range, options).fix();
         });
 
         // TODO: suport config DocumentSelector

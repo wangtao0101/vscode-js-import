@@ -26,13 +26,24 @@ export function base2camel(str) {
     });
 };
 
-export function getImportOption(eol, needLineFeed = false, uri): ImportOption {
+export function getImportOption(eol, needLineFeed = false, options): ImportOption {
     return {
         eol,
+        needLineFeed,
+        semicolon: options.semicolon,
+        queto: options.queto,
+        commaDangle: options.commaDangle,
+        maxLen: options.maxLen,
+    }
+}
+
+export function getRootOption(uri) {
+    return {
+        insertPosition: vscode.workspace.getConfiguration('js-import', uri).get<string>('insertPosition') || 'last',
+        alias: vscode.workspace.getConfiguration('js-import', uri).get<string>('alias') || {},
+        semicolon: vscode.workspace.getConfiguration('js-import', uri).get<boolean>('semicolon') ? ';' : '',
         queto: vscode.workspace.getConfiguration('js-import', uri).get<string>('quote') === 'doublequote' ? '"' : "'",
         commaDangle: vscode.workspace.getConfiguration('js-import', uri).get<string>('commaDangleImport'),
         maxLen: parseInt(vscode.workspace.getConfiguration('js-import', uri).get<string>('maxLen')),
-        needLineFeed,
-        semicolon: vscode.workspace.getConfiguration('js-import', uri).get<boolean>('semicolon') ? ';' : '',
     }
 }
