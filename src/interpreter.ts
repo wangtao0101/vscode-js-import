@@ -2,35 +2,35 @@ import strip from 'parse-comment-es6';
 import findExports from "./findExports";
 
 export interface ModuleItem {
-    name: string;
-    default: boolean;
+    name?: string;
+    default?: boolean;
+    parse?: boolean; // whether should be parsed
 }
 
 export default class Interpreter {
-
-    /**
-     * match six regex
-     * export default class uuu
-     * export class abc
-     * exports.eee =
-     * exports["default"] =
-     * Object.defineProperty( exports , 'version'
-     * export {
-             a,
-             b,
-       }
-       module.exports = classNames;
-       exports.default = _parseImport2.default;
+    /** exec result index
+     * 1   exports.default = xxx.default
+     * 2   module.exports = xxx
+     * 3   exports["default"] = xxx
+     * 4 5 export (default) const | let | ... xxx
+     * 6   exports.xxx =
+     * 7   exports['xxx'] =
+     * 8   Object.defineProperty( exports , 'xxx'
+     * 9   export default xxx
+     * 10 11  export (default) { xxx1, xxx2 } // can not match export { complex code } if (default) just export single one identifer
+     * 12  module.exports = {}
      */
     private static importRegex = new RegExp(`
         exports.default\\s*=\\s*(\\w+).default
         |module.exports\\s*=\\s*(\\w+)
         |exports\\[[\\'\\"]default[\\'\\"]\\]\\s*=\\s*(\\w+)
-        |export\\s+(default\\s+){0,1}(?:(?:const|let|var|interface|enum|function|function\\*|class|abstract\\sclass)\\s+){0,1}([\\w]+)
+        |export\\s+(default\\s+){0,1}(?:const|let|var|interface|enum|function|function\\*|class|abstract\\sclass)\\s+([\\w]+)
         |exports\\.([\\w]+)\\s*=
         |exports\\[\\"([\\w]+)\\"\\]\\s*=
         |Object.defineProperty\\(\\s*exports\\s*,\\s*[\\'|\\"]([\\w]+)[\\'|\\"]
-        |export\\s+(?:default\\s+){0,1}(\\{[^\\}]+\\})
+        |export\\s+default\\s+([\\w]+)
+        |export\\s+(default\\s+){0,1}\\{([^\\}]+)\\}
+        |module.exports\\s+=\\s+\\{([^\\}]+)\\}
     `.replace(/\s*/g, ''), 'g');
 
     private static importBlockRegex = /[\w]+/g;
@@ -41,7 +41,7 @@ export default class Interpreter {
         return this.extractModuleFromFile(strip(text).text, isIndex, moduleName, fileName);
     }
 
-    private addDefaultName(name: string, moduleName: string, resultList: Array<ModuleItem>) {
+    private addDefaultName(name: string, resultList: Array<ModuleItem>) {
         // support export['default'] = _xxxx2 or _xxxx
         const mt = name.match(/(?:^_(\w+)2)|(?:^_(\w+))/)
         let defaultName = name;
@@ -54,7 +54,6 @@ export default class Interpreter {
                 name: defaultName,
             })
         }
-        return name;
     }
 
     private extractModuleFromFile(text: string, isIndex: boolean, moduleName :string, fileName: string) {
@@ -62,18 +61,13 @@ export default class Interpreter {
         const resultList : Array<ModuleItem> = [];
         let res;
         let i = 0;
+        Interpreter.importRegex.lastIndex = 0;
         while ((res = Interpreter.importRegex.exec(text)) != null) {
-            if (res[1] != null) {
-                this.addDefaultName(res[1], moduleName, resultList);
-                continue;
-            }
-            if (res[2] != null) {
-                this.addDefaultName(res[2], moduleName, resultList);
-                continue;
-            }
-            if (res[3] != null) {
-                this.addDefaultName(res[3], moduleName, resultList);
-                continue;
+            for (i = 1; i <= 3; i+=1) {
+                if (res[i] != null) {
+                    this.addDefaultName(res[i], resultList);
+                    break;
+                }
             }
             if (res[4] != null) {
                 resultList.push({
@@ -82,7 +76,7 @@ export default class Interpreter {
                 })
                 continue;
             }
-            for (i = 5; i < 9; i+=1) {
+            for (i = 5; i <= 8; i+=1) {
                 if (res[i] != null) {
                     if (!this.isUnwantedName(res[i]) && !nameList.includes(res[i])) {
                         nameList.push(res[i]);
@@ -91,7 +85,34 @@ export default class Interpreter {
                 }
             }
             if (res[9] != null) {
-                nameList.push(...this.extrachModuleFromExportBlock(res[9]))
+                this.addDefaultName(res[9], resultList);
+                break;
+            }
+            if (res[11] != null) {
+                if (res[10] != null) {
+                    this.addDefaultName(moduleName, resultList);
+                } else {
+                    const names = this.extrachModuleFromExportBlock(res[11]);
+                    if (names) {
+                        nameList.push(...names);
+                    } else {
+                        // complex export statement
+                        resultList.push({
+                            parse: true,
+                        });
+                    }
+                }
+            }
+            if (res[12] != null) {
+                const names = this.extrachModuleFromExportBlock(res[12]);
+                if (names) {
+                    nameList.push(...names);
+                } else {
+                    // complex export statement
+                    resultList.push({
+                        parse: true,
+                    });
+                }
             }
         }
         nameList.forEach((item) => {
@@ -115,8 +136,17 @@ export default class Interpreter {
            a,
            b,
        }
+       should ignore complex export {
+           'a': {
+
+           }
+           b: 'b'
+       }
      */
     private extrachModuleFromExportBlock(block) {
+        if (/[':{]/.test(block)) {
+            return false;
+        }
         const result = [];
         let res = [];
         while ((res = Interpreter.importBlockRegex.exec(block)) != null) {

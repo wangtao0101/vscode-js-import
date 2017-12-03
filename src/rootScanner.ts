@@ -127,16 +127,42 @@ export default class RootScanner {
                 return console.log(err);
             }
             const fileName = path.parse(file.fsPath).name;
+            // use for unnamed identifier
             const moduleName = path.basename(path.dirname(file.fsPath));
             const isIndex = fileName === 'index';
             const modules = this.interpreter.run(data, isIndex, moduleName, fileName);
+            let defaultModule = null;
+            let shouldParse = false;
             modules.forEach(m => {
+                if (m.parse) {
+                    shouldParse = true;
+                    return;
+                }
                 this.cache[`${file.fsPath}-${m.name}`] = {
                     path: file.fsPath,
                     module: m,
                     isNodeModule: false,
                 };
+                if (m.default) {
+                    defaultModule = m;
+                }
             });
+            if (shouldParse) {
+                // only complex export should be parsed
+                const parsedModules = this.interpreter.runMainFile(data, moduleName, file.fsPath);
+                parsedModules.forEach(m => {
+                    if (this.cache[`${file.fsPath}-${m.name}`] == null) {
+                        if (m.default && defaultModule != null) {
+                            return;
+                        }
+                        this.cache[`${file.fsPath}-${m.name}`] = {
+                            path: file.fsPath,
+                            module: m,
+                            isNodeModule: false,
+                        };
+                    }
+                });
+            }
             JsImport.setStatusBar();
         });
     }
@@ -212,6 +238,9 @@ export default class RootScanner {
                 const modules = this.interpreter.run(data, true, moduleKebabName, '')
                 let defaultModule = null;
                 modules.forEach(m => {
+                    if (m.parse) {
+                        return;
+                    }
                     this.nodeModuleCache[`${moduleName}-${m.name}`] = {
                         path: moduleName,
                         module: m,
