@@ -33,6 +33,9 @@ export default function parse(fileContent) {
             'objectRestSpread',
             'decorators',
             'classProperties',
+            'typescript',
+            'asyncGenerators',
+            'dynamicImport',
         ],
         sourceType: 'module',
     });

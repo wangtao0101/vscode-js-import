@@ -32,3 +32,4 @@ affix
 abc
 icon
 index
+appBuild

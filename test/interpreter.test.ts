@@ -90,6 +90,17 @@ suite("Interpreter Tests", () => {
         assert.deepEqual([{default: false, name: 'version'}], my.run(text, false, '', ''))
     });
 
+    test("should return default identifer", () => {
+        const my = new Interpreter();
+        const text = `
+            export default {
+                'a': {},
+                b: 'b',
+            };
+        `
+        assert.deepEqual([{default: true, name: 'aa'}], my.run(text, false, 'aa', ''))
+    });
+
     test("export block", () => {
         const my = new Interpreter();
         const text = `
@@ -99,6 +110,29 @@ suite("Interpreter Tests", () => {
             };
         `
         assert.deepEqual([{default: false, name: 'aaa'}, {default: false, name: 'bbb'}], my.run(text, false, '', ''))
+    });
+
+    test("module.exports = {}", () => {
+        const my = new Interpreter();
+        const text = `
+            module.exports = {
+                aaa,
+                bbb,
+            };
+        `
+        assert.deepEqual([{default: false, name: 'aaa'}, {default: false, name: 'bbb'}], my.run(text, false, '', ''))
+    });
+
+    test("should skip complex module.exports", () => {
+        const my = new Interpreter();
+        const text = `
+            const aa = {}
+            module.exports = {
+                aaa: aa,
+                bbb: function(){}
+            };
+        `
+        assert.deepEqual([{parse: true}], my.run(text, false, '', ''))
     });
 
     test("module.exports = _Sortable2.default;", () => {
