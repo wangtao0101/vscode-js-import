@@ -13,10 +13,12 @@ export default class JsImport {
     public static rootCaches = {};
 
     public run(context: vscode.ExtensionContext) {
-        vscode.workspace.workspaceFolders.map(item => {
-            const cache = new RootCache(item);
-            JsImport.rootCaches[item.uri.fsPath] = cache;
-        })
+        if (vscode.workspace.workspaceFolders) {
+            vscode.workspace.workspaceFolders.map(item => {
+                const cache = new RootCache(item);
+                JsImport.rootCaches[item.uri.fsPath] = cache;
+            })
+        }
 
         this.attachCommands(context);
 
