@@ -1,6 +1,9 @@
 # Change Log
 
-## [0.15.0] - 2017-xx-xx
+## [0.15.0] - 2017-12-14
+- fix bug: Open to remove leading ./ if is ./../ #11
+
+## [0.15.0] - 2017--12-4
 - feature: vscode Adopting Multi Root Workspace APIs
 - improve: improve interpreter
 
