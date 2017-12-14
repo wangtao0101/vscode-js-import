@@ -65,6 +65,19 @@ suite("extractImportFromRoot", () => {
         assert.equal('../via', importFixer.extractImportFromRoot(importObj, path.join(vscode.workspace.rootPath, 'src/component/index.js')))
     });
 
+    test("should return ignore ./ if in parent siblings dir and is index file", () => {
+        const importObj = {
+            path: path.join(vscode.workspace.rootPath, 'src/com/index.js'),
+            module: {
+                default: false,
+                name: 'via',
+            },
+            isNodeModule: false,
+        }
+        const importFixer = new ImportFixer(null, null, null, options);
+        assert.equal('../com', importFixer.extractImportFromRoot(importObj, path.join(vscode.workspace.rootPath, 'src/component/index.js')))
+    });
+
     test("should return ./ + dirname", () => {
         const importFixer = new ImportFixer(null, null, null, options);
         assert.equal('./via', importFixer.extractImportFromRoot(importObj, path.join(vscode.workspace.rootPath, 'src/app.js')))

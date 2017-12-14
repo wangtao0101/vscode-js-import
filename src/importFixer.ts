@@ -135,15 +135,14 @@ export default class ImportFixer {
             dir = dir.replace(/\\/g, '/');
         }
         dir = dir.replace(/../, '.');
+        if (dir.startsWith('./..')) {
+            dir = dir.substr(2, dir.length - 2);
+        }
         if (!importObj.module.isPlainFile && isIndexFile(parsePath.base)) {
             importPath = `${dir}`
         } else {
             const name = importObj.module.isPlainFile ? parsePath.base : parsePath.name;
-            if (dir.startsWith('./..')) {
-                importPath = `${dir.substr(2, dir.length - 2)}/${name}`;
-            } else {
-                importPath = `${dir}/${name}`;
-            }
+            importPath = `${dir}/${name}`;
         }
         return importPath;
     }
