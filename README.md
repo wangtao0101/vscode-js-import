@@ -159,21 +159,21 @@ Currently in beta, there are a lot of work to do;
 - [x] full suport in node_modules, only extract export form main file and support module.exports = require('./lib/React')
 - [x] full support import statement, such as 'feedline' in import statement
 - [x] option for insert position (ability to skip flow, Copyright, Lisence comment in top of file)
-- [ ] sort import statement by eslint rule, deal with comment
 - [x] support autocomplete
 - [x] support auto fix by eslint rule
 - [x] support option for max-line like eslint rule max-line, auto split statement to mutilines
-- [ ] support shortcut goto module under cursor, spec react conpoment
 - [x] support import "module-name"
-- [ ] autofix useless import statement or identifier by using eslint rule(no-unused-vars)
 - [x] support import scss, css, less, json, bmp, gif, jpe, jpeg, png file
+- [ ] sort import statement by eslint rule, deal with comment
+- [ ] support shortcut goto module under cursor, spec react conpoment, alias module
 - [ ] support commonjs, considering require nodejs built-in modules
 - [ ] full support typescript, using typescript parse
 - [ ] full support flow, export type and import type
-- [ ] support action for remove unused import identifier using eslint or tslint
+- [ ] support action for remove unused import identifier using eslint or tslint, eslint rule(no-unused-vars)
 - [ ] support config for extra module path, such as module in node_modules but not in dependenciess
 - [ ] support config for css modules, import less css sass like import * as css from 'xxx.less'
 - [ ] support single vue Single File Components
+- [ ] support read path of tsconfig.json and alias of webpack.config to config alias
 
 # Export RegExp
 ```
