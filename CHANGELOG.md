@@ -1,5 +1,8 @@
 # Change Log
 
+## [0.15.2] - 2018-04-28
+- fix bug: Type variable, then use shortcut it erases variable #14
+
 ## [0.15.0] - 2017-12-14
 - fix bug: Open to remove leading ./ if is ./../ #11
 
