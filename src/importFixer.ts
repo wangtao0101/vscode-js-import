@@ -211,7 +211,6 @@ export default class ImportFixer {
         const iec: EditChange = importStatement.getEditChange();
         let edit: vscode.WorkspaceEdit = new vscode.WorkspaceEdit();
         edit.replace(this.doc.uri, new vscode.Range(iec.startLine, iec.startColumn, iec.endLine, iec.endColumn), iec.text);
-        this.deleteWordRange(edit);
         vscode.workspace.applyEdit(edit);
     }
 
@@ -259,13 +258,6 @@ export default class ImportFixer {
             }
         }
         return position;
-    }
-
-    public deleteWordRange(edit: vscode.WorkspaceEdit) {
-        const line = this.doc.lineAt(this.range.start.line)
-        if (line.text.trim() === this.doc.getText(this.range)) {
-            edit.delete(this.doc.uri, line.rangeIncludingLineBreak);
-        }
     }
 }
 
