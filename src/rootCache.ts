@@ -17,15 +17,18 @@ export default class RootCache {
         defaultMemberPlainFiles: [],
         plainFilesGlob: '',
         filesToScan: '',
+        excludeFilesToScan: '',
     }
 
     constructor(workspaceFolder: WorkspaceFolder) {
         this.workspaceFolder = workspaceFolder;
         const filesToScan = vscode.workspace.getConfiguration('js-import', this.workspaceFolder.uri).get<string>('filesToScan');
+        const excludeFilesToScan = vscode.workspace.getConfiguration('js-import', this.workspaceFolder.uri).get<string>('excludeFilesToScan');
         const plainFileSuffix = vscode.workspace.getConfiguration('js-import', this.workspaceFolder.uri).get<string>('plainFileSuffix');
         const plainFileSuffixWithDefaultMember = vscode.workspace.getConfiguration('js-import', this.workspaceFolder.uri).get<string>('plainFileSuffixWithDefaultMember');
 
         this.options.filesToScan = filesToScan;
+        this.options.excludeFilesToScan = `{**/node_modules/**${excludeFilesToScan ? ','+excludeFilesToScan : ""}}`;
         this.options.emptyMemberPlainFiles = plainFileSuffix.split(',').map((x) => x.trim());
         this.options.defaultMemberPlainFiles = plainFileSuffixWithDefaultMember.split(',').map((x) => x.trim());
         this.options.plainFilesGlob = `**/*.{${this.options.emptyMemberPlainFiles.concat(this.options.defaultMemberPlainFiles).join(',')}}`;
