@@ -121,7 +121,7 @@ We will watch the change of package.json, and auto add and remove module.
 "js-import.filesToScan": "**/*.{jsx,js,tsx,ts}"
 
 //Glob for files to exclude from watch and scan, e.g **/.meteor/**. Defaults to nothing
-"js-import.excludeFilesToScan": "**/.meteor/**"
+"js-import.excludeFilesToScan": ""
 
 //suffix of plainFiles. Defaults to css,less,sass
 //When import file with these suffixes, the import statement only has 'import' and 'model-name' like 'import 'xxx.less'.
