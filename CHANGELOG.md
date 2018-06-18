@@ -1,5 +1,8 @@
 # Change Log
 
+## [0.15.3] - 2018-06-18
+- improve: Exclude folders from scan #16 #17
+
 ## [0.15.2] - 2018-04-28
 - fix bug: Type variable, then use shortcut it erases variable #14
 

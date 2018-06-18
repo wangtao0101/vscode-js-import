@@ -11,7 +11,7 @@
         "helpalias": "src/package/"
     },
     "js-import.filesToScan": "**/*.{jsx,tsx,ts,js,vue}",
-    "js-import.excludeFilesToScan": "",
+    "js-import.excludeFilesToScan": "**/exclude/**",
     "js-import.commaDangleImport": "never",
     "js-import.quote": "singlequote",
     "js-import.codeCompletionAction": false,

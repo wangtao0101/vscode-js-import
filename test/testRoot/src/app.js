@@ -33,3 +33,4 @@ abc
 icon
 index
 appBuild
+exclude
