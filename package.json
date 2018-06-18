@@ -2,13 +2,15 @@
     "name": "vscode-js-import",
     "displayName": "vscode-js-import",
     "description": "Intelligent and fast import extension for js in vscode, support import position option and adding import to existing import statement.",
-    "version": "0.15.2",
+    "version": "0.15.3",
     "publisher": "wangtao0101",
     "repository": {
         "type": "git",
         "url": "https://github.com/wangtao0101/vscode-js-import.git"
     },
-    "keywords": ["multi-root ready"],
+    "keywords": [
+        "multi-root ready"
+    ],
     "engines": {
         "vscode": "^1.17.0"
     },
@@ -55,6 +57,12 @@
                     "type": "string",
                     "default": "**/*.{jsx,js,tsx,ts}",
                     "description": "Glob for files to watch and scan, e.g ./src/** ./src/app/**/*.js. Defaults to **/*.{jsx,js,ts}",
+                    "scope": "resource"
+                },
+                "js-import.excludeFilesToScan": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Glob for files to exclude from watch and scan, e.g **/.meteor/**. Defaults to nothing",
                     "scope": "resource"
                 },
                 "js-import.plainFileSuffix": {

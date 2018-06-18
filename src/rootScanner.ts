@@ -34,6 +34,7 @@ export interface RootOptions {
     defaultMemberPlainFiles : Array<string>,
     plainFilesGlob: string,
     filesToScan: string;
+    excludeFilesToScan: string;
 }
 
 export default class RootScanner {
@@ -54,7 +55,7 @@ export default class RootScanner {
     public scanAllImport() {
         const relativePattern = new RelativePattern(this.workspaceFolder, this.options.filesToScan);
         // TODO: filter file not in src
-        vscode.workspace.findFiles(relativePattern, '{**/node_modules/**}', 99999)
+        vscode.workspace.findFiles(relativePattern, this.options.excludeFilesToScan, 99999)
             .then((files) => this.processFiles(files));
         this.findModulesInPackageJson();
         this.processPlainFiles();
@@ -76,7 +77,7 @@ export default class RootScanner {
 
     private processPlainFiles() {
         const relativePattern = new vscode.RelativePattern(this.workspaceFolder, this.options.plainFilesGlob);
-        vscode.workspace.findFiles(relativePattern, '{**/node_modules/**}', 99999)
+        vscode.workspace.findFiles(relativePattern, this.options.excludeFilesToScan, 99999)
         .then((files) => {
             files.filter((f) => {
                 return f.fsPath.indexOf('node_modules') === -1
