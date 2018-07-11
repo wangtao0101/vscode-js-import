@@ -1,5 +1,8 @@
 # Change Log
 
+## [0.15.4] - 2018-07-11
+- improve: support export import async function
+
 ## [0.15.2] - 2018-04-28
 - fix bug: Type variable, then use shortcut it erases variable #14
 

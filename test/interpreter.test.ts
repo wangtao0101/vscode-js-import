@@ -36,6 +36,14 @@ suite("Interpreter Tests", () => {
         assert.deepEqual([{default: false, name: 'xxx'}], my.run(text, false, '', ''))
     });
 
+    test("export async function xxx", () => {
+        const my = new Interpreter();
+        const text = `
+            export async function xxx;
+        `
+        assert.deepEqual([{default: false, name: 'xxx'}], my.run(text, false, '', ''))
+    });
+
     test("export interface ModuleItem", () => {
         const my = new Interpreter();
         const text = `
