@@ -34,3 +34,4 @@ icon
 index
 appBuild
 exclude
+asyncFunction

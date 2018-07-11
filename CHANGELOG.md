@@ -1,5 +1,8 @@
 # Change Log
 
+## [0.15.4] - 2018-07-11
+- improve: support export import async function
+
 ## [0.15.3] - 2018-06-18
 - improve: Exclude folders from scan #16 #17
 

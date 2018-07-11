@@ -24,7 +24,7 @@ export default class Interpreter {
         exports.default\\s*=\\s*(\\w+).default
         |module.exports\\s*=\\s*(\\w+)
         |exports\\[[\\'\\"]default[\\'\\"]\\]\\s*=\\s*(\\w+)
-        |export\\s+(default\\s+){0,1}(?:const|let|var|interface|enum|function|function\\*|class|abstract\\sclass)\\s+([\\w]+)
+        |export\\s+(default\\s+){0,1}(?:const|let|var|interface|enum|async\\s+function|function|function\\*|class|abstract\\sclass)\\s+([\\w]+)
         |exports\\.([\\w]+)\\s*=
         |exports\\[\\"([\\w]+)\\"\\]\\s*=
         |Object.defineProperty\\(\\s*exports\\s*,\\s*[\\'|\\"]([\\w]+)[\\'|\\"]
