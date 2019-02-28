@@ -16,7 +16,7 @@ import './via';
 import io from '';
 import $ from 'jquery';
 
-
+import {Component}from 'react';
 import { $$ } from './foo';
 
 

@@ -2,7 +2,7 @@
     "name": "vscode-js-import",
     "displayName": "vscode-js-import",
     "description": "Intelligent and fast import extension for js in vscode, support import position option and adding import to existing import statement.",
-    "version": "0.15.4",
+    "version": "0.15.5",
     "publisher": "wangtao0101",
     "repository": {
         "type": "git",
@@ -142,7 +142,7 @@
         "leven": "^2.1.0",
         "open": "^0.0.5",
         "parse-comment-es6": "^0.5.5",
-        "parse-import-es6": "^0.5.9",
+        "parse-import-es6": "^0.5.10",
         "require-relative": "^0.8.7",
         "throttleit": "^1.0.0"
     }
